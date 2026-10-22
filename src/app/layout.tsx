@@ -1,23 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { hero, site, skipLabel } from "@/content/story";
-
-const OG_ALT = `${site.name}: ${hero.title}`;
-import { Geist, Geist_Mono } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans, IBM_Plex_Serif } from "next/font/google";
+import { SiteHeader } from "@/components/site/SiteHeader";
+import { MotionProvider } from "@/lib/motion/MotionProvider";
+import { nav, site } from "@/content/site";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+// Lead-owned. IBM Plex because Hollerith's 1890 machine (scene 4) is IBM's root.
+const serif = IBM_Plex_Serif({ variable: "--font-plex-serif", subsets: ["latin"], weight: ["400", "600"], display: "swap" });
+const sans = IBM_Plex_Sans({ variable: "--font-plex-sans", subsets: ["latin"], weight: ["400", "600"], display: "swap" });
+// Mono is only for years and card numerals: no preload, it is never the LCP.
+const mono = IBM_Plex_Mono({ variable: "--font-plex-mono", subsets: ["latin"], weight: ["400", "500"], display: "swap", preload: false });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const OG_ALT = `${site.name}: ${site.line}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: site.title,
+  title: { default: site.title, template: `%s · ${site.name}` },
   description: site.description,
   alternates: { canonical: "/" },
   openGraph: {
@@ -35,25 +33,31 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f4f2ec" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e1012" },
+    { media: "(prefers-color-scheme: light)", color: "#f3efe4" },
+    { media: "(prefers-color-scheme: dark)", color: "#121315" },
   ],
 };
 
-// Runs while the HTML parses, before first paint: picks the theme from the
-// system setting and follows it if it changes. The kit's `.iso[data-theme]`
-// tokens and the page tokens both key off `body[data-theme]`.
-const THEME_SCRIPT = `(function(){var q=window.matchMedia("(prefers-color-scheme: dark)");var b=document.body;function set(){b.dataset.theme=q.matches?"dark":"light"}set();q.addEventListener("change",set)})()`;
+// Runs while the HTML parses, before first paint: follows the system theme,
+// live. <html data-theme> drives the page tokens; <body data-theme> drives the
+// anatomy kit's tokens (.iso[data-theme]).
+const THEME_SCRIPT = `(function(){var q=window.matchMedia("(prefers-color-scheme: dark)");function set(){var t=q.matches?"dark":"light";document.documentElement.dataset.theme=t;document.body.dataset.theme=t}set();q.addEventListener("change",set)})()`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en" className={`${serif.variable} ${sans.variable} ${mono.variable}`} suppressHydrationWarning>
       <body className="iso" data-theme="light" suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        {/* JS off: the odometer strip cannot move, so it is not shown. */}
+        <noscript>
+          <style>{`.strip{display:none!important}`}</style>
+        </noscript>
         <a href="#main" className="skip-link">
-          {skipLabel}
+          {nav.skip}
         </a>
+        <SiteHeader />
         {children}
+        <MotionProvider />
       </body>
     </html>
   );

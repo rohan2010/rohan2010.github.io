@@ -1,0 +1,164 @@
+/* The ruler (desktop gutter) and the odometer strip (phone). Lead-owned. */
+
+/* ---------- Desktop: fixed 72 px gutter ---------- */
+.ruler {
+  position: fixed;
+  z-index: 20;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--ruler-w);
+  border-right: 1px solid var(--rule);
+  background: var(--paper);
+  pointer-events: none;
+}
+.ruler-track {
+  position: absolute;
+  top: var(--space-5);
+  bottom: var(--space-5);
+  left: 0;
+  right: 0;
+}
+.ruler-tick {
+  position: absolute;
+  right: 0;
+  width: 8px;
+  height: 1px;
+  background: color-mix(in oklab, var(--ink-2) 55%, transparent);
+}
+.ruler-tick[data-major] {
+  width: 16px;
+  background: var(--ink-2);
+}
+.ruler-label {
+  position: absolute;
+  right: 22px;
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--ink-2);
+}
+/* Past 2026: blank paper, a faint dotted run to the bottom. */
+.ruler-blank {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 1px;
+  border-right: 1px dotted var(--rule);
+}
+.ruler-span,
+.ruler-pointer {
+  position: absolute;
+  top: 0;
+  opacity: 0;
+}
+.ruler[data-live] :is(.ruler-span, .ruler-pointer) {
+  opacity: 1;
+}
+/* The active scene's rhyme: its history year to its Rohan year. */
+.ruler-span {
+  right: 0;
+  width: 3px;
+  background: var(--accent);
+  opacity: 0;
+}
+.ruler[data-live] .ruler-span {
+  opacity: 0.55;
+}
+.ruler-pointer {
+  left: 0;
+  right: 0;
+  height: 0;
+  will-change: transform;
+}
+.ruler-pointer::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 2px;
+  background: var(--accent);
+}
+.ruler-pointer-year {
+  position: absolute;
+  left: 6px;
+  top: 0;
+  transform: translateY(-50%);
+  padding: 2px 4px;
+  background: var(--paper);
+  color: var(--accent-ink);
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 500;
+}
+
+/* ---------- Phone: the sticky odometer strip ---------- */
+.strip {
+  display: none;
+}
+@media (max-width: 767px) {
+  .ruler {
+    display: none;
+  }
+  .strip {
+    position: sticky;
+    z-index: 30;
+    top: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    height: var(--strip-h);
+    padding-inline: var(--gutter);
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+    pointer-events: none;
+  }
+}
+.odometer {
+  display: inline-flex;
+  font-size: 16px;
+  line-height: 20px;
+  height: 20px;
+  color: var(--accent-ink);
+  font-weight: 500;
+}
+.odo-digit {
+  display: inline-block;
+  height: 20px;
+  overflow: hidden;
+}
+.odo-reel {
+  display: flex;
+  flex-direction: column;
+  transform: translateY(calc(var(--d, 0) * -20px));
+  transition: transform var(--dur-ui) var(--ease-press);
+}
+.odo-reel > span {
+  height: 20px;
+}
+.strip-label {
+  font-size: var(--t-caption);
+  color: var(--ink-2);
+}
+.strip-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+}
+.strip-bar {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .odo-reel {
+    transition: none;
+  }
+}
