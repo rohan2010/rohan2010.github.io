@@ -1,18 +1,15 @@
-import { Contact } from "@/components/sections/Contact";
-import { Field } from "@/components/sections/Field";
-import { Fun } from "@/components/sections/Fun";
-import { Hero } from "@/components/sections/Hero";
-import { Research } from "@/components/sections/Research";
-import { Work } from "@/components/sections/Work";
-import { BenchDetail } from "@/components/figures/bench/detail";
-import { DETAILS } from "@/components/figures/bench/details";
-import { BenchFigure, BenchLegend } from "@/components/figures/bench/figure";
-import { EMAIL, GITHUB, LINKEDIN, chapters, site } from "@/content/story";
-import { ChapterRail } from "@/components/ui/ChapterRail";
-import { Reveal } from "@/components/ui/Reveal";
-import { TopBar } from "@/components/ui/TopBar";
+import { Ruler } from "@/components/ruler/Ruler";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { EMAIL, GITHUB, LINKEDIN, site } from "@/content/site";
+import { PageTransition } from "@/lib/transitions";
+import { Scenes0to3 } from "@/scenes/s0-s3";
+import { Scenes4to5 } from "@/scenes/s4-s5";
+import { Scenes6to8 } from "@/scenes/s6-s8";
 
-// ProfilePage JSON-LD (design pass, 9.4). Every value here is on the page; no telephone.
+// The home page: the ruler, then scenes 0–8 in order. Lead-owned: phase-1
+// workstreams change their own scenes folder, never this file.
+
+// ProfilePage JSON-LD. Every value is on the page; no telephone.
 const PROFILE = {
   "@context": "https://schema.org",
   "@type": "ProfilePage",
@@ -20,34 +17,28 @@ const PROFILE = {
     "@type": "Person",
     name: site.name,
     url: site.url,
-    jobTitle: "Software Engineer",
+    jobTitle: site.role,
     worksFor: { "@type": "Organization", name: "my day job" },
-    alumniOf: [
-      { "@type": "CollegeOrUniversity", name: "Purdue University" },
-      { "@type": "CollegeOrUniversity", name: "Maharaja Agrasen Institute of Technology" },
-    ],
+    alumniOf: [{ "@type": "CollegeOrUniversity", name: "Purdue University" }],
     email: `mailto:${EMAIL}`,
     address: { "@type": "PostalAddress", addressLocality: "Delhi", addressCountry: "IN" },
     sameAs: [LINKEDIN, GITHUB],
-    knowsAbout: ["LLM agent workflows", "RAG pipelines", "LLM evals", "guardrails", "Next.js", "Python"],
   },
 };
 
 export default function Home() {
   return (
-    <>
-      <TopBar />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(PROFILE).replace(/</g, "\\u003c") }} />
-      <main id="main" tabIndex={-1}>
-        <Hero figure={<BenchFigure />} legend={<BenchLegend />} />
-        <Field figure={<BenchDetail spec={DETAILS.field} />} />
-        <Research figure={<BenchDetail spec={DETAILS.research} />} />
-        <Work figure={<BenchDetail spec={DETAILS.work} />} />
-        <Fun figure={<BenchDetail spec={DETAILS.fun} />} />
-        <Contact />
-      </main>
-      <Reveal />
-      <ChapterRail chapters={chapters} />
-    </>
+    <PageTransition>
+      <div className="home">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(PROFILE).replace(/</g, "\\u003c") }} />
+        <Ruler />
+        <main id="main" tabIndex={-1}>
+          <Scenes0to3 />
+          <Scenes4to5 />
+          <Scenes6to8 />
+        </main>
+        <SiteFooter />
+      </div>
+    </PageTransition>
   );
 }

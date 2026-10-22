@@ -1,0 +1,129 @@
+/* Design tokens (concepts.md §3, MASTER §4). Lead-owned.
+   Light is the designed theme ("rag paper"); dark is "the same drawings under lamplight".
+   Theme: <html data-theme> is set by the inline script in layout.tsx before
+   first paint; with JS off the media query below decides. */
+
+/* --era: 0 = 1843 (sepia) … 1 = the present (teal). A registered number so it
+   can be interpolated and multiplied in calc(). */
+@property --era {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+:root {
+  /* Palette: every token has one job. */
+  --paper: #f3efe4; /* page (rag paper) */
+  --card-stock: #e9ddbe; /* punched cards, scene 4 manila */
+  --ink: #1b1a17; /* text (iron-gall black) */
+  --ink-2: #55524a; /* secondary text, ≥ 4.5:1 on paper and card stock */
+  --sepia: #8a5a2b; /* 1843–1950 accent, graphics; also ≥ 4.5:1 as text */
+  --teal: #0f8b8d; /* the present, graphics only */
+  --teal-ink: #0a6466; /* links and teal text */
+  --rule: color-mix(in oklab, var(--ink) 14%, var(--paper)); /* hairlines */
+  --vellum: color-mix(in oklab, var(--teal) 5%, var(--paper)); /* engineering vellum, scene 5 on */
+  color-scheme: light;
+}
+
+/* Dark, before the theme script runs or with JS off. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #121315;
+    --card-stock: #1c1b17;
+    --ink: #edeae2;
+    --ink-2: #a9a59b;
+    --sepia: #c79a6b;
+    --teal: #3cc4c6;
+    --teal-ink: #7fdcdd;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #121315;
+  --card-stock: #1c1b17;
+  --ink: #edeae2;
+  --ink-2: #a9a59b;
+  --sepia: #c79a6b;
+  --teal: #3cc4c6;
+  --teal-ink: #7fdcdd;
+  color-scheme: dark;
+}
+
+/* The drifting accent. Defined wherever --era can change, because a custom
+   property is computed where it is declared: a scene with its own --era must
+   recompute --accent itself. */
+:root,
+[data-scene] {
+  --accent: color-mix(in oklab, var(--sepia), var(--teal) calc(var(--era) * 100%)); /* graphics, focus rings */
+  --accent-ink: color-mix(in oklab, var(--sepia), var(--teal-ink) calc(var(--era) * 100%)); /* accent text, ≥ 4.5:1 at both ends */
+}
+
+:root {
+  /* Type families (next/font variables, set on <html> in layout.tsx). */
+  --font-serif: var(--font-plex-serif), "IBM Plex Serif", Georgia, serif; /* display, headings */
+  --font-sans: var(--font-plex-sans), "IBM Plex Sans", system-ui, sans-serif; /* body, UI */
+  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, monospace; /* ONLY years and card numerals */
+
+  /* Type scale: 6 steps (craft-bar R-T1). display ≥ 6 × body; top ratios 1.6+. */
+  --t-caption: 14px; /* captions, ruler years */
+  --lh-caption: 20px;
+  --t-body: 18px; /* body 18/30 */
+  --lh-body: 30px;
+  --t-h3: 24px;
+  --lh-h3: 32px;
+  --t-h2: clamp(30px, 1.6vw + 18px, 44px);
+  --lh-h2: 1.1;
+  --t-h1: clamp(40px, 3.4vw + 20px, 76px);
+  --lh-h1: 1.04;
+  --t-display: clamp(52px, 7vw, 128px); /* scene 0's line and the peak only */
+  --lh-display: 0.98;
+
+  /* Spacing: 8 steps. Inside a group ≤ half the gap between groups (UX-PX1). */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 40px;
+  --space-6: 64px;
+  --space-7: 96px;
+  --space-8: 160px;
+
+  /* Layout */
+  --ruler-w: 72px; /* desktop ruler gutter */
+  --strip-h: 40px; /* phone odometer strip */
+  --gutter: 40px; /* grid side padding, desktop */
+  --grid-gap: 24px;
+  --grid-max: 1200px;
+
+  /* Motion (concepts.md §4). Scrubbed tweens are linear in progress. */
+  --ease-press: cubic-bezier(0.2, 0.8, 0.2, 1); /* things that land: cards, packets */
+  --ease-ink: cubic-bezier(0.4, 0, 0.2, 1); /* ink and colour */
+  --dur-press: 160ms; /* hover, press */
+  --dur-ui: 320ms; /* UI change */
+  --dur-event: 700ms; /* an in-scene event */
+  --dur-ink: 1200ms; /* the once-per-page ink-in */
+}
+
+@media (max-width: 767px) {
+  :root {
+    --gutter: 16px;
+    --grid-gap: 16px;
+  }
+}
+
+/* Tailwind utilities that read the tokens: bg-paper, text-ink, font-serif … */
+@theme inline {
+  --color-paper: var(--paper);
+  --color-card-stock: var(--card-stock);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-sepia: var(--sepia);
+  --color-teal: var(--teal);
+  --color-teal-ink: var(--teal-ink);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-rule: var(--rule);
+  --font-serif: var(--font-plex-serif), Georgia, serif;
+  --font-sans: var(--font-plex-sans), system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+}

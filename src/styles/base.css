@@ -1,0 +1,225 @@
+/* Base elements, type roles, focus, skip link, site chrome. Lead-owned. */
+
+html {
+  background: var(--paper);
+  scroll-behavior: smooth; /* Lenis writes with behavior: instant, so no double smoothing (G7) */
+  scroll-padding-top: var(--space-4);
+}
+@media (max-width: 767px) {
+  html {
+    scroll-padding-top: calc(var(--strip-h) + var(--space-3));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  font-variant-numeric: proportional-nums oldstyle-nums;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+p,
+li,
+dd,
+figcaption {
+  text-wrap: pretty;
+}
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+  font-family: var(--font-serif);
+  font-weight: 600;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--accent) 24%, transparent);
+}
+
+/* ---------- Type roles (use these classes; ≤ 6 sizes on the home page) ---------- */
+@layer components {
+  .t-display {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--t-display);
+    line-height: var(--lh-display);
+    letter-spacing: -0.025em;
+  }
+  .t-h1 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: var(--t-h1);
+    line-height: var(--lh-h1);
+    letter-spacing: -0.02em;
+  }
+  .t-h2 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: var(--t-h2);
+    line-height: var(--lh-h2);
+    letter-spacing: -0.015em;
+  }
+  .t-h3 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: var(--t-h3);
+    line-height: var(--lh-h3);
+    letter-spacing: -0.005em;
+  }
+  .t-body {
+    font-size: var(--t-body);
+    line-height: var(--lh-body);
+  }
+  .t-caption {
+    font-size: var(--t-caption);
+    line-height: var(--lh-caption);
+    color: var(--ink-2);
+  }
+  /* Years and card numerals ONLY (craft-bar B2). Mark the element data-mono too. */
+  .t-year {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums lining-nums;
+    letter-spacing: 0;
+  }
+  .measure {
+    max-width: 62ch;
+  }
+
+  /* One link style everywhere (UX-SI1). */
+  .link {
+    color: var(--accent-ink);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: color-mix(in oklab, var(--accent) 50%, transparent);
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color var(--dur-press) var(--ease-ink);
+  }
+  .link:hover {
+    text-decoration-color: currentColor;
+    text-decoration-thickness: 2px;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+/* ---------- Focus: ≥ 2px, ≥ 3:1, on every surface (R-A2) ---------- */
+:where(a, button, summary, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+:where(main):focus {
+  outline: none;
+}
+
+/* ---------- Skip link: first focusable element, visible on focus ---------- */
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: var(--space-2);
+  left: var(--space-2);
+  padding: 10px 16px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+  transform: translateY(-200%);
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: none;
+}
+
+/* ---------- Site header (name left, ≤ 3 plain-word links right) ---------- */
+.site-header {
+  position: relative;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--gutter);
+  max-width: calc(var(--grid-max) + var(--gutter) * 2);
+  margin-inline: auto;
+}
+.site-header a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.site-header .site-name {
+  font-family: var(--font-serif);
+  font-weight: 600;
+}
+.site-header nav ul {
+  display: flex;
+  gap: var(--space-4);
+}
+.site-header nav a {
+  color: var(--ink-2);
+  font-size: 16px;
+  padding-inline: 2px;
+}
+.site-header nav a:hover,
+.site-header nav a[aria-current="page"] {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+@media (min-width: 768px) {
+  :root:has(.home) .site-header {
+    padding-left: calc(var(--ruler-w) + var(--gutter));
+    max-width: calc(var(--grid-max) + var(--gutter) * 2 + var(--ruler-w));
+  }
+}
+
+/* ---------- Footer: fine print, below the last viewport ---------- */
+.site-footer {
+  max-width: calc(var(--grid-max) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding: var(--space-5) var(--gutter) var(--space-6);
+  color: var(--ink-2);
+  font-size: var(--t-caption);
+  line-height: var(--lh-caption);
+}
+.site-footer > * + * {
+  margin-top: var(--space-3);
+}
+.site-sources summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+  color: var(--ink);
+}
+.site-sources ol {
+  list-style: decimal;
+  padding-left: var(--space-4);
+  max-width: 80ch;
+}
+.site-sources li + li {
+  margin-top: var(--space-2);
+}

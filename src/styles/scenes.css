@@ -1,0 +1,210 @@
+/* The home page frame and the scene shell's layout variants. Lead-owned.
+   Scenes place children with slots (<SceneSlot slot="text|figure|note|wide">);
+   each layout gives the slots a different composition on the 12-column grid. */
+
+/* ---------- Home frame: ruler gutter + content ---------- */
+.home {
+  position: relative;
+  overflow-x: clip;
+}
+@media (min-width: 768px) {
+  .home > main,
+  .home > .site-footer {
+    margin-left: var(--ruler-w);
+  }
+}
+
+/* ---------- Scene shell ---------- */
+.scene {
+  --era: var(--scene-era, 0); /* static era (JS off, reduced motion before hydration) */
+  position: relative;
+  padding-block: var(--space-8);
+}
+/* With JS, the ruler drives --era on <html> and every scene follows it. */
+:root[data-era-live] .scene {
+  --era: inherit;
+}
+.scene-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  row-gap: var(--space-5);
+  max-width: calc(var(--grid-max) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  align-items: start;
+}
+.scene-slot {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+/* The scene heading: years (mono, in the heading itself) then the title. */
+.scene-heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.scene-heading-years {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: var(--t-caption);
+  line-height: var(--lh-caption);
+  letter-spacing: 0;
+  color: var(--accent-ink);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.scene-text > * + * {
+  margin-top: var(--space-3);
+}
+.scene-text > .scene-heading + * {
+  margin-top: var(--space-4);
+}
+
+/* ---------- Layout variants (desktop ≥ 1024) ---------- */
+@media (min-width: 1024px) {
+  /* statement: type is the image (scene 0) */
+  [data-layout="statement"] {
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    padding-block: var(--space-7);
+  }
+  [data-layout="statement"] .scene-grid {
+    width: 100%;
+  }
+  [data-layout="statement"] [data-slot="wide"] {
+    grid-column: 1 / span 11;
+  }
+  [data-layout="statement"] [data-slot="figure"] {
+    grid-column: 1 / span 2;
+  }
+  [data-layout="statement"] [data-slot="text"] {
+    grid-column: 1 / span 6;
+  }
+  [data-layout="statement"] [data-slot="note"] {
+    grid-column: 9 / span 4;
+    align-self: end;
+  }
+
+  /* map: narrow text left, the map of rows right (scene 1) */
+  [data-layout="map"] [data-slot="text"] {
+    grid-column: 1 / span 4;
+  }
+  [data-layout="map"] [data-slot="wide"] {
+    grid-column: 6 / span 7;
+  }
+
+  /* split: figure left, text right (scene 2) */
+  [data-layout="split"] [data-slot="figure"] {
+    grid-column: 1 / span 7;
+    grid-row: 1 / span 2;
+  }
+  [data-layout="split"] [data-slot="text"] {
+    grid-column: 8 / span 5;
+  }
+  [data-layout="split"] [data-slot="note"] {
+    grid-column: 8 / span 5;
+  }
+
+  /* sheet: one wide sheet, then text set right and a figure left (scene 3) */
+  [data-layout="sheet"] [data-slot="wide"] {
+    grid-column: 1 / -1;
+  }
+  [data-layout="sheet"] [data-slot="figure"] {
+    grid-column: 1 / span 6;
+  }
+  [data-layout="sheet"] [data-slot="text"] {
+    grid-column: 8 / span 5;
+  }
+
+  /* centered: centred figure over a centred column; the pinnable one (scene 4) */
+  [data-layout="centered"] [data-slot="figure"] {
+    grid-column: 3 / span 8;
+  }
+  [data-layout="centered"] [data-slot="text"],
+  [data-layout="centered"] [data-slot="note"] {
+    grid-column: 4 / span 6;
+    text-align: center;
+  }
+
+  /* card: figure card left, a narrow note column right (scene 6) */
+  [data-layout="card"] [data-slot="figure"] {
+    grid-column: 1 / span 8;
+    grid-row: 1 / span 2;
+  }
+  [data-layout="card"] [data-slot="text"],
+  [data-layout="card"] [data-slot="note"] {
+    grid-column: 9 / span 4;
+  }
+
+  /* solo: one small object in empty space (scene 7) */
+  [data-layout="solo"] {
+    padding-block: var(--space-8) calc(var(--space-8) * 1.5);
+  }
+  [data-layout="solo"] [data-slot="figure"] {
+    grid-column: 4 / span 3;
+  }
+  [data-layout="solo"] [data-slot="text"] {
+    grid-column: 8 / span 5;
+    margin-top: var(--space-7);
+  }
+
+  /* closing: the card across, then one column of actions (scene 8) */
+  [data-layout="closing"] {
+    min-height: 100svh;
+  }
+  [data-layout="closing"] [data-slot="wide"] {
+    grid-column: 2 / span 10;
+  }
+  [data-layout="closing"] [data-slot="text"] {
+    grid-column: 2 / span 6;
+  }
+  [data-layout="closing"] [data-slot="note"] {
+    grid-column: 9 / span 3;
+    align-self: end;
+  }
+}
+
+/* peak: the only full-bleed block (R-G1 grid break), at every width.
+   It spans the viewport, under the ruler, on engineering vellum. */
+[data-layout="peak"] {
+  width: 100%;
+  max-width: none;
+  background: var(--vellum);
+  padding-block: var(--space-8);
+}
+@media (min-width: 768px) {
+  [data-layout="peak"] {
+    width: calc(100% + var(--ruler-w));
+    margin-left: calc(-1 * var(--ruler-w));
+    padding-left: var(--ruler-w);
+  }
+}
+@media (min-width: 1024px) {
+  [data-layout="peak"] [data-slot="wide"] {
+    grid-column: 1 / -1;
+  }
+  [data-layout="peak"] [data-slot="text"] {
+    grid-column: 1 / span 7;
+  }
+  [data-layout="peak"] [data-slot="note"] {
+    grid-column: 9 / span 4;
+  }
+}
+
+/* ---------- Phone: its own rhythm, one column, slots in source order ---------- */
+@media (max-width: 767px) {
+  .scene {
+    padding-block: var(--space-7);
+  }
+  [data-layout="statement"] {
+    min-height: calc(100svh - var(--strip-h));
+    display: flex;
+    align-items: center;
+    padding-block: var(--space-6);
+  }
+  [data-layout="statement"] .scene-grid {
+    width: 100%;
+  }
+}

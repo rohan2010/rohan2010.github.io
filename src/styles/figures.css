@@ -1,0 +1,40 @@
+/* Anatomy figures on the v2 palette. Lead-owned.
+   The kit's tokens come from iso.css (body.iso[data-theme]); here the plate
+   (the one card style on the home page, craft-bar UX-CR1) takes the paper
+   palette so fills match the card exactly. Per-figure tokens belong in the
+   figure's own CSS, scoped to its class (never on :root). */
+
+.iso-figure {
+  margin: 0;
+}
+.iso-plate {
+  --plate: color-mix(in oklab, var(--paper) 55%, #fff);
+  --anatomy-card: var(--plate);
+  --anatomy-paper: var(--plate);
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px var(--rule);
+}
+:root[data-theme="dark"] .iso-plate {
+  --plate: color-mix(in oklab, var(--paper) 88%, #fff);
+}
+/* Plate corner labels and legend meet 4.5:1 on the plate. */
+body[data-theme="light"] :is(.iso-figure, .iso-legend) {
+  --anatomy-muted: #66625a;
+  --anatomy-text: #4a473f;
+}
+body[data-theme="dark"] :is(.iso-figure, .iso-legend) {
+  --anatomy-muted: #9a968c;
+}
+.iso-plate-corner {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+/* The readout is a data value: the one place a figure may use mono. */
+.iso-plate-corner[data-corner="readout"] {
+  font-family: var(--font-mono);
+}
+.iso-caption {
+  font-size: var(--t-caption);
+  line-height: var(--lh-caption);
+}
