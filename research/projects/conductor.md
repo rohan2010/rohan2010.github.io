@@ -150,4 +150,4 @@ flowchart LR
 2. The PRD lists "Owner: [You]" with "Eng, Design/Research" contributors. Is this solo work, or part of a team or startup? Who should be credited?
 3. Has any live run happened since July 2026? If so, is there a real PR or trace we could show (redacted)?
 4. Are the PRD and execution plan OK to link publicly? They're already in the public repo.
-5. Do you want to connect this explicitly to BulkMagic's LangGraph work, or keep personal and professional separate?
+5. Do you want to connect this explicitly to the LangGraph work at the day job, or keep personal and professional separate?
