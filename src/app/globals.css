@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+/* Home, plain for now (the look comes after the desk and OS are approved). */
+.home { max-width: 1100px; margin: 0 auto; padding: 40px 20px 96px; font: 16px/1.6 system-ui, sans-serif; color: #1a1a1a; }
+.home h1 { margin: 0; font-size: 32px; }
+.home h2 { margin: 40px 0 8px; font-size: 20px; }
+.home-role, .home-muted { color: #555; }
+.home-role { margin: 4px 0 0; }
+.home-line { margin: 16px 0 0; font-size: 19px; max-width: 560px; }
+.home-skip { display: inline-block; margin-top: 8px; font-size: 14px; color: #555; }
+.home-list { padding-left: 20px; list-style: disc; }
+.home-list li { margin-bottom: 6px; }
+.home-links { display: flex; gap: 20px; flex-wrap: wrap; }

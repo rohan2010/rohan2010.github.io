@@ -6,9 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "desk": "node figures/desk/build.mjs --light",
+    "predev": "npm run desk",
+    "prebuild": "npm run desk"
   },
   "dependencies": {
+    "marked": "^16.4.2",
     "next": "16.4.2",
     "react": "19.3.0",
     "react-dom": "19.3.0"

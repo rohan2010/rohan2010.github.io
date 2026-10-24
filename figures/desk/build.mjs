@@ -1,7 +1,7 @@
 // Rohan's desk: the home page figure. Static drawing (step 1 of
 // research/home-plan.md). Writes a preview page for review and an SVG module
 // for the site: node figures/desk/build.mjs [--light]
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as k from "../kit/iso-kit.mjs";
@@ -9,6 +9,14 @@ import * as k from "../kit/iso-kit.mjs";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..");
 const theme = process.argv.includes("--light") ? "light" : "dark";
+
+// One folder on the desk per project in src/content/projects (top of the stack = order 1, at most 5).
+const PROJECTS_DIR = join(HERE, "..", "..", "src", "content", "projects");
+const PROJECTS = readdirSync(PROJECTS_DIR, { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => ({ slug: entry.name, ...JSON.parse(readFileSync(join(PROJECTS_DIR, entry.name, "project.json"), "utf8")) }))
+  .sort((a, b) => a.order - b.order)
+  .slice(0, 5);
 
 const WIDTH = 1000;
 const HEIGHT = 680;
@@ -53,7 +61,7 @@ const ROW_H = [6.4, 6, 5.6, 5.2, 4.8];
 
 const PAD = { x: 122, y: 42, angle: -16 };
 const CLIP = { x: 168, y: -44, w: 52, d: 74, angle: 10 };
-const FOLDERS = { x: -218, y: 14, w: 90, d: 64 };
+const FOLDERS = { x: -220, y: 30, w: 88, d: 62 };
 const TICKETS = { x: -170, y: -24 };
 
 const corners = [
@@ -106,7 +114,7 @@ function catmull(points, per = 6) {
 // Drawn items, painted by depth. Each object is one group with data-object, so step 2 can wire hover and click.
 const items = [];
 const put = (key, svg) => items.push({ key, svg });
-const object = (name, label, parts) => `<g class="desk-object" data-object="${name}" aria-label="${label}">${parts.join("")}</g>`;
+const object = (name, label, parts, extra = "") => `<g class="desk-object" data-object="${name}"${extra} tabindex="0" role="button" aria-label="${label}">${parts.join("")}</g>`;
 
 let clips = 0;
 function recess({ x0, x1, z0, z1, r, depth: dz }, y, back = "", backClass = "desk-well") {
@@ -197,7 +205,6 @@ function monitor() {
   out.push(recess(SCREEN, MON_FRONT, back, "desk-glass"));
   // Bottom chin: a power LED and the maker's slot, kept blank.
   out.push(D([at([MON.x + MON.w - 12, MON_FRONT, MON_Z0 + 4.5])], { size: 0.7, tone: "hi" }));
-  out.push(stickyNote());
   return out.join("");
 }
 function stickyNote() {
@@ -387,22 +394,23 @@ function clipboard() {
 }
 
 // ── Project folders, fanned ─────────────────────────────────────────────
-function folders() {
+// Folder i of n, counted from the bottom of the stack.
+function folder(i, n) {
   const out = [];
-  const angles = [-6, 3, 10];
-  angles.forEach((angle, i) => {
-    const plan = { x: FOLDERS.x + i * 4, y: FOLDERS.y - i * 3, w: FOLDERS.w, d: FOLDERS.d, r: 1.6 };
-    const z = i * 2.2;
-    if (i === 0) out.push(`<path class="iso-halo" d="${k.extrude(turned(plan, angle), 0, 2, P).fill}"/>`);
-    // Back cover with a tab, then the front cover a little shorter.
-    const spin = { cx: plan.x + plan.w / 2, cy: plan.y + plan.d / 2, angle };
-    const tab = { x: plan.x + 10 + i * 28, y: plan.y - 7, w: 26, d: 9, r: 2 };
-    out.push(S(k.extrude(ringAbout(tab, spin), z, 0.8, P), { tone: "mid" }));
-    out.push(S(k.extrude(ringAbout(plan, spin, 4), z, 0.8, P), { tone: "mid" }));
-    out.push(S(k.extrude(ringAbout({ ...plan, y: plan.y + 4, d: plan.d - 4 }, spin, 4), z + 0.8, 1.2, P, { bevel: 0.4 }), { tone: "mid" }));
-    const label = [turnPoint([tab.x + 5, tab.y + 3.4], spin), turnPoint([tab.x + 19, tab.y + 3.4], spin)];
-    out.push(L(k.onTop(label, z + 0.8, P), { tone: "mid", free: true }));
-  });
+  // Fanned toward the viewer so every folder keeps a strip you can click: the top one is nearest.
+  const angle = [-9, -4, 1, 6, 10][i];
+  const plan = { x: FOLDERS.x + i * 5, y: FOLDERS.y - (n - 1 - i) * 12, w: FOLDERS.w, d: FOLDERS.d, r: 1.6 };
+  const z = i * 2.2;
+  if (i === 0) out.push(`<path class="iso-halo" d="${k.extrude(turned(plan, angle), 0, 2, P).fill}"/>`);
+  // Back cover with a tab (staggered so every tab shows), then the front cover a little shorter.
+  const spin = { cx: plan.x + plan.w / 2, cy: plan.y + plan.d / 2, angle };
+  const step = n > 1 ? (plan.w - 26 - 16) / (n - 1) : 0;
+  const tab = { x: plan.x + 8 + (n - 1 - i) * step, y: plan.y - 7, w: 26, d: 9, r: 2 };
+  out.push(S(k.extrude(ringAbout(tab, spin), z, 0.8, P), { tone: "mid" }));
+  out.push(S(k.extrude(ringAbout(plan, spin, 4), z, 0.8, P), { tone: "mid" }));
+  out.push(S(k.extrude(ringAbout({ ...plan, y: plan.y + 4, d: plan.d - 4 }, spin, 4), z + 0.8, 1.2, P, { bevel: 0.4 }), { tone: "mid" }));
+  const label = [turnPoint([tab.x + 5, tab.y + 3.4], spin), turnPoint([tab.x + 19, tab.y + 3.4], spin)];
+  out.push(L(k.onTop(label, z + 0.8, P), { tone: "mid", free: true }));
   return out.join("");
 }
 
@@ -432,10 +440,14 @@ function tickets() {
 put(-1e9, desk());
 put(depth(0, MAT.y + 10) - 1e6, mat());
 put(depth(POT.x, POT.y), object("plant", "A snake plant", [plant()]));
-put(depth(0, STAND.y), object("monitor", "Monitor: the onboarding agent, running", [monitor()]));
+put(depth(0, STAND.y), object("monitor", "The computer: open rohanOS", [monitor()]));
+put(depth(0, STAND.y) + 0.01, object("sticky", "Sticky note: say hi", [stickyNote()]));
 put(depth(FRAME.x + 30, FRAME.y), object("photo", "A photo of Rohan in Chicago", [photoFrame()]));
 put(depth(TICKETS.x, TICKETS.y), object("tickets", "How I got here", [tickets()]));
-put(depth(FOLDERS.x + 50, FOLDERS.y), object("folders", "Projects", [folders()]));
+// Bottom of the stack is the last project; each folder is its own clickable object.
+[...PROJECTS].reverse().forEach((project, i) => {
+  put(depth(FOLDERS.x + 50, FOLDERS.y) + i * 0.01, object("folder", `Project folder: ${project.name}`, [folder(i, PROJECTS.length)], ` data-slug="${project.slug}"`));
+});
 put(depth(0, KB.y - 20) - 0.5, cable());
 put(depth(0, KB.y), object("keyboard", "Skills", [keyboard()]));
 put(depth(PAD.x, PAD.y + 10), object("controller", "Currently playing", [controller()]));
