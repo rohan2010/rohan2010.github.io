@@ -6,15 +6,17 @@ import "./desk.css";
 
 // The desk figure: static art from figures/desk/build.mjs, made interactive by DeskLive.
 export function Desk() {
-  const projects = getProjects().map(({ slug, name, oneLine, status, readmeHtml, links, caseStudy }) => ({
+  const projects = getProjects().map(({ slug, name, oneLine, status, year, readmeHtml, links, demo, caseStudy, design }) => ({
     slug,
     name,
     oneLine,
     status,
+    year,
     readmeHtml,
-    code: links.code,
-    paper: links.paper,
+    links,
+    demo,
     caseStudy,
+    design,
   }));
   return (
     <div className="iso desk" data-theme="light">

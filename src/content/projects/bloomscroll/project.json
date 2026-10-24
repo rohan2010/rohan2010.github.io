@@ -28,12 +28,7 @@
       {
         "id": "llm",
         "label": "Local model",
-        "note": "only for the unclear few"
-      },
-      {
-        "id": "open",
-        "label": "Fail open",
-        "note": "no answer means show it"
+        "note": "the unclear few; no answer = show"
       },
       {
         "id": "hide",
@@ -56,22 +51,6 @@
       ],
       [
         "llm",
-        "open"
-      ],
-      [
-        "rules",
-        "hide"
-      ],
-      [
-        "embed",
-        "hide"
-      ],
-      [
-        "llm",
-        "hide"
-      ],
-      [
-        "open",
         "hide"
       ]
     ]
