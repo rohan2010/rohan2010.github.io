@@ -54,5 +54,6 @@
         "hide"
       ]
     ]
-  }
+  },
+  "demo": "bloomscroll-cascade"
 }

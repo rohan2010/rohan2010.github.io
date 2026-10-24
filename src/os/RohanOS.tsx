@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Cascade } from "@/demos/Cascade";
 import { Toy } from "@/toy/Toy";
 import { Design, designSize } from "./Design";
 import { Icon, type IconName } from "./icons";
@@ -155,7 +156,7 @@ export function RohanOS({ projects, from, start, onExit, onRoute }: { projects: 
       const size = designSize(p.design.nodes, p.design.edges);
       files.push({ id: "design", name: "system design", kind: "Drawing", icon: "drawing", open: () => open("design", `${p.name}: system design`, p.slug, { w: size.width + 32, h: size.height + 52 }) });
     }
-    if (p.demo) files.push({ id: "demo", name: "demo", kind: "Application", icon: "app", open: () => open("demo", `${p.name}: demo`, p.slug, { w: 900, h: 600 }) });
+    if (p.demo) files.push({ id: "demo", name: "demo", kind: "Application", icon: "app", open: () => open("demo", `${p.name}: demo`, p.slug, { w: 900, h: p.demo === "bloomscroll-cascade" ? 640 : 600 }) });
     if (p.links.code) files.push({ id: "code", name: "code", kind: "Alias to GitHub", icon: "alias", open: () => window.open(p.links.code, "_blank", "noopener") });
     if (p.links.paper) files.push({ id: "paper", name: "paper", kind: "Alias to arXiv", icon: "alias", open: () => window.open(p.links.paper, "_blank", "noopener") });
     if (p.caseStudy) files.push({ id: "case", name: "case study", kind: "Alias to page", icon: "alias", open: () => (window.location.href = p.caseStudy!) });
@@ -185,11 +186,7 @@ export function RohanOS({ projects, from, start, onExit, onRoute }: { projects: 
           </div>
         ) : null;
       case "demo":
-        return (
-          <div className="os-demo">
-            <Toy />
-          </div>
-        );
+        return <div className="os-demo">{p?.demo === "bloomscroll-cascade" ? <Cascade /> : <Toy />}</div>;
       case "about":
         return (
           <div className="os-text">
