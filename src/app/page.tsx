@@ -2,13 +2,12 @@ import { getProjects } from "@/content/projects";
 import { EMAIL, GITHUB, LINKEDIN, site } from "@/content/site";
 import { Desk } from "@/desk/Desk";
 import { HISTORY, SKILLS } from "@/desk/content";
-import "./sheet.css";
+import { Zones } from "@/sheet/Zones";
+import "@/sheet/sheet.css";
 
 // Home: an engineering drawing sheet. The desk is the drawing; the parts list
 // is the projects; the title block is who drew it. Sheet 2 carries the
 // revision table (career) and general notes (skills).
-const ZONES = [1, 2, 3, 4, 5, 6, 7, 8];
-const ROWS = ["A", "B", "C", "D"];
 const REV = "ABCDEFGHJK";
 
 export default function Home() {
@@ -19,7 +18,7 @@ export default function Home() {
         Skip the drawing
       </a>
 
-      <section className="sheet" aria-label="Sheet 1: the desk">
+      <section className="sheet sheet-home" aria-label="Sheet 1: the desk">
         <Zones />
         <div className="sheet-drawing">
           <Desk />
@@ -89,7 +88,7 @@ export default function Home() {
             </div>
             <div className="tb-cell">
               <span className="tb-label">Sheet</span>
-              <p>1 of 2</p>
+              <p>1 of 3</p>
             </div>
           </div>
         </div>
@@ -127,7 +126,7 @@ export default function Home() {
                 </li>
               ))}
             </ol>
-            <p className="notes-end">Sheet 2 of 2</p>
+            <p className="notes-end">Sheet 2 of 3</p>
           </div>
         </div>
       </section>
@@ -135,19 +134,3 @@ export default function Home() {
   );
 }
 
-function Zones() {
-  return (
-    <div className="zones" aria-hidden="true">
-      <div className="zones-top">
-        {ZONES.map((n) => (
-          <span key={n}>{n}</span>
-        ))}
-      </div>
-      <div className="zones-side">
-        {ROWS.map((r) => (
-          <span key={r}>{r}</span>
-        ))}
-      </div>
-    </div>
-  );
-}

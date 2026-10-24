@@ -14,6 +14,7 @@
   min-height: 100vh;
   padding: 16px;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   background: var(--table);
   color: var(--ink);
@@ -108,7 +109,7 @@
 
 /* Sheet 1, one screen tall on desktop: the drawing on the left; the parts list
    above the title block in the right-hand column, as on a real drawing. */
-.sheet:first-of-type {
+.sheet-home {
   min-height: calc(100svh - 32px);
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(360px, 33vw, 470px);
@@ -288,7 +289,7 @@
 }
 
 @media (max-width: 1000px) {
-  .sheet:first-of-type {
+  .sheet-home {
     grid-template-columns: 1fr;
     min-height: 0;
   }
@@ -334,7 +335,7 @@
     bottom: 10px;
     width: 18px;
   }
-  .sheet:first-of-type {
+  .sheet-home {
     min-height: 0;
     display: flex;
     flex-direction: column;
@@ -358,4 +359,111 @@
   .parts {
     border-top: 0.6px solid var(--ink);
   }
+}
+
+/* Sheet 3: a case study. Reading text on the left, the facts in a title block on the right,
+   then numbered details (the toy, the design) across the full width. */
+.case-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(300px, 28vw, 380px);
+  border-bottom: 0.6px solid var(--ink);
+}
+.case-text {
+  padding: 28px clamp(16px, 4vw, 56px) 40px;
+  max-width: 74ch;
+}
+.case-back {
+  margin: 0 0 24px;
+  font-size: 13px;
+}
+.case-text h1 {
+  margin: 0 0 12px;
+  font-size: clamp(30px, 3.4vw, 44px);
+  line-height: 1.1;
+}
+.case-lede {
+  margin: 0 0 8px;
+  font-size: 19px;
+  line-height: 1.5;
+}
+.case-text h2 {
+  margin: 32px 0 8px;
+  font-size: 17px;
+}
+.case-text p,
+.case-text ul {
+  margin: 0 0 12px;
+}
+.case-text ul {
+  padding-left: 20px;
+  list-style: square;
+}
+.case-text li {
+  margin-bottom: 4px;
+}
+.case-block {
+  align-self: start;
+  border-top: 0;
+  border-left: 0.6px solid var(--ink);
+}
+.case-block .tb-cell:last-child,
+.case-block .tb-cell:nth-last-child(2) {
+  border-bottom: 0;
+}
+.case-part {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.detail {
+  border-bottom: 0.6px solid var(--ink);
+}
+.detail:last-child {
+  border-bottom: 0;
+}
+.detail-title {
+  margin: 0;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border-bottom: 0.6px solid var(--hair);
+}
+.detail-note {
+  margin: 0;
+  padding: 10px 12px 0;
+  max-width: 80ch;
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+.detail-body {
+  padding: 16px 12px 20px;
+}
+.detail-scroll {
+  overflow-x: auto;
+}
+.detail .toy {
+  max-width: 980px;
+}
+.detail .os-design {
+  shape-rendering: crispEdges;
+}
+.detail .os-design-label {
+  font: 700 13px var(--font);
+}
+.detail .os-design-note {
+  font: 11px var(--font);
+}
+@media (max-width: 900px) {
+  .case-grid {
+    grid-template-columns: 1fr;
+  }
+  .case-block {
+    border-left: 0;
+    border-top: 0.6px solid var(--ink);
+    order: -1;
+  }
+}
+.detail,
+.detail-body {
+  min-width: 0;
 }
