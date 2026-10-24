@@ -45,3 +45,6 @@ next-env.d.ts
 
 # docs
 /docs/
+
+# original photos (web copies live in public/)
+/photo/

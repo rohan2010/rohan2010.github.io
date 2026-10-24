@@ -37,7 +37,7 @@ from one constraint: it should look like a real desk and real paper, not a dashb
 Each step is shown to Rohan before the next. No parallel agents, no spec documents.
 
 ## Needs from Rohan
-- [ ] A photo (any size; one showing something you're into is best). Put it in `public/me.jpg`.
+- [x] Photo: `public/me.jpg` / `me.webp` (1200px, metadata stripped; original in `photo/`, not committed).
 - [ ] One honest sentence about yourself, ideally with a bit of humour (Maggie's is "designer,
       anthropologist, and mediocre developer").
 - [ ] Two or three things you're into outside work.
