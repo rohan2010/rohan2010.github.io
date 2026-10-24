@@ -19,7 +19,7 @@ export const site = {
   role: "Full-stack + AI engineer",
   title: "Rohan Pant · Full-stack + AI engineer",
   description:
-    "A short history of helpful machines, from Lovelace’s 1843 note to today, and the AI work by Rohan Pant that rhymes with each era.",
+    "Rohan Pant is a full-stack and AI engineer: production LLM agents, evals and guardrails, NeurIPS 2024 research, M.S. Purdue.",
   url: "https://rohan2010.github.io",
   /** Draft hero line (MASTER §7, open item 3). Rohan picks the final wording. */
   line: "Rohan Pant builds AI that does more than it’s told, and the checks that keep it honest.",
