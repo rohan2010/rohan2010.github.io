@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans, IBM_Plex_Serif } from "next/font/google";
+import { Geist, Geist_Mono, IBM_Plex_Mono, IBM_Plex_Sans, IBM_Plex_Serif, Instrument_Serif } from "next/font/google";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { MotionProvider } from "@/lib/motion/MotionProvider";
 import { nav, site } from "@/content/site";
@@ -10,6 +10,11 @@ const serif = IBM_Plex_Serif({ variable: "--font-plex-serif", subsets: ["latin"]
 const sans = IBM_Plex_Sans({ variable: "--font-plex-sans", subsets: ["latin"], weight: ["400", "600"], display: "swap" });
 // Mono is only for years and card numerals: no preload, it is never the LCP.
 const mono = IBM_Plex_Mono({ variable: "--font-plex-mono", subsets: ["latin"], weight: ["400", "500"], display: "swap", preload: false });
+
+// Home page (src/home): Geist with Instrument Serif italic accents.
+const geist = Geist({ variable: "--font-geist", subsets: ["latin"], display: "swap" });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"], display: "swap", preload: false });
+const instrument = Instrument_Serif({ variable: "--font-instrument", subsets: ["latin"], weight: "400", style: "italic", display: "swap" });
 
 const OG_ALT = `${site.name}: ${site.line}`;
 
@@ -45,7 +50,7 @@ const THEME_SCRIPT = `(function(){var q=window.matchMedia("(prefers-color-scheme
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${serif.variable} ${sans.variable} ${mono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${serif.variable} ${sans.variable} ${mono.variable} ${geist.variable} ${geistMono.variable} ${instrument.variable}`} suppressHydrationWarning>
       <body className="iso" data-theme="light" suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         {/* JS off: the odometer strip cannot move, so it is not shown. */}
