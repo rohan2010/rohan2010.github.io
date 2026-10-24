@@ -1,5 +1,9 @@
 # Plan: "Hand them the agent"
 
+> **Update 2026-10-25:** the toy is **not** for the home page. It lives in the case study at
+> `/work/onboarding-agent/` (employer unnamed). The home page is being re-discussed; sections below
+> about the home page are on hold.
+
 Decided 2026-10-25: direction **Play with it**; real photo **yes**; the toy is **a document-checking
 agent** with a light **roguelike (Hades) flavour**. Inspiration and reasoning: `inspiration.md`.
 
