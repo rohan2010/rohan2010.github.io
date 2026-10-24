@@ -25,7 +25,7 @@ Launch set: **onboarding-agent** (demo = the toy, case study exists), **bloomscr
   | Folders | A paper preview on the desk: the folder opens and shows that project's README, with a link to "open on the computer" |
   | Photo | About me (Chicago caption) |
   | Keyboard | Skills |
-  | Controller | "Currently: losing to Hades" |
+  | Controller | "Currently: losing to Hades" (later: a small playable browser game) |
   | Sticky note | Email, LinkedIn, GitHub |
   | Clipboard | Résumé |
   | Tickets | How I got here |

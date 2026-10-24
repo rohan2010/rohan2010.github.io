@@ -147,7 +147,6 @@ function PanelView({ panel }: { panel: Panel }) {
           {panel.links.map((link) => (
             <a key={link.href} href={link.href} {...(link.external ? { target: "_blank", rel: "noreferrer" } : {})}>
               {link.label}
-              {link.external ? " ↗" : ""}
             </a>
           ))}
         </p>
@@ -161,19 +160,19 @@ function FolderView({ project }: { project?: FolderProject }) {
   return (
     <>
       <p className="desk-sheet-kicker">
-        Folder · {project.status}
+        Folder: {project.status}
       </p>
       <div className="desk-readme" id="desk-sheet-title" dangerouslySetInnerHTML={{ __html: project.readmeHtml }} />
       <p className="desk-sheet-links">
         {project.caseStudy && <a href={project.caseStudy}>Read the case study</a>}
         {project.code && (
           <a href={project.code} target="_blank" rel="noreferrer">
-            Code ↗
+            Code
           </a>
         )}
         {project.paper && (
           <a href={project.paper} target="_blank" rel="noreferrer">
-            Paper ↗
+            Paper
           </a>
         )}
       </p>
