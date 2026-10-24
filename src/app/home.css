@@ -1,0 +1,108 @@
+/* Home without a frame: a sentence, the desk, three lists. Paper and ink from the drawing. */
+.home {
+  --paper: #fbfbfa;
+  --ink: #1e1e21;
+  --ink-2: #6b6b70;
+  --rule: #dcdcd8;
+  --blue: #2450b5;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(28px, 6vw, 72px) clamp(16px, 4vw, 40px) 96px;
+  color: var(--ink);
+  background: var(--paper);
+  font: 16px/1.55 var(--font-b612), "Helvetica Neue", Arial, sans-serif;
+}
+:root:has(.home),
+:root:has(.home) body {
+  background: #fbfbfa;
+}
+.home a {
+  color: var(--ink);
+  text-decoration-color: var(--rule);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.home a:hover {
+  text-decoration-color: var(--ink);
+}
+.home :focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+.home-head h1 {
+  max-width: 17ch;
+  margin: 0;
+  font-size: clamp(34px, 5.6vw, 72px);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+.home-status {
+  margin: 20px 0 0;
+  font-size: clamp(16px, 1.5vw, 19px);
+  color: var(--ink-2);
+}
+
+.home-desk {
+  margin: clamp(16px, 3vw, 40px) clamp(-40px, -3vw, 0px) 0;
+}
+.home-desk .desk {
+  margin: 0;
+  background: transparent;
+  --anatomy-card: var(--paper);
+  --anatomy-paper: var(--paper);
+}
+.home-hint {
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.home-lists {
+  display: grid;
+  grid-template-columns: 1.2fr 1.4fr 0.8fr;
+  gap: clamp(24px, 4vw, 56px);
+  margin-top: clamp(40px, 6vw, 80px);
+  padding-top: 28px;
+  border-top: 1px solid var(--rule);
+}
+.home-lists h2 {
+  margin: 0 0 14px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.home-lists ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 14px;
+}
+.home-lists li {
+  display: grid;
+  gap: 2px;
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+.home-lists li a {
+  justify-self: start;
+  font-weight: 700;
+}
+.home-lists li > span {
+  color: var(--ink-2);
+}
+.home-lists .home-date {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 860px) {
+  .home-lists {
+    grid-template-columns: 1fr;
+  }
+  .home-desk {
+    margin-inline: -8px;
+  }
+}
