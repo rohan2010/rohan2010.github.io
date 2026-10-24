@@ -218,7 +218,7 @@ export function Toy() {
         )}
       </div>
 
-      <p className="toy-note">A toy. The documents are made up; the retries, guardrails and human check are how the real one works.</p>
+      <p className="toy-note">A toy. The documents and steps are made up.</p>
     </div>
   );
 }
