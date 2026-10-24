@@ -48,3 +48,8 @@ next-env.d.ts
 
 # original photos (web copies live in public/)
 /photo/
+
+# figure previews and screenshots (regenerate with node figures/desk/build.mjs)
+/figures/*/shots/
+/figures/*/*.html
+/.playwright-mcp/
