@@ -1,28 +1,12 @@
-import { EMAIL, GITHUB, LINKEDIN, site } from "@/content/site";
-import { Home as HomePage } from "@/home/Home";
+import { EMAIL, site } from "@/content/site";
 
-// ProfilePage JSON-LD. Every value is on the page; no telephone.
-const PROFILE = {
-  "@context": "https://schema.org",
-  "@type": "ProfilePage",
-  mainEntity: {
-    "@type": "Person",
-    name: site.name,
-    url: site.url,
-    jobTitle: site.role,
-    worksFor: { "@type": "Organization", name: "my day job" },
-    alumniOf: [{ "@type": "CollegeOrUniversity", name: "Purdue University" }],
-    email: `mailto:${EMAIL}`,
-    address: { "@type": "PostalAddress", addressLocality: "Delhi", addressCountry: "IN" },
-    sameAs: [LINKEDIN, GITHUB],
-  },
-};
-
+// Placeholder while the new design is planned.
 export default function Home() {
   return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(PROFILE).replace(/</g, "\\u003c") }} />
-      <HomePage />
-    </>
+    <main style={{ padding: 32, fontFamily: "system-ui" }}>
+      <h1>{site.name}</h1>
+      <p>{site.role}</p>
+      <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+    </main>
   );
 }
