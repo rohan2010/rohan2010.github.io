@@ -1,0 +1,242 @@
+/* Plain styling on purpose: this is for judging whether the toy is fun.
+   The real look comes later, designed around it. */
+
+.toy {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  max-width: 900px;
+  font-family: system-ui, sans-serif;
+  font-size: 15px;
+  color: #1a1a1a;
+}
+.toy-hint,
+.toy-note {
+  color: #666;
+  font-size: 13px;
+  margin: 0 0 12px;
+}
+.toy-note {
+  grid-column: 1 / -1;
+}
+.toy-pile {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.toy-card {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  min-height: 64px;
+  padding: 12px 96px 12px 14px;
+  text-align: left;
+  font: inherit;
+  background: #fffdf6;
+  border: 1px solid #d8d2c2;
+  border-radius: 6px;
+  cursor: grab;
+}
+.toy-card:hover:not(:disabled) {
+  border-color: #1a1a1a;
+}
+.toy-card:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.toy-card.is-running {
+  opacity: 1;
+  border-color: #1a1a1a;
+  border-style: dashed;
+}
+.toy-card-name {
+  font-family: ui-monospace, monospace;
+  font-weight: 600;
+}
+.toy-card-kind {
+  color: #666;
+  font-size: 13px;
+}
+.toy-stamp {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  translate: 0 -50%;
+  rotate: -8deg;
+  padding: 2px 8px;
+  border: 2px solid;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.toy-stamp.ok {
+  color: #1d7a3a;
+}
+.toy-stamp.bad {
+  color: #b3261e;
+}
+
+.toy-agent {
+  min-height: 420px;
+  padding: 16px;
+  border: 2px dashed #bbb;
+  border-radius: 10px;
+  background: #fafafa;
+}
+.toy-agent.is-busy {
+  border-style: solid;
+  border-color: #1a1a1a;
+}
+.toy-agent-head {
+  display: flex;
+  justify-content: space-between;
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+.toy-empty {
+  color: #888;
+  text-align: center;
+  padding: 80px 0;
+}
+.toy-doc {
+  padding: 12px 14px;
+  background: #fffdf6;
+  border: 1px solid #d8d2c2;
+  border-radius: 6px;
+}
+.toy-doc.is-blurry dd {
+  filter: blur(1.2px);
+}
+.toy-doc-kind {
+  margin: 0 0 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #666;
+}
+.toy-doc dl {
+  margin: 0;
+  display: grid;
+  gap: 4px;
+}
+.toy-field {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.toy-field dt {
+  color: #666;
+}
+.toy-field dd {
+  margin: 0;
+  font-family: ui-monospace, monospace;
+}
+.toy-field.is-checking {
+  background: #fff3c4;
+}
+.toy-field.is-ok {
+  background: #e3f4e8;
+}
+.toy-field.is-bad {
+  background: #fde2e0;
+}
+.toy-field.is-fixed {
+  background: #dfeafc;
+}
+
+.toy-log {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.toy-log span {
+  color: #666;
+}
+.tone-head {
+  font-weight: 700;
+}
+.tone-attempt {
+  margin-top: 6px;
+  color: #666;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+.tone-tool {
+  padding-left: 12px;
+}
+.tone-tool::before {
+  content: "→ ";
+}
+.tone-ok,
+.tone-fail,
+.tone-fix,
+.tone-ask {
+  padding-left: 12px;
+}
+.tone-ok::before {
+  content: "✓ ";
+  color: #1d7a3a;
+}
+.tone-fail::before {
+  content: "✗ ";
+  color: #b3261e;
+}
+.tone-fix::before {
+  content: "↻ ";
+  color: #1f5fbf;
+}
+.tone-ask::before {
+  content: "? ";
+}
+.tone-escaped,
+.tone-dead {
+  margin-top: 8px;
+  font-weight: 700;
+}
+.tone-escaped {
+  color: #1d7a3a;
+}
+.tone-dead {
+  color: #b3261e;
+}
+.toy-ask {
+  display: flex;
+  gap: 8px;
+  padding: 6px 0 0 12px;
+}
+.toy-ask button,
+.toy-over button {
+  min-height: 40px;
+  padding: 0 14px;
+  font: inherit;
+  border: 1px solid #1a1a1a;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+.toy-over {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #ddd;
+}
+.toy-over p {
+  margin: 0 0 10px;
+}
+
+@media (max-width: 640px) {
+  .toy {
+    grid-template-columns: 1fr;
+  }
+}
