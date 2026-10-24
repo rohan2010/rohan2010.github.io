@@ -2,6 +2,7 @@
 .desk {
   margin: 24px 0;
   background: var(--anatomy-card);
+  --desk-font: var(--font-b612), "Helvetica Neue", Arial, sans-serif;
 }
 .desk-stage {
   position: relative;
@@ -43,8 +44,7 @@
   position: absolute;
   transform: translate(-50%, calc(-100% - 10px));
   padding: 4px 9px;
-  font: 500 11px/1.4 var(--anatomy-mono);
-  letter-spacing: 0.04em;
+  font: 12px/1.4 var(--desk-font);
   white-space: nowrap;
   color: var(--anatomy-card);
   background: var(--anatomy-strong);
@@ -70,7 +70,7 @@
   color: var(--anatomy-text);
   background: var(--anatomy-face);
   box-shadow: 0 0 0 1px var(--anatomy-mid), 0 18px 40px -20px #0005;
-  font: 15px/1.6 system-ui, sans-serif;
+  font: 15px/1.6 var(--desk-font);
   animation: desk-rise 0.32s var(--anatomy-ease);
 }
 .desk-sheet h1,
@@ -107,9 +107,7 @@
   color: var(--anatomy-strong);
 }
 .desk-sheet-kicker {
-  font: 11px/1.4 var(--anatomy-mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 12px;
   color: var(--anatomy-muted);
 }
 .desk-sheet-links {
@@ -119,7 +117,7 @@
   margin-top: 16px !important;
 }
 .desk-sheet a {
-  color: var(--anatomy-strong);
+  color: #2450b5;
   text-underline-offset: 3px;
 }
 .desk-sheet-close {
