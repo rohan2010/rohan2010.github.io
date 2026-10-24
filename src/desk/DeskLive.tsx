@@ -1,20 +1,21 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { RohanOS, type OsProject } from "@/os/RohanOS";
 import { LABELS, PANELS, type Panel } from "./content";
 
-export type FolderProject = { slug: string; name: string; oneLine: string; status: string; readmeHtml: string; code?: string; paper?: string; caseStudy?: string | null };
-
-type Open = { kind: "panel"; id: string } | { kind: "folder"; slug: string } | { kind: "computer" } | null;
+type Open = { kind: "panel"; id: string } | { kind: "folder"; slug: string } | null;
+type Computer = { from: { x: number; y: number; w: number; h: number } | null; start?: string } | null;
 type Tip = { text: string; x: number; y: number } | null;
 
 // Makes the static desk drawing interactive: hover labels, click or Enter to
 // open, Esc to close. The SVG comes in as markup; objects are found by
 // [data-object] with event delegation, so the art stays server-rendered.
-export function DeskLive({ svg, css, projects }: { svg: string; css: string; projects: FolderProject[] }) {
+export function DeskLive({ svg, css, projects }: { svg: string; css: string; projects: OsProject[] }) {
   const stage = useRef<HTMLDivElement>(null);
   const [tip, setTip] = useState<Tip>(null);
   const [open, setOpen] = useState<Open>(null);
+  const [computer, setComputer] = useState<Computer>(null);
   const returnTo = useRef<Element | null>(null);
 
   const labelOf = useCallback(
@@ -47,7 +48,13 @@ export function DeskLive({ svg, css, projects }: { svg: string; css: string; pro
       return;
     }
     if (name === "folder") setOpen({ kind: "folder", slug: el.getAttribute("data-slug") ?? "" });
-    else if (name === "monitor") setOpen({ kind: "computer" });
+    else if (name === "monitor") {
+      // Zoom out of the monitor's screen: start the OS at the glass's place on the page.
+      const glass = el.querySelector(".desk-glass")?.getBoundingClientRect();
+      setTip(null);
+      setComputer({ from: glass ? { x: glass.left, y: glass.top, w: glass.width, h: glass.height } : null });
+      history.replaceState(null, "", "#os");
+    }
     else if (name && PANELS[name]) setOpen({ kind: "panel", id: name });
   }, []);
 
@@ -84,6 +91,20 @@ export function DeskLive({ svg, css, projects }: { svg: string; css: string; pro
     return () => events.forEach(([name, fn]) => host.removeEventListener(name, fn));
   }, [activate, show]);
 
+  // A link to /#os or /#os/<slug> sits you straight down at the computer.
+  useEffect(() => {
+    const match = window.location.hash.match(/^#os(?:\/([\w-]+))?$/);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (match) setComputer({ from: null, start: match[1] });
+  }, []);
+
+  const standUp = useCallback(() => {
+    setComputer(null);
+    history.replaceState(null, "", window.location.pathname);
+    stage.current?.querySelector<HTMLElement>('[data-object="monitor"]')?.focus();
+  }, []);
+  const route = useCallback((slug?: string) => history.replaceState(null, "", slug ? `#os/${slug}` : "#os"), []);
+
   const close = useCallback(() => {
     setOpen(null);
     (returnTo.current as HTMLElement | null)?.focus?.();
@@ -100,6 +121,7 @@ export function DeskLive({ svg, css, projects }: { svg: string; css: string; pro
     <div className="desk-stage" ref={stage}>
       <style>{css}</style>
       <div dangerouslySetInnerHTML={{ __html: svg }} />
+      {computer && <RohanOS projects={projects} from={computer.from} start={computer.start} onExit={standUp} onRoute={route} />}
       {tip && !open && (
         <span className="desk-tip" style={{ left: tip.x, top: tip.y }} aria-hidden="true">
           {tip.text}
@@ -113,13 +135,6 @@ export function DeskLive({ svg, css, projects }: { svg: string; css: string; pro
             </button>
             {open.kind === "panel" && <PanelView panel={PANELS[open.id]} />}
             {open.kind === "folder" && <FolderView project={projects.find((p) => p.slug === open.slug)} />}
-            {open.kind === "computer" && (
-              <>
-                <p className="desk-sheet-kicker">The computer</p>
-                <h2 id="desk-sheet-title">rohanOS is booting soon</h2>
-                <p>Next step: click the monitor and you sit down at a little System 7 computer with every project on it. For now, the folders on the desk open each project.</p>
-              </>
-            )}
           </div>
         </div>
       )}
@@ -155,7 +170,7 @@ function PanelView({ panel }: { panel: Panel }) {
   );
 }
 
-function FolderView({ project }: { project?: FolderProject }) {
+function FolderView({ project }: { project?: OsProject }) {
   if (!project) return null;
   return (
     <>
@@ -165,13 +180,13 @@ function FolderView({ project }: { project?: FolderProject }) {
       <div className="desk-readme" id="desk-sheet-title" dangerouslySetInnerHTML={{ __html: project.readmeHtml }} />
       <p className="desk-sheet-links">
         {project.caseStudy && <a href={project.caseStudy}>Read the case study</a>}
-        {project.code && (
-          <a href={project.code} target="_blank" rel="noreferrer">
+        {project.links.code && (
+          <a href={project.links.code} target="_blank" rel="noreferrer">
             Code
           </a>
         )}
-        {project.paper && (
-          <a href={project.paper} target="_blank" rel="noreferrer">
+        {project.links.paper && (
+          <a href={project.links.paper} target="_blank" rel="noreferrer">
             Paper
           </a>
         )}
