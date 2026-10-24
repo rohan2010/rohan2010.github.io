@@ -1,10 +1,1 @@
-/* Entry stylesheet. The design system lives in src/styles/ (lead-owned).
-   Scene and figure CSS is imported by the component that owns it. */
 @import "tailwindcss";
-@import "../components/iso/iso.css";
-@import "../styles/tokens.css";
-@import "../styles/base.css";
-@import "../styles/scenes.css";
-@import "../styles/figures.css";
-@import "../styles/transitions.css";
-@import "../components/ruler/ruler.css";
