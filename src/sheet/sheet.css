@@ -1,0 +1,469 @@
+/* The home page as an engineering drawing sheet. Paper and ink from the
+   drawing itself, one accent (drafting blue) for links and focus. */
+
+.sheets {
+  --paper: #fbfbfa;
+  --table: #e7e6e1;
+  --ink: #26262a;
+  --ink-2: #5d5d61;
+  --rule: #8a8a8f;
+  --hair: #cfcfd2;
+  --blue: #2450b5;
+  --font: var(--font-b612), "Helvetica Neue", Arial, sans-serif;
+  --mono: var(--font-b612-mono), ui-monospace, monospace;
+  min-height: 100vh;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  background: var(--table);
+  color: var(--ink);
+  font: 15px/1.55 var(--font);
+  font-variant-numeric: tabular-nums;
+}
+.sheets a {
+  color: var(--blue);
+  text-decoration-thickness: 0.06em;
+  text-underline-offset: 0.2em;
+}
+.sheets a:hover {
+  text-decoration-thickness: 0.12em;
+}
+.sheets :focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+.sheet-skip {
+  position: absolute;
+  left: -9999px;
+}
+.sheet-skip:focus {
+  left: 24px;
+  top: 24px;
+  z-index: 10;
+  padding: 8px 12px;
+  background: var(--paper);
+}
+
+/* One sheet: an outer border, zone references in the margin, an inner frame. */
+.sheet {
+  position: relative;
+  max-width: 1360px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 22px;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  box-shadow: 0 1px 0 #0000000a, 0 12px 30px -18px #0000002e;
+}
+.sheet > :not(.zones) {
+  position: relative;
+}
+.sheet::before {
+  content: "";
+  position: absolute;
+  inset: 22px;
+  border: 0.6px solid var(--ink);
+  pointer-events: none;
+}
+.zones {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-size: 10px;
+  color: var(--ink-2);
+}
+.zones-top {
+  position: absolute;
+  top: 5px;
+  left: 22px;
+  right: 22px;
+  display: flex;
+}
+.zones-top span {
+  flex: 1;
+  text-align: center;
+  border-left: 0.6px solid var(--hair);
+}
+.zones-top span:first-child {
+  border-left: 0;
+}
+.zones-side {
+  position: absolute;
+  top: 22px;
+  bottom: 22px;
+  left: 0;
+  width: 22px;
+  display: flex;
+  flex-direction: column;
+}
+.zones-side span {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  border-top: 0.6px solid var(--hair);
+}
+.zones-side span:first-child {
+  border-top: 0;
+}
+
+/* Sheet 1, one screen tall on desktop: the drawing on the left; the parts list
+   above the title block in the right-hand column, as on a real drawing. */
+.sheet-home {
+  min-height: calc(100svh - 32px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(360px, 33vw, 470px);
+}
+.sheet-drawing {
+  display: grid;
+  place-items: center;
+  min-height: 0;
+}
+.sheet-drawing .desk {
+  margin: 0;
+  width: 100%;
+  background: transparent;
+  --anatomy-card: var(--paper);
+  --anatomy-paper: var(--paper);
+}
+.sheet-drawing .iso-svg {
+  max-height: calc(100svh - 90px);
+}
+.sheet-foot {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-left: 0.6px solid var(--ink);
+}
+.sheet-foot .parts {
+  border-top: 0.6px solid var(--ink);
+}
+
+/* Tables: parts list and revisions. */
+.parts,
+.revisions {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.parts caption,
+.revisions caption,
+.notes h2 {
+  caption-side: top;
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  border-bottom: 0.6px solid var(--ink);
+}
+.parts th,
+.parts td,
+.revisions th,
+.revisions td {
+  padding: 6px 12px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 0.6px solid var(--hair);
+}
+.parts thead th,
+.revisions thead th {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--ink-2);
+  border-bottom: 0.6px solid var(--rule);
+}
+.parts tbody th {
+  font-weight: 700;
+}
+.parts-line {
+  display: block;
+  margin-top: 1px;
+  font-weight: 400;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+.parts td + td,
+.parts th + td,
+.parts td + th,
+.revisions td + td {
+  border-left: 0.6px solid var(--hair);
+}
+.parts-n {
+  width: 1%;
+  font-family: var(--mono);
+  text-align: center !important;
+}
+.parts-status {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--ink-2);
+}
+.parts-ref {
+  white-space: nowrap;
+  width: 1%;
+}
+.parts-ref a {
+  display: block;
+}
+
+/* Title block: the bottom-right corner of every drawing. */
+.title-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 0.6px solid var(--ink);
+}
+.tb-cell {
+  padding: 5px 12px 7px;
+  border-bottom: 0.6px solid var(--ink);
+}
+.tb-cell:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+.tb-left {
+  border-right: 0.6px solid var(--ink);
+}
+.tb-name,
+.tb-title,
+.tb-line,
+.tb-contact {
+  grid-column: span 2;
+}
+.tb-label {
+  display: block;
+  font-size: 10.5px;
+  color: var(--ink-2);
+}
+.title-block h1 {
+  margin: 0;
+  font-size: clamp(26px, 2.6vw, 34px);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.title-block p {
+  margin: 0;
+}
+.tb-title p {
+  font-weight: 700;
+}
+.tb-line p {
+  font-size: 14px;
+  line-height: 1.45;
+}
+.tb-contact p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+}
+
+/* Sheet 2: revisions and general notes. */
+.sheet-2-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+}
+.rev-date {
+  white-space: nowrap;
+  width: 1%;
+}
+.notes {
+  border-left: 0.6px solid var(--ink);
+}
+.notes h2 {
+  margin: 0;
+}
+.notes ol {
+  margin: 0;
+  padding: 10px 14px 0 34px;
+  list-style: decimal;
+  font-size: 13.5px;
+}
+.notes li {
+  margin-bottom: 8px;
+}
+.notes-end {
+  margin: 12px 14px;
+  font-size: 11px;
+  color: var(--ink-2);
+  text-align: right;
+}
+
+@media (max-width: 1000px) {
+  .sheet-home {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+  .sheet-foot {
+    border-left: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: end;
+  }
+  .sheet-foot .parts {
+    border-right: 0.6px solid var(--ink);
+  }
+  .sheet-drawing .iso-svg {
+    max-height: none;
+  }
+}
+@media (max-width: 900px) {
+  .sheet-2-grid {
+    grid-template-columns: 1fr;
+  }
+  .notes {
+    border-left: 0;
+    border-top: 0.6px solid var(--ink);
+  }
+}
+@media (max-width: 640px) {
+  .sheets {
+    padding: 8px;
+  }
+  .sheet {
+    padding: 18px 8px 10px 18px;
+  }
+  .sheet::before {
+    inset: 18px 8px 10px 18px;
+  }
+  .zones-top {
+    top: 3px;
+    left: 18px;
+    right: 8px;
+  }
+  .zones-side {
+    top: 18px;
+    bottom: 10px;
+    width: 18px;
+  }
+  .sheet-home {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  /* On a phone the name comes first: the title block moves above the drawing. */
+  .sheet-foot {
+    display: contents;
+  }
+  .title-block {
+    order: -1;
+    border-top: 0;
+    border-bottom: 0.6px solid var(--ink);
+  }
+  .sheet-foot .parts {
+    border-right: 0;
+  }
+  .sheet-drawing .iso-svg {
+    min-height: 0;
+    max-height: none;
+  }
+  .parts {
+    border-top: 0.6px solid var(--ink);
+  }
+}
+
+/* Sheet 3: a case study. Reading text on the left, the facts in a title block on the right,
+   then numbered details (the toy, the design) across the full width. */
+.case-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(300px, 28vw, 380px);
+  border-bottom: 0.6px solid var(--ink);
+}
+.case-text {
+  padding: 28px clamp(16px, 4vw, 56px) 40px;
+  max-width: 74ch;
+}
+.case-back {
+  margin: 0 0 24px;
+  font-size: 13px;
+}
+.case-text h1 {
+  margin: 0 0 12px;
+  font-size: clamp(30px, 3.4vw, 44px);
+  line-height: 1.1;
+}
+.case-lede {
+  margin: 0 0 8px;
+  font-size: 19px;
+  line-height: 1.5;
+}
+.case-text h2 {
+  margin: 32px 0 8px;
+  font-size: 17px;
+}
+.case-text p,
+.case-text ul {
+  margin: 0 0 12px;
+}
+.case-text ul {
+  padding-left: 20px;
+  list-style: square;
+}
+.case-text li {
+  margin-bottom: 4px;
+}
+.case-block {
+  align-self: start;
+  border-top: 0;
+  border-left: 0.6px solid var(--ink);
+}
+.case-block .tb-cell:last-child,
+.case-block .tb-cell:nth-last-child(2) {
+  border-bottom: 0;
+}
+.case-part {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.detail {
+  border-bottom: 0.6px solid var(--ink);
+}
+.detail:last-child {
+  border-bottom: 0;
+}
+.detail-title {
+  margin: 0;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border-bottom: 0.6px solid var(--hair);
+}
+.detail-note {
+  margin: 0;
+  padding: 10px 12px 0;
+  max-width: 80ch;
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+.detail-body {
+  padding: 16px 12px 20px;
+}
+.detail-scroll {
+  overflow-x: auto;
+}
+.detail .toy {
+  max-width: 980px;
+}
+.detail .os-design {
+  shape-rendering: crispEdges;
+}
+.detail .os-design-label {
+  font: 700 13px var(--font);
+}
+.detail .os-design-note {
+  font: 11px var(--font);
+}
+@media (max-width: 900px) {
+  .case-grid {
+    grid-template-columns: 1fr;
+  }
+  .case-block {
+    border-left: 0;
+    border-top: 0.6px solid var(--ink);
+    order: -1;
+  }
+}
+.detail,
+.detail-body {
+  min-width: 0;
+}

@@ -1,0 +1,67 @@
+{
+  "name": "DecentralMem",
+  "order": 4,
+  "oneLine": "One project memory that survives new chats and model switches, served over MCP.",
+  "year": "2026",
+  "status": "In progress; open source",
+  "links": {
+    "code": "https://github.com/rohan2010/decenz-mcp"
+  },
+  "caseStudy": null,
+  "design": {
+    "nodes": [
+      {
+        "id": "client",
+        "label": "Any MCP client",
+        "note": "Claude today, others under test"
+      },
+      {
+        "id": "mcp",
+        "label": "MCP server",
+        "note": "write and search tools"
+      },
+      {
+        "id": "pg",
+        "label": "PostgreSQL",
+        "note": "source of truth"
+      },
+      {
+        "id": "qd",
+        "label": "Qdrant",
+        "note": "vector search"
+      },
+      {
+        "id": "redis",
+        "label": "Redis",
+        "note": "cache"
+      },
+      {
+        "id": "emb",
+        "label": "Embeddings service",
+        "note": "self-hosted FastAPI"
+      }
+    ],
+    "edges": [
+      [
+        "client",
+        "mcp"
+      ],
+      [
+        "mcp",
+        "pg"
+      ],
+      [
+        "mcp",
+        "redis"
+      ],
+      [
+        "mcp",
+        "emb"
+      ],
+      [
+        "emb",
+        "qd"
+      ]
+    ]
+  }
+}

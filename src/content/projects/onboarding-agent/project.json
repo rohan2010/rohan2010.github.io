@@ -1,0 +1,70 @@
+{
+  "name": "Seller onboarding agent",
+  "order": 1,
+  "oneLine": "An agent that checks a new seller's documents and retries instead of guessing. Activation went from days to minutes.",
+  "year": "2024 – now",
+  "status": "In production at my day job",
+  "links": {},
+  "demo": "onboarding-toy",
+  "caseStudy": "/work/onboarding-agent/",
+  "design": {
+    "nodes": [
+      {
+        "id": "upload",
+        "label": "Seller uploads",
+        "note": "KYC, tax and legal documents"
+      },
+      {
+        "id": "read",
+        "label": "read_document",
+        "note": "a tool-calling node"
+      },
+      {
+        "id": "check",
+        "label": "validate fields",
+        "note": "schema and format checks"
+      },
+      {
+        "id": "route",
+        "label": "conditional routing",
+        "note": "where the document goes next"
+      },
+      {
+        "id": "retry",
+        "label": "retry",
+        "note": "on a failed check"
+      },
+      {
+        "id": "live",
+        "label": "Seller live",
+        "note": "minutes, not days"
+      }
+    ],
+    "edges": [
+      [
+        "upload",
+        "read"
+      ],
+      [
+        "read",
+        "check"
+      ],
+      [
+        "check",
+        "route"
+      ],
+      [
+        "route",
+        "retry"
+      ],
+      [
+        "retry",
+        "read"
+      ],
+      [
+        "route",
+        "live"
+      ]
+    ]
+  }
+}

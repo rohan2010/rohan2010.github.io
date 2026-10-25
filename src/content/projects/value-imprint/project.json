@@ -1,0 +1,58 @@
+{
+  "name": "Value Imprint",
+  "order": 3,
+  "oneLine": "Auditing which human values are baked into the data used to align AI models.",
+  "year": "2024",
+  "status": "NeurIPS 2024; Datasets & Benchmarks track; 2nd of 5 authors",
+  "links": {
+    "paper": "https://arxiv.org/abs/2411.11937"
+  },
+  "caseStudy": null,
+  "design": {
+    "nodes": [
+      {
+        "id": "lit",
+        "label": "Ethics literature",
+        "note": "philosophy, axiology"
+      },
+      {
+        "id": "tax",
+        "label": "Values taxonomy",
+        "note": "phase 1"
+      },
+      {
+        "id": "ann",
+        "label": "6,501 annotations",
+        "note": "curated RLHF samples"
+      },
+      {
+        "id": "clf",
+        "label": "Transformer classifier",
+        "note": "phase 2"
+      },
+      {
+        "id": "audit",
+        "label": "Audit the datasets",
+        "note": "hh-rlhf, WebGPT, Alpaca GPT-4"
+      }
+    ],
+    "edges": [
+      [
+        "lit",
+        "tax"
+      ],
+      [
+        "tax",
+        "ann"
+      ],
+      [
+        "ann",
+        "clf"
+      ],
+      [
+        "clf",
+        "audit"
+      ]
+    ]
+  }
+}

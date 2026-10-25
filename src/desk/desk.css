@@ -1,0 +1,164 @@
+/* Desk interaction: hover lift, labels, the paper sheet that opens on click. */
+.desk {
+  margin: 24px 0;
+  background: var(--anatomy-card);
+  --desk-font: var(--font-b612), "Helvetica Neue", Arial, sans-serif;
+}
+.desk-stage {
+  position: relative;
+}
+.desk-object {
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.28s var(--anatomy-ease), filter 0.28s var(--anatomy-ease);
+}
+.desk-object:hover,
+.desk-object:focus-visible {
+  transform: translateY(-4px);
+}
+.desk-object:focus-visible .iso-edge {
+  stroke: var(--anatomy-lit);
+}
+.desk-object > .iso-halo {
+  transition: opacity 0.28s var(--anatomy-ease);
+}
+.desk-object:hover > .iso-halo,
+.desk-object:focus-visible > .iso-halo {
+  opacity: calc(var(--anatomy-halo-opacity) * 1.6);
+}
+
+/* The plant perks up when clicked. */
+.desk-object[data-object="plant"] .desk-leaf {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+.desk-object.is-watered .desk-leaf {
+  animation: desk-perk 0.9s var(--anatomy-ease);
+}
+@keyframes desk-perk {
+  35% { transform: scaleY(1.08) rotate(-2deg); }
+  70% { transform: scaleY(0.98) rotate(1deg); }
+}
+
+.desk-tip {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 10px));
+  padding: 4px 9px;
+  font: 12px/1.4 var(--desk-font);
+  white-space: nowrap;
+  color: var(--anatomy-card);
+  background: var(--anatomy-strong);
+  pointer-events: none;
+}
+
+/* The sheet: a piece of paper laid over the desk. */
+.desk-sheet-wrap {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: color-mix(in srgb, var(--anatomy-page) 55%, transparent);
+  animation: desk-fade 0.2s ease-out;
+}
+.desk-sheet {
+  position: relative;
+  width: min(560px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  padding: 28px 32px;
+  color: var(--anatomy-text);
+  background: var(--anatomy-face);
+  box-shadow: 0 0 0 1px var(--anatomy-mid), 0 18px 40px -20px #0005;
+  font: 15px/1.6 var(--desk-font);
+  animation: desk-rise 0.32s var(--anatomy-ease);
+}
+.desk-sheet h1,
+.desk-sheet h2 {
+  margin: 0 0 12px;
+  font-size: 22px;
+  line-height: 1.2;
+  color: var(--anatomy-strong);
+}
+.desk-sheet h2 + h2,
+.desk-readme h2 {
+  font-size: 16px;
+  margin-top: 20px;
+}
+.desk-sheet p,
+.desk-sheet ul,
+.desk-sheet ol {
+  margin: 0 0 12px;
+}
+.desk-sheet ul,
+.desk-sheet ol {
+  padding-left: 20px;
+}
+.desk-sheet ul {
+  list-style: disc;
+}
+.desk-sheet ol {
+  list-style: decimal;
+}
+.desk-sheet li {
+  margin-bottom: 4px;
+}
+.desk-sheet strong {
+  color: var(--anatomy-strong);
+}
+.desk-sheet-kicker {
+  font-size: 12px;
+  color: var(--anatomy-muted);
+}
+.desk-sheet-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-top: 16px !important;
+}
+.desk-sheet a {
+  color: #2450b5;
+  text-underline-offset: 3px;
+}
+.desk-sheet-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--anatomy-text);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+@keyframes desk-fade {
+  from { opacity: 0; }
+}
+@keyframes desk-rise {
+  from { opacity: 0; transform: translateY(16px) rotate(-1deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .desk-object,
+  .desk-sheet,
+  .desk-sheet-wrap,
+  .desk-object.is-watered .desk-leaf {
+    transition: none;
+    animation: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .desk-sheet-wrap {
+    position: fixed;
+    z-index: 50;
+    padding: 12px;
+  }
+}
+
+/* Folders in the stack lift only a little, so a lifted one never covers its neighbour's strip. */
+.desk-object[data-object="folder"]:hover,
+.desk-object[data-object="folder"]:focus-visible {
+  transform: translateY(-1.5px);
+}

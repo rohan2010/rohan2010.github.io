@@ -1,0 +1,59 @@
+{
+  "name": "bloomScroll",
+  "order": 2,
+  "oneLine": "A browser extension that keeps YouTube on what you came for, decided on your own computer.",
+  "year": "2026",
+  "status": "Early release; open source (MIT)",
+  "links": {
+    "code": "https://github.com/rohan2010/bloomScroll"
+  },
+  "caseStudy": null,
+  "design": {
+    "nodes": [
+      {
+        "id": "feed",
+        "label": "YouTube feed",
+        "note": "titles as they load"
+      },
+      {
+        "id": "rules",
+        "label": "Rules",
+        "note": "settle the obvious ones"
+      },
+      {
+        "id": "embed",
+        "label": "MiniLM embeddings",
+        "note": "on-device, in the browser"
+      },
+      {
+        "id": "llm",
+        "label": "Local model",
+        "note": "the unclear few; no answer = show"
+      },
+      {
+        "id": "hide",
+        "label": "Keep or dissolve",
+        "note": "off-topic tiles fade out"
+      }
+    ],
+    "edges": [
+      [
+        "feed",
+        "rules"
+      ],
+      [
+        "rules",
+        "embed"
+      ],
+      [
+        "embed",
+        "llm"
+      ],
+      [
+        "llm",
+        "hide"
+      ]
+    ]
+  },
+  "demo": "bloomscroll-cascade"
+}
