@@ -4,8 +4,9 @@ import { useEffect, useRef } from "react";
 
 // A Bayer-dithered grid of small square cells behind the hero, after "Dither Grid" by Vikers on
 // 21st.dev, in the identity's colours. At rest every cell is a pencil dot, like dot-grid paper,
-// strongest toward the desk's corner. The cursor warms it: dots near the pointer grow into soft
-// brass squares and cool back to dots as it moves on. It fades on scroll.
+// strongest toward the desk's corner, with a few dots twinkling at any moment. The cursor warms it:
+// dots near the pointer grow into soft brass squares and cool back to dots as it moves on. It
+// fades on scroll.
 
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((n) => (n + 0.5) / 16);
 const CELL = 16;
@@ -20,6 +21,9 @@ const FLOOR = 0.3;
 const RADIUS = 150;
 const GAIN = 0.16;
 const COOL = 0.955;
+// Twinkle: the share of dots that start one each frame, and how many frames one lasts.
+const SPARK = 0.0007;
+const SPARK_FRAMES = 40;
 
 // Tints, all laid over paper at low alpha so nothing reads darker than a pencil wash.
 const BASE = { token: "--ink", alpha: 0.24 };
@@ -45,6 +49,8 @@ export function DitherGrid() {
     let rows = 0;
     let rest = new Float32Array(0);
     let heat = new Float32Array(0);
+    // Each twinkling dot's progress through its blink, 0 when it isn't blinking.
+    let spark = new Float32Array(0);
     let raf = 0;
     let lastDraw = -1;
     // Pointer in canvas space; null when it's off the stage.
@@ -68,6 +74,7 @@ export function DitherGrid() {
       cols = Math.ceil(w / CELL);
       rows = Math.ceil(h / CELL);
       heat = new Float32Array(cols * rows);
+      spark = new Float32Array(cols * rows);
       // The dots: strength falling off from just past the bottom-right corner.
       rest = new Float32Array(cols * rows);
       const diag = Math.hypot(w, h);
@@ -89,10 +96,12 @@ export function DitherGrid() {
           const b = BAYER[(y % 4) * 4 + (x % 4)];
           // Heat steps through the tints by the same Bayer threshold, so the glow dithers too.
           const level = t > 0.04 ? Math.min(WARM.length - 1, Math.floor(t * WARM.length + b - 0.5)) : -1;
-          const side = CELL * (REST + (HOT - REST) * Math.min(1, t * 1.4));
+          // A twinkle rises and falls on a sine, so dots fade in and out instead of popping.
+          const v = spark[k] ? Math.sin(Math.PI * spark[k]) : 0;
+          const side = CELL * (REST * (1 + 0.7 * v) + (HOT - REST) * Math.min(1, t * 1.4));
           const o = (CELL - side) / 2;
           if (level < 0) {
-            ctx.globalAlpha = BASE.alpha * rest[k];
+            ctx.globalAlpha = Math.min(1, BASE.alpha * rest[k] * (1 + 2.4 * v));
             ctx.fillStyle = base;
           } else {
             ctx.globalAlpha = WARM[level].alpha * Math.min(1, t * 2.2);
@@ -102,6 +111,20 @@ export function DitherGrid() {
         }
       }
       ctx.globalAlpha = 1;
+    };
+
+    // Moves every twinkle on a frame and starts a few new ones.
+    const twinkle = () => {
+      for (let k = 0; k < spark.length; k++) {
+        if (!spark[k]) continue;
+        spark[k] += 1 / SPARK_FRAMES;
+        if (spark[k] >= 1) spark[k] = 0;
+      }
+      const starts = Math.max(1, Math.round(spark.length * SPARK));
+      for (let i = 0; i < starts; i++) {
+        const k = Math.floor(Math.random() * spark.length);
+        if (!spark[k]) spark[k] = 1 / SPARK_FRAMES;
+      }
     };
 
     // Adds heat around the pointer and cools everything; returns whether anything is still warm.
@@ -130,16 +153,19 @@ export function DitherGrid() {
       return warmLeft;
     };
 
-    // Runs only while the field is warm, then parks until the pointer moves again.
+    // Runs while the hero is on screen: 30 frames a second for the twinkle, 60 while the cursor
+    // glow is warm. Parks when the hero is scrolled away or the tab is hidden.
+    let warmLeft = false;
     const tick = (now: number) => {
       raf = 0;
       const fade = Math.max(0, 1 - scrollY / (innerHeight * 0.5));
       canvas.style.opacity = String(fade);
-      if (now - lastDraw >= 16) {
+      if (fade === 0 || document.hidden) return;
+      if (now - lastDraw >= (warmLeft || moved ? 16 : 33)) {
         lastDraw = now;
-        const warmLeft = step();
+        warmLeft = step();
+        twinkle();
         draw();
-        if (!warmLeft) return;
       }
       raf = requestAnimationFrame(tick);
     };
@@ -165,6 +191,7 @@ export function DitherGrid() {
     };
     const scroll = () => {
       canvas.style.opacity = String(Math.max(0, 1 - scrollY / (innerHeight * 0.5)));
+      if (!reduced) wake();
     };
 
     read();
@@ -181,12 +208,18 @@ export function DitherGrid() {
       addEventListener("pointermove", move, { passive: true });
       document.documentElement.addEventListener("pointerleave", leave);
     }
+    const visible = () => {
+      if (!reduced && !document.hidden) wake();
+    };
+    document.addEventListener("visibilitychange", visible);
+    if (!reduced) wake();
     return () => {
       cancelAnimationFrame(raf);
       removeEventListener("resize", resize);
       removeEventListener("scroll", scroll);
       removeEventListener("pointermove", move);
       document.documentElement.removeEventListener("pointerleave", leave);
+      document.removeEventListener("visibilitychange", visible);
     };
   }, []);
 
