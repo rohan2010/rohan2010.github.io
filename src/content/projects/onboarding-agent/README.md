@@ -1,17 +1,17 @@
 # Seller onboarding agent
 
-New sellers used to wait days to go live while their KYC, tax and legal documents got checked. I built a stateful agent workflow in LangGraph that checks them instead, and seller activation went from days to minutes.
+New sellers waited days to go live. I built a LangGraph agent that checks their KYC, tax and legal documents, and activation now takes minutes.
 
 ## How it works
 
-- Each step is a node that calls a tool: read the document, validate a field, look something up.
-- Conditional routing decides where each document goes next, so a clean one goes straight through and a messy one takes a detour.
-- When a check fails, it retries rather than guessing.
+- It's a stateful graph. Each step is a node that calls a tool: read the document, validate a field.
+- The graph routes on what each node finds. A document that passes moves on.
+- A failed check gets retried, not guessed at.
 
-## Keeping it honest
+## Keeping the model honest
 
 - Model output is checked against a schema before anything uses it.
 - Malformed output gets a retry, then a fallback path.
 - Prompt changes are regression-tested against a curated eval set.
 
-This is work for an employer, so the code stays private. The demo is a toy version you can play with.
+This is work for my day job, so the code stays private. The demo is a toy with made-up documents.

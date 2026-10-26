@@ -1,14 +1,15 @@
 # DecentralMem
 
-Every new chat, and every new model, starts from zero. You re-explain the project again.
+Every new chat with an AI assistant starts from zero. You explain the project again.
 
-DecentralMem is a memory layer for a project: decisions, constraints and architecture notes are written once through an MCP server and come back for whichever model you use next, scoped to that project.
+DecentralMem is memory for a project. Decisions, constraints and architecture notes are written once through an MCP server and come back in the next session, scoped to that project.
 
 ## Under the hood
 
-- **PostgreSQL** is the source of truth.
-- **Qdrant** handles vector search; **Redis** caches.
-- Embeddings come from a small self-hosted FastAPI service.
-- If the vector store fails, the write is kept and marked for retry rather than lost.
+- Two MCP tools: **write** and **search**. Both check an API key first.
+- **PostgreSQL** is the record. **Qdrant** is a vector index built from it.
+- Embeddings come from a small self-hosted FastAPI service, so no text goes to an outside API.
+- If indexing fails, the write still lands, flagged as pending rather than lost.
+- Results are trimmed to a token budget. Constraints, decisions and architecture notes are never dropped.
 
-**Status:** in progress. The Claude connector works today. Connectors for other LLMs are under test, while I try out ways to build my own knowledge graphs for the memory.
+**Status:** in progress. The first version runs locally and is set up for Claude Desktop and Claude Code. Adapters for other models are stubs for now.
