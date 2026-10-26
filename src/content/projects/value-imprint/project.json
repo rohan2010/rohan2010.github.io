@@ -1,39 +1,44 @@
 {
   "name": "Value Imprint",
   "order": 3,
-  "oneLine": "Auditing which human values are baked into the data used to align AI models.",
+  "oneLine": "A NeurIPS 2024 paper that measures which human values sit inside the data used to align language models.",
   "year": "2024",
-  "status": "NeurIPS 2024; Datasets & Benchmarks track; 2nd of 5 authors",
+  "status": "NeurIPS 2024, Datasets & Benchmarks track, spotlight poster",
   "links": {
     "paper": "https://arxiv.org/abs/2411.11937"
   },
-  "caseStudy": null,
+  "caseStudy": "/work/value-imprint/",
   "design": {
     "nodes": [
       {
         "id": "lit",
         "label": "Ethics literature",
-        "note": "philosophy, axiology"
+        "note": "9 journals"
       },
       {
         "id": "tax",
         "label": "Values taxonomy",
-        "note": "phase 1"
+        "note": "7 values"
       },
       {
         "id": "ann",
-        "label": "6,501 annotations",
-        "note": "curated RLHF samples"
+        "label": "Hand labels",
+        "note": "6,501 preferences"
       },
       {
         "id": "clf",
-        "label": "Transformer classifier",
-        "note": "phase 2"
+        "label": "RoBERTa classifier",
+        "note": "trained on the labels"
       },
       {
         "id": "audit",
-        "label": "Audit the datasets",
-        "note": "hh-rlhf, WebGPT, Alpaca GPT-4"
+        "label": "Label 3 datasets",
+        "note": "hh-rlhf, WebGPT, Alpaca"
+      },
+      {
+        "id": "check",
+        "label": "Human check",
+        "note": "500 labels, 84% right"
       }
     ],
     "edges": [
@@ -52,7 +57,48 @@
       [
         "clf",
         "audit"
+      ],
+      [
+        "audit",
+        "check"
       ]
+    ]
+  },
+  "case": {
+    "title": "Whose *values* are in the data we align AI with?",
+    "lede": "Value Imprint measures the human values inside RLHF datasets, the preference data used to align language models. In three widely used datasets, information and usefulness dominated, and justice and rights barely registered.",
+    "facts": {
+      "part": "A method for auditing the human values in RLHF datasets, with the labelled data released",
+      "where": "Purdue University",
+      "when": "2024",
+      "role": "Second of five authors",
+      "result": "Wisdom & Knowledge was the most common value in all three datasets. Justice & Rights was the least common, at 0.04% to 1.76%.",
+      "builtWith": [
+        "Python",
+        "RoBERTa",
+        "Hugging Face Transformers",
+        "scikit-learn"
+      ],
+      "note": "First author Ike Obi, with Rohan Pant, Srishti Shekhar Agrawal, Maham Ghazanfar and Aaron Basiletti."
+    },
+    "pattern": "label a sample by hand, train a classifier on it, label the rest, then check the classifier",
+    "details": [
+      {
+        "id": "A",
+        "node": "tax",
+        "title": "Values from the ethics literature",
+        "chose": "A seven-value taxonomy built for conversations between people and AI",
+        "over": "A general theory of human values, such as Schwartz's",
+        "because": "General theories describe broad human motivation. They have no category for asking an assistant for information, or for accountability in what it says (paper, Appendix C)."
+      },
+      {
+        "id": "B",
+        "node": "clf",
+        "title": "A classifier to label the rest",
+        "chose": "Train RoBERTa on the 6,501 hand labels, then check 500 of its outputs by hand",
+        "over": "Labelling every preference by hand",
+        "because": "People labelled 6,501 preferences. The audit had to cover more than 400,000."
+      }
     ]
   }
 }

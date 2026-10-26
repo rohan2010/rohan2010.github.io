@@ -1,39 +1,39 @@
 {
   "name": "bloomScroll",
   "order": 2,
-  "oneLine": "A browser extension that keeps YouTube on what you came for, decided on your own computer.",
+  "oneLine": "A Chrome extension that hides off-topic YouTube videos, decided on your own computer.",
   "year": "2026",
   "status": "Early release; open source (MIT)",
   "links": {
     "code": "https://github.com/rohan2010/bloomScroll"
   },
-  "caseStudy": null,
+  "caseStudy": "/work/bloomscroll/",
   "design": {
     "nodes": [
       {
         "id": "feed",
         "label": "YouTube feed",
-        "note": "titles as they load"
+        "note": "title + channel per tile"
       },
       {
         "id": "rules",
-        "label": "Rules",
-        "note": "settle the obvious ones"
+        "label": "Corrections + rules",
+        "note": "your labels, cache, keywords"
       },
       {
         "id": "embed",
         "label": "MiniLM embeddings",
-        "note": "on-device, in the browser"
+        "note": "in the browser"
       },
       {
         "id": "llm",
         "label": "Local model",
-        "note": "the unclear few; no answer = show"
+        "note": "unclear few; silent = show"
       },
       {
         "id": "hide",
         "label": "Keep or dissolve",
-        "note": "off-topic tiles fade out"
+        "note": "Show / Hide corrects it"
       }
     ],
     "edges": [
@@ -52,8 +52,76 @@
       [
         "llm",
         "hide"
+      ],
+      [
+        "hide",
+        "rules"
       ]
     ]
   },
-  "demo": "bloomscroll-cascade"
+  "demo": "bloomscroll-cascade",
+  "case": {
+    "title": "A YouTube filter that *shows* what it can’t judge.",
+    "lede": "You open YouTube to learn something and the feed pulls you somewhere else. bloomScroll is a Chrome extension that hides the off-topic videos. By default it decides on your own computer, so nothing you watch is sent anywhere.",
+    "result": {
+      "label": "Time for a test feed to settle",
+      "from": "39 s",
+      "to": "2.7 s",
+      "note": "Self-measured: 40-title test feed, 2017 dual-core MacBook Pro"
+    },
+    "facts": {
+      "part": "bloomScroll, a Chrome extension",
+      "where": "Personal project",
+      "when": "2026",
+      "role": "Built it",
+      "builtWith": [
+        "TypeScript",
+        "Chrome MV3",
+        "Transformers.js + ONNX (MiniLM)",
+        "IndexedDB",
+        "a local Python model server",
+        "Vite",
+        "Vitest",
+        "Playwright",
+        "GitHub Actions"
+      ],
+      "note": "Every number here is my own measurement on a 40-title test feed, not field data."
+    },
+    "pattern": "a cascade, cheapest confident stage first",
+    "details": [
+      {
+        "id": "A",
+        "node": "llm",
+        "title": "Fail open",
+        "chose": "Show a video when no model answers",
+        "over": "Hiding whatever couldn’t be judged",
+        "because": "A wrongly hidden video costs more than a missed distraction"
+      },
+      {
+        "id": "B",
+        "node": "embed",
+        "title": "Embeddings in the browser",
+        "chose": "MiniLM in the browser (Transformers.js + ONNX)",
+        "over": "A hosted embedding API",
+        "because": "Titles never leave the computer, and it works offline"
+      }
+    ],
+    "changes": [
+      {
+        "when": "Before",
+        "change": "Prompt with 30 topics and 8 described categories: 980 ms per tile",
+        "effect": "about 39 s to settle"
+      },
+      {
+        "when": "After",
+        "change": "A short summary and 8 labels, plus a one-tile warm-up: 394 ms per tile, same AUC (1.000) on the test feed",
+        "effect": "2.7 s to settle"
+      },
+      {
+        "when": "Today",
+        "change": "Early release. Built and tested on macOS; Windows and Linux untested. Installed unpacked, not on the Chrome Web Store",
+        "effect": "early release"
+      }
+    ]
+  }
 }

@@ -91,11 +91,16 @@ export function DeskLive({ svg, css, projects }: { svg: string; css: string; pro
     return () => events.forEach(([name, fn]) => host.removeEventListener(name, fn));
   }, [activate, show]);
 
-  // A link to /#os or /#os/<slug> sits you straight down at the computer.
+  // A link to /#os or /#os/<slug> sits you straight down at the computer, on load or from a
+  // link on this page (the nav, a project's Open).
   useEffect(() => {
-    const match = window.location.hash.match(/^#os(?:\/([\w-]+))?$/);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (match) setComputer({ from: null, start: match[1] });
+    const sit = () => {
+      const match = window.location.hash.match(/^#os(?:\/([\w-]+))?$/);
+      if (match) setComputer((c) => c ?? { from: null, start: match[1] });
+    };
+    sit();
+    window.addEventListener("hashchange", sit);
+    return () => window.removeEventListener("hashchange", sit);
   }, []);
 
   const standUp = useCallback(() => {

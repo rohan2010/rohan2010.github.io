@@ -1,44 +1,44 @@
 {
   "name": "DecentralMem",
   "order": 4,
-  "oneLine": "One project memory that survives new chats and model switches, served over MCP.",
+  "oneLine": "Project memory for AI assistants: write a decision once, get it back in the next chat. Served over MCP.",
   "year": "2026",
-  "status": "In progress; open source",
+  "status": "In progress; code public",
   "links": {
     "code": "https://github.com/rohan2010/decenz-mcp"
   },
-  "caseStudy": null,
+  "caseStudy": "/work/decentralmem/",
   "design": {
     "nodes": [
       {
         "id": "client",
-        "label": "Any MCP client",
-        "note": "Claude today, others under test"
+        "label": "Claude, over MCP",
+        "note": "Desktop or Claude Code"
       },
       {
         "id": "mcp",
         "label": "MCP server",
-        "note": "write and search tools"
+        "note": "write and search; key checked"
       },
       {
         "id": "pg",
         "label": "PostgreSQL",
-        "note": "source of truth"
+        "note": "the record, written first"
+      },
+      {
+        "id": "emb",
+        "label": "Embedding service",
+        "note": "self-hosted FastAPI"
       },
       {
         "id": "qd",
         "label": "Qdrant",
-        "note": "vector search"
+        "note": "vectors, one project at a time"
       },
       {
-        "id": "redis",
-        "label": "Redis",
-        "note": "cache"
-      },
-      {
-        "id": "emb",
-        "label": "Embeddings service",
-        "note": "self-hosted FastAPI"
+        "id": "cwm",
+        "label": "Context budget",
+        "note": "trims results to fit"
       }
     ],
     "edges": [
@@ -52,16 +52,76 @@
       ],
       [
         "mcp",
-        "redis"
-      ],
-      [
-        "mcp",
         "emb"
       ],
       [
         "emb",
         "qd"
+      ],
+      [
+        "qd",
+        "cwm"
+      ],
+      [
+        "cwm",
+        "client"
       ]
+    ]
+  },
+  "case": {
+    "title": "One project memory that *survives* a new chat.",
+    "lede": "Every new chat with an AI assistant starts from zero, so you explain the project again. DecentralMem stores a project’s decisions, constraints and architecture notes once, through an MCP server, and hands them back in the next session. The first version runs locally and is set up for Claude.",
+    "facts": {
+      "part": "DecentralMem, a memory layer served over MCP",
+      "where": "Side project",
+      "when": "2026; first version in March",
+      "result": "First version works: write and search over MCP, set up for Claude",
+      "builtWith": [
+        "Python",
+        "MCP (stdio)",
+        "FastAPI",
+        "PostgreSQL",
+        "Qdrant",
+        "Redis",
+        "sentence-transformers",
+        "Docker",
+        "pytest"
+      ],
+      "note": "Only the Claude side is built. Adapters for GPT-4o, Gemini and local models exist as stubs in the code."
+    },
+    "pattern": "one source of truth, a vector index derived from it, and a budget on what comes back",
+    "details": [
+      {
+        "id": "A",
+        "node": "pg",
+        "title": "Postgres first",
+        "chose": "PostgreSQL as the record, with Qdrant as an index that can be rebuilt from it",
+        "because": "If the vector store is down, an item is late to search, not lost"
+      },
+      {
+        "id": "B",
+        "node": "cwm",
+        "title": "Memory on a budget",
+        "chose": "A token budget per model, and three kinds of memory that are never dropped",
+        "because": "Memory shouldn’t crowd out the conversation, and the project’s rules matter most"
+      }
+    ],
+    "changes": [
+      {
+        "when": "March 2026",
+        "change": "First version: write and search over MCP, setup guides for Claude, a cross-session test and 49 others",
+        "effect": "works today"
+      },
+      {
+        "when": "Next",
+        "change": "Adapters for GPT-4o, Gemini and local models, and the background job that retries pending embeddings",
+        "effect": "stubbed in the code"
+      },
+      {
+        "when": "Later",
+        "change": "Keyword plus vector search, contradiction detection, a web UI",
+        "effect": "on the roadmap"
+      }
     ]
   }
 }

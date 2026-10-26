@@ -1,5 +1,6 @@
 // A system design drawn from project.json: nodes laid out left to right by
 // longest path, edges that point backwards (retries, loops) routed underneath.
+// One bit in rohanOS; a page can recolour it with --d-ink, --d-paper, --d-shadow and --d-loop.
 
 type Node = { id: string; label: string; note?: string };
 
@@ -53,9 +54,14 @@ export function designSize(nodes: Node[], edges: [string, string][]) {
   return { width, height };
 }
 
+const INK = { fill: "var(--d-ink, #000)" };
+const PAPER = { fill: "var(--d-paper, #fff)", stroke: "var(--d-ink, #000)" };
+const LINE = { fill: "none", stroke: "var(--d-ink, #000)" };
+const LOOP = { fill: "none", stroke: "var(--d-loop, #000)" };
+
 export function Design({ nodes, edges }: { nodes: Node[]; edges: [string, string][] }) {
   const { width, height, pos, forward, back } = layout(nodes, edges);
-  const arrow = (x: number, y: number, dir: 1 | -1) => <path d={`M${x} ${y}l${-7 * dir} -4v8z`} fill="#000" />;
+  const arrow = (x: number, y: number, dir: 1 | -1) => <path d={`M${x} ${y}l${-7 * dir} -4v8z`} style={INK} />;
 
   return (
     <svg className="os-design" viewBox={`0 0 ${width} ${height}`} width={width} height={height} role="img" aria-label={`System design: ${nodes.map((n) => n.label).join(", ")}`}>
@@ -69,7 +75,7 @@ export function Design({ nodes, edges }: { nodes: Node[]; edges: [string, string
         const mid = (x0 + x1) / 2;
         return (
           <g key={`${a}>${b}`}>
-            <path d={`M${x0} ${y0}H${mid}V${y1}H${x1 - 6}`} fill="none" stroke="#000" />
+            <path d={`M${x0} ${y0}H${mid}V${y1}H${x1 - 6}`} style={LINE} />
             {arrow(x1, y1, 1)}
           </g>
         );
@@ -83,8 +89,8 @@ export function Design({ nodes, edges }: { nodes: Node[]; edges: [string, string
         const x1 = q.x + W / 2;
         return (
           <g key={key}>
-            <path d={`M${x0} ${p.y + H + 2}V${below}H${x1}V${q.y + H + 9}`} fill="none" stroke="#000" strokeDasharray="3 2" />
-            <path d={`M${x1} ${q.y + H + 2}l-4 7h8z`} fill="#000" />
+            <path d={`M${x0} ${p.y + H + 2}V${below}H${x1}V${q.y + H + 9}`} style={LOOP} strokeDasharray="3 2" />
+            <path d={`M${x1} ${q.y + H + 2}l-4 7h8z`} style={{ fill: "var(--d-loop, #000)" }} />
           </g>
         );
       })}
@@ -92,8 +98,8 @@ export function Design({ nodes, edges }: { nodes: Node[]; edges: [string, string
         const { x, y } = pos.get(n.id)!;
         return (
           <g key={n.id}>
-            <rect x={x + 2.5} y={y + 2.5} width={W} height={H} fill="#000" />
-            <rect x={x + 0.5} y={y + 0.5} width={W} height={H} fill="#fff" stroke="#000" />
+            <rect x={x + 2.5} y={y + 2.5} width={W} height={H} style={{ fill: "var(--d-shadow, #000)" }} />
+            <rect x={x + 0.5} y={y + 0.5} width={W} height={H} style={PAPER} />
             <text x={x + 10} y={y + 19} className="os-design-label">
               {n.label}
             </text>

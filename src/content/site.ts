@@ -9,6 +9,6 @@ export const site = {
   name: "Rohan Pant",
   role: "Full-stack + AI engineer",
   title: "Rohan Pant · Full-stack + AI engineer",
-  description: "Rohan Pant is a full-stack and AI engineer.",
+  description: "Full-stack and AI engineer in Delhi. AI agents in production, a NeurIPS 2024 paper, and an M.S. in HCI from Purdue.",
   url: "https://rohan2010.github.io",
 };

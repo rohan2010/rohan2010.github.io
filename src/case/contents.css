@@ -1,0 +1,76 @@
+/* Contents rail. Reads the page's tokens, so it sits on the drawing sheet now and on the
+   Tobacco & Brass case-study template later (--signal is the brass there). */
+.contents {
+  --c-ink: var(--ink, #26262a);
+  --c-ink-2: var(--ink-2, #5d5d61);
+  --c-rule: var(--hair, var(--rule, #cfcfd2));
+  --c-mark: var(--signal, var(--c-ink));
+  position: sticky;
+  top: 24px;
+  align-self: start;
+  max-height: calc(100svh - 48px);
+  overflow: auto;
+}
+.contents-head {
+  margin: 0 0 14px;
+  font: 500 11px/1.4 var(--mono, ui-monospace, monospace);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-ink-2);
+}
+.contents-list {
+  margin: 0 0 40px;
+  padding: 0;
+  list-style: none;
+  border-left: 1px solid var(--c-rule);
+}
+.contents .contents-list a {
+  position: relative;
+  display: block;
+  padding: 7px 0 7px 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--c-ink-2);
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+/* The bar sits on the rail, so the current section reads as a mark on the same line. */
+.contents-list a::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -1px;
+  width: 3px;
+  background: var(--c-mark);
+  transform: scaleY(0);
+  transition: transform 220ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+.contents .contents-list a:hover {
+  color: var(--c-ink);
+}
+.contents .contents-list a[aria-current] {
+  color: var(--c-ink);
+  font-weight: 600;
+}
+.contents-list a[aria-current]::before {
+  transform: scaleY(1);
+}
+.contents-links {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.contents .contents-links a {
+  display: inline-block;
+  padding: 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-ink);
+}
+@media (prefers-reduced-motion: reduce) {
+  .contents-list a,
+  .contents-list a::before {
+    transition: none;
+  }
+}

@@ -1,108 +1,785 @@
-/* Home without a frame: a sentence, the desk, three lists. Paper and ink from the drawing. */
+/* Home. Paper and ink from the desk drawing, one redline for what you can act on
+   (research/redesign/color.md), Instrument Sans/Serif with JetBrains Mono, the desk's
+   own easing (motion.md). */
 .home {
   --paper: #fbfbfa;
+  --paper-2: #f2f2ef;
   --ink: #1e1e21;
-  --ink-2: #6b6b70;
+  --ink-2: #57575a;
+  --ink-3: #8a8a8f;
   --rule: #dcdcd8;
-  --blue: #2450b5;
-  max-width: 1240px;
+  --signal: #f04e0c;
+  --signal-ink: #c2410c;
+  /* Identity roles; a colour scheme ([data-scheme], src/theme/schemes.ts) overrides these. */
+  --brand: var(--ink);
+  --brand-ink: var(--paper);
+  --deep: var(--ink);
+  --on-deep: var(--paper);
+  --sans: var(--font-sans), "Helvetica Neue", Arial, sans-serif;
+  --serif: var(--font-serif), Georgia, serif;
+  --mono: var(--font-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-hover: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --nav-h: 64px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: clamp(28px, 6vw, 72px) clamp(16px, 4vw, 40px) 96px;
+  padding: 0 clamp(16px, 4vw, 40px);
   color: var(--ink);
   background: var(--paper);
-  font: 16px/1.55 var(--font-b612), "Helvetica Neue", Arial, sans-serif;
+  font: 400 clamp(16px, 0.25vw + 15px, 17px) / 1.55 var(--sans);
 }
-:root:has(.home),
-:root:has(.home) body {
+:root:has(.home):not([data-scheme]),
+:root:has(.home):not([data-scheme]) body {
   background: #fbfbfa;
 }
+.home .desk {
+  --desk-font: var(--sans);
+}
+/* Paper grain over the whole page: the warmth of a printed sheet, barely there. */
+.home::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35  0 0 0 0 .27  0 0 0 0 .2  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
 .home a {
-  color: var(--ink);
+  color: inherit;
+  text-decoration-line: underline;
   text-decoration-color: var(--rule);
-  text-decoration-thickness: 2px;
+  text-decoration-thickness: 1.5px;
   text-underline-offset: 4px;
+  transition: text-decoration-color 160ms var(--ease-hover);
 }
 .home a:hover {
-  text-decoration-color: var(--ink);
+  text-decoration-color: var(--signal);
 }
 .home :focus-visible {
-  outline: 2px solid var(--blue);
+  outline: 2px solid var(--signal);
   outline-offset: 3px;
 }
-
-.home-head h1 {
-  max-width: 17ch;
+.meta {
   margin: 0;
-  font-size: clamp(34px, 5.6vw, 72px);
-  line-height: 1.04;
-  letter-spacing: -0.02em;
-  font-weight: 700;
-}
-.home-status {
-  margin: 20px 0 0;
-  font-size: clamp(16px, 1.5vw, 19px);
+  font: 400 13px/1.5 var(--mono);
   color: var(--ink-2);
-}
-
-.home-desk {
-  margin: clamp(16px, 3vw, 40px) clamp(-40px, -3vw, 0px) 0;
-}
-.home-desk .desk {
-  margin: 0;
-  background: transparent;
-  --anatomy-card: var(--paper);
-  --anatomy-paper: var(--paper);
-}
-.home-hint {
-  margin: 0;
-  text-align: center;
-  font-size: 13px;
-  color: var(--ink-2);
-}
-
-.home-lists {
-  display: grid;
-  grid-template-columns: 1.2fr 1.4fr 0.8fr;
-  gap: clamp(24px, 4vw, 56px);
-  margin-top: clamp(40px, 6vw, 80px);
-  padding-top: 28px;
-  border-top: 1px solid var(--rule);
-}
-.home-lists h2 {
-  margin: 0 0 14px;
-  font-size: 14px;
-  font-weight: 700;
-}
-.home-lists ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 14px;
-}
-.home-lists li {
-  display: grid;
-  gap: 2px;
-  font-size: 14.5px;
-  line-height: 1.45;
-}
-.home-lists li a {
-  justify-self: start;
-  font-weight: 700;
-}
-.home-lists li > span {
-  color: var(--ink-2);
-}
-.home-lists .home-date {
-  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 
-@media (max-width: 860px) {
-  .home-lists {
+/* ── Nav ──────────────────────────────────────────────── */
+/* Fixed over everything but what opens from the desk (sheets 50, rohanOS 100). */
+:root:has(.home) {
+  scroll-padding-top: var(--nav-h, 64px);
+}
+.nav {
+  position: fixed;
+  z-index: 40;
+  inset: 0 0 auto;
+  height: var(--nav-h);
+  border-bottom: 1px solid transparent;
+  transition: background-color 200ms var(--ease-hover), border-color 200ms var(--ease-hover);
+}
+.nav.is-moved {
+  background: color-mix(in oklab, var(--paper) 88%, transparent);
+  border-bottom-color: var(--rule);
+  backdrop-filter: blur(8px);
+}
+.nav-in {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 3vw, 36px);
+  max-width: 1200px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 40px);
+}
+.home .nav a {
+  text-decoration: none;
+}
+.nav-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: auto;
+}
+.nav-home .mark {
+  display: block;
+  flex: none;
+}
+.mark-px {
+  fill: var(--brand-ink);
+}
+.mark-px.is-last {
+  fill: var(--signal);
+}
+/* Hover: the pixels light in a brass wave from the top-left, like the cursor grid. */
+.nav-home:hover .mark-px {
+  animation: mark-wave 520ms var(--ease) calc(var(--i) * 40ms);
+}
+@keyframes mark-wave {
+  40% {
+    fill: var(--signal);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-home:hover .mark-px {
+    animation: none;
+  }
+}
+.nav-name {
+  font: 600 16px/1 var(--sans);
+  letter-spacing: -0.01em;
+}
+.nav-links {
+  display: flex;
+  gap: clamp(16px, 2.4vw, 28px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.nav-links a {
+  font: 500 12px/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  transition: color 160ms var(--ease-hover);
+}
+.home .nav-links a:hover {
+  color: var(--ink);
+}
+.nav-cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 14px;
+  font: 600 14px/1 var(--sans);
+  color: var(--brand-ink);
+  background: var(--brand);
+  transition: background-color 160ms var(--ease-hover);
+}
+.home .nav-cta {
+  color: var(--brand-ink);
+}
+.home .nav-cta:hover {
+  background: var(--deep);
+}
+@media (max-width: 640px) {
+  .nav-links {
+    display: none;
+  }
+}
+/* rohanOS is the whole screen: it lives inside the desk's sticky stage, so it can't rise
+   above the fixed bar. The bar steps out while it's open. */
+:root:has(.os) .nav {
+  visibility: hidden;
+}
+
+/* ── Hero ─────────────────────────────────────────────── */
+/* The hero lives in the desk's sticky stage: beside the desk on wide screens,
+   above it on narrow ones. Exploded.tsx frames the desk into the space left. */
+.home .xp-hero {
+  position: absolute;
+  z-index: 2;
+  top: calc(50% + var(--nav-h) / 2);
+  left: clamp(0px, 3vw, 40px);
+  width: min(46%, 600px);
+  transform: translateY(-50%);
+}
+@media (max-width: 899px) {
+  .home .xp-hero {
+    top: calc(var(--nav-h) + clamp(12px, 3vh, 32px));
+    right: 8px;
+    left: 8px;
+    width: auto;
+    transform: none;
+  }
+}
+.hero-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 22px;
+  font: 500 12px/1.4 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--signal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--signal) 18%, transparent);
+}
+.hero h1 {
+  max-width: 15ch;
+  margin: 0;
+  font-size: clamp(36px, 2.6vw + 24px, 62px);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  font-weight: 500;
+  text-wrap: balance;
+}
+/* One word in the serif italic: the paperwork the agents do. */
+.hero h1 em {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.1em;
+  letter-spacing: -0.01em;
+  line-height: 0;
+}
+.hero-hint {
+  display: flex;
+  gap: 10px;
+  margin: clamp(24px, 4vh, 44px) 0 0;
+  font: 400 12px/1.5 var(--mono);
+  color: var(--ink-2);
+}
+.hero-hint span {
+  animation: hint-nudge 2.4s var(--ease) infinite;
+}
+@keyframes hint-nudge {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(3px); }
+}
+@media (max-width: 899px) {
+  .hero-hint {
+    display: none;
+  }
+}
+.hero-sub {
+  max-width: 40ch;
+  margin: 20px 0 0;
+  font-size: clamp(16px, 0.3vw + 15px, 19px);
+  line-height: 1.5;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+/* Proof strip: three small facts, labelled like a drawing's title block. */
+.hero-proof {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: start;
+  margin: 24px 0 0;
+  border-top: 1px solid var(--rule);
+}
+.hero-proof div {
+  padding: 10px 22px 0 0;
+}
+.hero-proof div + div {
+  padding-left: 18px;
+  border-left: 1px solid var(--rule);
+}
+.hero-proof dt {
+  font: 500 10.5px/1.4 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--signal-ink);
+}
+.hero-proof dd {
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.hero-proof a {
+  text-decoration-color: var(--rule);
+}
+@media (max-width: 560px) {
+  .hero-proof {
     grid-template-columns: 1fr;
+  }
+  .hero-proof div,
+  .hero-proof div + div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    border-left: 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .hero-proof dd {
+    margin: 0;
+  }
+}
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 28px;
+  margin-top: 28px;
+}
+
+/* Buttons: solid ink, like the controller; a redline bar arrives on hover. */
+.home .btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 22px;
+  font: 600 16px/1 var(--sans);
+  color: var(--brand-ink);
+  background: var(--brand);
+  text-decoration: none;
+  overflow: hidden;
+  transition: transform 100ms var(--ease-hover);
+}
+.home .btn::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--signal);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 160ms var(--ease);
+}
+.home .btn:hover::after,
+.home .btn:focus-visible::after {
+  transform: scaleX(1);
+}
+.home .btn:active {
+  transform: scale(0.97);
+}
+.home .btn-ghost {
+  color: var(--ink);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+.home .text-link {
+  font-weight: 500;
+  text-decoration-color: var(--ink-3);
+}
+.text-link span,
+.row-arrow {
+  display: inline-block;
+  transition: transform 160ms var(--ease-hover);
+}
+.text-link:hover span {
+  transform: translateX(3px);
+}
+
+/* ── The desk ─────────────────────────────────────────── */
+.home-desk {
+  margin-inline: clamp(-40px, -3vw, 0px);
+}
+/* The floor grid may run to the window's edge; only the page clips sideways. */
+:root:has(.home) body {
+  overflow-x: clip;
+}
+.home .xp-stage {
+  overflow: visible clip;
+}
+/* The desk's caption lines up with the hero text, not the bleed. */
+.home .xp-caption {
+  max-width: none;
+  padding-inline: clamp(0px, 3vw, 40px);
+  padding-top: calc(var(--nav-h) + 12px);
+}
+
+/* ── Sections ─────────────────────────────────────────── */
+.sec {
+  padding-top: clamp(64px, 9vw, 128px);
+}
+/* Section head: a numbered ring and a hairline, the desk's callout. */
+.sec-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: clamp(28px, 4vw, 48px);
+}
+.sec-ring {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--signal);
+  border-radius: 50%;
+  font: 500 11px/1 var(--mono);
+}
+.sec-head h2 {
+  margin: 0;
+  font-size: clamp(24px, 0.9vw + 20px, 34px);
+  line-height: 1.15;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+}
+.sec-rule {
+  flex: 1;
+  min-width: 24px;
+  height: 1px;
+  background: var(--ink-3);
+  opacity: 0.6;
+}
+.sec-note {
+  font: 400 12px/1.4 var(--mono);
+  color: var(--ink-2);
+  text-align: right;
+}
+
+.receipts {
+  max-width: 40ch;
+  margin: 0 0 clamp(36px, 5vw, 56px);
+  font-size: clamp(22px, 1vw + 17px, 30px);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+}
+.receipts a {
+  text-decoration-color: var(--signal);
+  text-decoration-thickness: 2px;
+}
+
+/* Lead project: text on the left, its real pipeline on the right. */
+.lead {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--rule);
+}
+.lead-text {
+  padding: 28px 40px 32px 0;
+}
+.lead h3 {
+  margin: 12px 0 10px;
+  font-size: clamp(26px, 1vw + 21px, 36px);
+  line-height: 1.1;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+.lead-line {
+  max-width: 44ch;
+  margin: 0;
+  color: var(--ink-2);
+}
+.lead-result {
+  margin: 28px 0 0;
+  font: 400 clamp(40px, 3vw + 26px, 64px) / 1 var(--sans);
+  letter-spacing: -0.03em;
+}
+.lead-result span {
+  color: var(--signal);
+}
+.lead-actions {
+  margin: 28px 0 0;
+}
+.lead-flow {
+  padding: 28px 0 32px 40px;
+  border-left: 1px solid var(--rule);
+  background:
+    radial-gradient(circle, var(--rule) 0.8px, transparent 1px) 0 0 / 16px 16px;
+}
+
+/* A design graph as a chain of nodes on a hairline spine. */
+.flow {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+}
+.flow li {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  padding: 0 0 18px 26px;
+}
+.flow li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 7px;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+  z-index: 1;
+}
+.flow li::after {
+  content: "";
+  position: absolute;
+  left: 8.5px;
+  top: 16px;
+  bottom: 0;
+  width: 1px;
+  background: var(--ink-3);
+}
+.flow li:last-child {
+  padding-bottom: 0;
+}
+.flow li:last-child::after {
+  display: none;
+}
+.flow:not(.flow-compact) li:last-child::before {
+  background: var(--ink);
+}
+.flow-label {
+  font: 500 14px/1.5 var(--mono);
+}
+.flow-note {
+  font-size: 14px;
+  color: var(--ink-2);
+}
+.flow-loop {
+  font: 400 12px/1.5 var(--mono);
+  color: var(--signal-ink);
+}
+
+/* Compact flow: one line of nodes joined by arrows. */
+.flow-compact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 0;
+  margin: 0;
+}
+.flow-compact li {
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+}
+.flow-compact li::before,
+.flow-compact li::after {
+  display: none;
+}
+.flow-compact li + li::before {
+  content: "→";
+  display: inline;
+  position: static;
+  width: auto;
+  height: auto;
+  border: 0;
+  background: none;
+  margin: 0 8px;
+  color: var(--ink-3);
+  font: 400 12px var(--mono);
+}
+.flow-compact .flow-label {
+  padding: 3px 8px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* Other projects: numbered rows. */
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.row {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 24px;
+  align-items: start;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.row-n {
+  font: 500 13px/1.9 var(--mono);
+  color: var(--ink-2);
+}
+.row h3 {
+  margin: 0 0 6px;
+  font-size: 21px;
+  line-height: 1.3;
+  font-weight: 600;
+}
+.row h3 a {
+  text-decoration: none;
+}
+.row h3 a:hover .row-arrow {
+  transform: translate(2px, -2px);
+  color: var(--signal);
+}
+.row-main p {
+  margin: 0 0 10px;
+  max-width: 46ch;
+  color: var(--ink-2);
+}
+.row-main .meta {
+  margin: 0;
+  font-size: 12px;
+}
+.row .flow-compact {
+  padding-top: 4px;
+}
+
+/* ── Route: a spec table with a dotted spine ──────────── */
+.route {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.route li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 130px 28px minmax(0, 1fr);
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.route li:first-child {
+  border-top: 1px solid var(--ink);
+}
+.route-date {
+  font: 400 13px/1.5 var(--mono);
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.route-dot {
+  justify-self: center;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--ink-3);
+  border-radius: 50%;
+  transform: translateY(-1px);
+}
+.route li.is-now .route-dot {
+  border-color: var(--signal);
+  background: var(--signal);
+}
+.route li.is-now .route-date {
+  color: var(--ink);
+}
+.route-text {
+  max-width: 70ch;
+}
+
+/* ── Close: the one inverted block ────────────────────── */
+.close {
+  margin-top: clamp(80px, 10vw, 144px);
+  padding: clamp(56px, 8vw, 104px) 0 clamp(64px, 8vw, 112px);
+  color: var(--on-deep);
+  background: var(--deep);
+  /* Full bleed without overflowing the page. */
+  box-shadow: 0 0 0 100vmax var(--deep);
+  clip-path: inset(0 -100vmax);
+}
+.close-run {
+  margin: 0 0 24px;
+  font: 400 13px/1.5 var(--mono);
+  color: color-mix(in oklab, var(--on-deep) 62%, var(--deep));
+}
+.close-run b {
+  font-weight: 500;
+  color: var(--on-deep);
+}
+.close h2 {
+  max-width: 20ch;
+  margin: 0;
+  font-size: clamp(30px, 2vw + 22px, 52px);
+  line-height: 1.08;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.close-note {
+  margin: 16px 0 0;
+  font-size: clamp(16px, 0.4vw + 14px, 19px);
+  color: color-mix(in oklab, var(--on-deep) 72%, transparent);
+}
+.home .close-mail {
+  display: inline-block;
+  margin-top: 32px;
+  font-size: clamp(20px, 1.2vw + 15px, 30px);
+  text-decoration-color: var(--signal);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 7px;
+  overflow-wrap: anywhere;
+}
+.close-links {
+  display: flex;
+  gap: 24px;
+  margin: 28px 0 0;
+  font: 400 14px var(--mono);
+}
+.home .close a:not(.close-mail) {
+  text-decoration-color: color-mix(in oklab, var(--on-deep) 35%, var(--deep));
+}
+.home .close a:hover {
+  text-decoration-color: var(--signal);
+}
+
+/* ── Small screens ────────────────────────────────────── */
+@media (max-width: 860px) {
+  .lead {
+    grid-template-columns: 1fr;
+  }
+  .lead-text {
+    padding-right: 0;
+  }
+  .lead-flow {
+    padding: 24px 0 28px;
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .row {
+    grid-template-columns: 36px minmax(0, 1fr);
+  }
+  .row .flow-compact {
+    grid-column: 2;
+  }
+}
+@media (max-width: 560px) {
+  .sec-note {
+    display: none;
+  }
+  .route li {
+    grid-template-columns: 18px minmax(0, 1fr);
+    row-gap: 2px;
+  }
+  .route-dot {
+    grid-row: 1;
+    grid-column: 1;
+    justify-self: start;
+  }
+  .route-date {
+    grid-column: 2;
+  }
+  .route-text {
+    grid-column: 2;
   }
   .home-desk {
     margin-inline: -8px;
   }
+  .home .xp-caption {
+    padding-inline: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home *,
+  .home *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ── Hero backdrop ────────────────────────────────────── */
+/* The dither grid runs full-bleed under the hero and the desk. */
+.home .dither {
+  position: absolute;
+  z-index: 0;
+  inset: 0 calc(50% - 50vw);
+  width: 100vw;
+  height: 100%;
+  pointer-events: none;
+}
+/* Positioned after the grid, so it paints above it; no z-index, so what opens from the desk
+   (rohanOS, the sheets) can still rise above the hero. */
+.home .xp-desk {
+  position: relative;
+}
+/* A sheet dims the whole viewport, hero included, not just the desk's box. */
+.home .desk-sheet-wrap {
+  position: fixed;
+  z-index: 50;
 }

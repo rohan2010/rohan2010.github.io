@@ -53,3 +53,7 @@ next-env.d.ts
 /figures/*/shots/
 /figures/*/*.html
 /.playwright-mcp/
+
+# internal notes and research (keep local, never publish)
+/research/
+/plans/

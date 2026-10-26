@@ -1,7 +1,7 @@
 {
   "name": "Seller onboarding agent",
   "order": 1,
-  "oneLine": "An agent that checks a new seller's documents and retries instead of guessing. Activation went from days to minutes.",
+  "oneLine": "A LangGraph agent that checks a new seller's KYC, tax and legal documents, and retries a failed check instead of guessing. Activation went from days to minutes.",
   "year": "2024 – now",
   "status": "In production at my day job",
   "links": {},
@@ -9,62 +9,54 @@
   "caseStudy": "/work/onboarding-agent/",
   "design": {
     "nodes": [
-      {
-        "id": "upload",
-        "label": "Seller uploads",
-        "note": "KYC, tax and legal documents"
-      },
-      {
-        "id": "read",
-        "label": "read_document",
-        "note": "a tool-calling node"
-      },
-      {
-        "id": "check",
-        "label": "validate fields",
-        "note": "schema and format checks"
-      },
-      {
-        "id": "route",
-        "label": "conditional routing",
-        "note": "where the document goes next"
-      },
-      {
-        "id": "retry",
-        "label": "retry",
-        "note": "on a failed check"
-      },
-      {
-        "id": "live",
-        "label": "Seller live",
-        "note": "minutes, not days"
-      }
+      { "id": "upload", "label": "Seller uploads", "note": "KYC, tax and legal documents" },
+      { "id": "read", "label": "Read the document", "note": "a tool-calling node" },
+      { "id": "check", "label": "Validate fields", "note": "checks it against the rules" },
+      { "id": "route", "label": "Route", "note": "picks the next step" },
+      { "id": "retry", "label": "Retry", "note": "when a check fails" },
+      { "id": "live", "label": "Seller live", "note": "minutes, not days" }
     ],
     "edges": [
-      [
-        "upload",
-        "read"
-      ],
-      [
-        "read",
-        "check"
-      ],
-      [
-        "check",
-        "route"
-      ],
-      [
-        "route",
-        "retry"
-      ],
-      [
-        "retry",
-        "read"
-      ],
-      [
-        "route",
-        "live"
-      ]
+      ["upload", "read"],
+      ["read", "check"],
+      ["check", "route"],
+      ["route", "retry"],
+      ["retry", "read"],
+      ["route", "live"]
+    ]
+  },
+  "case": {
+    "title": "A seller onboarding agent that *retries* instead of guessing.",
+    "lede": "New sellers waited days to go live. I built a LangGraph agent that checks their KYC, tax and legal documents, and activation now takes minutes.",
+    "result": {
+      "label": "Seller activation",
+      "from": "days",
+      "to": "minutes"
+    },
+    "facts": {
+      "part": "An agent that checks new sellers' documents",
+      "where": "My day job",
+      "when": "2024 – now",
+      "role": "Software engineer. Built the agent workflow.",
+      "builtWith": ["LangGraph", "tool calling", "conditional routing", "schema validation", "an eval set"],
+      "note": "Work for an employer, so the code, data and internal details stay private. The demo on this page is a toy."
+    },
+    "pattern": "a stateful graph that routes on each check and loops back on a failure",
+    "details": [
+      { "id": "A", "node": "retry", "title": "Retry, don't guess" },
+      { "id": "B", "node": "check", "title": "Checking the model's output" }
+    ],
+    "changes": [
+      {
+        "when": "Before",
+        "change": "A new seller waits for their documents to be cleared",
+        "effect": "days"
+      },
+      {
+        "when": "Now",
+        "change": "A LangGraph agent checks KYC, tax and legal documents, and retries a failed check",
+        "effect": "minutes"
+      }
     ]
   }
 }

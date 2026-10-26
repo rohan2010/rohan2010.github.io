@@ -154,26 +154,33 @@ function desk() {
   const legs = k.corners(DESK, 16);
   out.push(`<path class="iso-halo" d="${k.haloOf(k.insetPlan(DESK, 10), -TOP_H - LEG_H, 2, P)}"/>`);
   const apron = k.insetPlan(DESK, 12);
+  // Parts are tagged (data-part) so the exploded view can pull them apart; they draw the same.
+  out.push(`<g data-part="legs">`);
   for (const [x, y] of byDepth(legs)) {
     out.push(S(k.cylinder(x, y, LEG + 2, -TOP_H - LEG_H, 2.4, P, 24), { tone: "lo" }));
     out.push(S(k.slabOf({ x: x - LEG, y: y - LEG, w: LEG * 2, d: LEG * 2, r: 1.4 }, -TOP_H - LEG_H + 2.4, LEG_H - 2.4, P, 3, 0.4), { tone: "mid" }));
   }
+  out.push(`</g><g data-part="apron">`);
   out.push(S(k.slabOf(apron, -TOP_H - 22, 22, P, 3), { tone: "mid", inner: L(k.sideSeam(apron, -TOP_H - 11, P, 3), { tone: "faint" }) }));
+  out.push(`</g><g data-part="top">`);
   out.push(S(k.slabOf(DESK, -TOP_H, TOP_H, P, 6, 1.4), { tone: "mid", inner: L(k.sideSeam(DESK, -TOP_H + 2.4, P, 6), { tone: "faint" }) }));
   // Bracket screws where the legs meet the apron's visible faces.
+  out.push(`</g><g data-part="screws">`);
   const front = apron.y + apron.d;
   const right = apron.x + apron.w;
   out.push(D([[apron.x + 14, front], [right - 14, front]].flatMap(([x, y]) => [at([x, y, -TOP_H - 6]), at([x, y, -TOP_H - 16])]), { size: 0.5 }));
   out.push(D([[right, apron.y + 14], [right, apron.y + apron.d - 14]].flatMap(([x, y]) => [at([x, y, -TOP_H - 6]), at([x, y, -TOP_H - 16])]), { size: 0.5 }));
+  out.push(`</g><g data-part="grommet">`);
   // Cable grommet at the back, behind the monitor.
   out.push(S(k.cylinder(-70, -112, 6, -0.2, 0.4, P, 28), { tone: "lo", crease: "none" }));
   out.push(`<path class="desk-hole" d="${k.ring(-70, -112, 3.6, 0.2, P, 28)}"/>`);
+  out.push(`</g>`);
   return out.join("");
 }
 
 // ── Desk mat ────────────────────────────────────────────────────────────
 function mat() {
-  return S(k.slabOf(MAT, 0, 1, P, 6), { tone: "lo", crease: "none", inner: L(k.planOutline(k.insetPlan(MAT, 3), 1, P, 6), { tone: "faint" }) });
+  return `<g data-part="mat">${S(k.slabOf(MAT, 0, 1, P, 6), { tone: "lo", crease: "none", inner: L(k.planOutline(k.insetPlan(MAT, 3), 1, P, 6), { tone: "faint" }) })}</g>`;
 }
 
 // ── Monitor ─────────────────────────────────────────────────────────────
@@ -190,7 +197,7 @@ const LOG = [
   ["  ? asking a human_", "hi"],
 ];
 function monitor() {
-  const out = [`<path class="iso-halo" d="${k.haloOf(STAND, 0, 6, P)}"/>`];
+  const out = [`<path class="iso-halo" d="${k.haloOf(STAND, 0, 6, P)}"/>`, `<g data-part="stand">`];
   out.push(S(k.slabOf(STAND, 0, 3.2, P, 8, 0.8), { tone: "mid" }));
   out.push(L(k.planOutline(k.insetPlan(STAND, 4), 3.2, P, 8), { tone: "faint" }));
   out.push(S(k.slabOf(NECK, 3.2, MON_Z0 + 22, P, 3, 0.4), { tone: "mid" }));
@@ -201,10 +208,12 @@ function monitor() {
   const lines = LOG.map(([text, tone], i) => `<text class="desk-log" data-tone="${tone}" x="${textX}" y="${-(SCREEN.z1 - 12 - i * 9.6)}" font-size="6.4">${text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</text>`).join("");
   const scan = Array.from({ length: Math.floor((SCREEN.z1 - SCREEN.z0) / 2) }, (_, i) => `M${SCREEN.x0} ${-(SCREEN.z0 + 1 + i * 2)}H${SCREEN.x1}`).join("");
   const back = `<path class="desk-scan" d="${scan}"/>${lines}`;
+  out.push(`</g><g data-part="panel">`);
   out.push(S(panel, { tone: "mid" }));
   out.push(recess(SCREEN, MON_FRONT, back, "desk-glass"));
   // Bottom chin: a power LED and the maker's slot, kept blank.
   out.push(D([at([MON.x + MON.w - 12, MON_FRONT, MON_Z0 + 4.5])], { size: 0.7, tone: "hi" }));
+  out.push(`</g>`);
   return out.join("");
 }
 function stickyNote() {
@@ -321,7 +330,7 @@ function cable() {
   const run = k.pathOf([[cx, coilFrom, 5.4], [cx - 2, coilFrom - 6, 4], [cx - 16, coilFrom - 14, 1.4], [STAND.x + STAND.w - 2, STAND.y + STAND.d - 12, 1.6]].map(at));
   out.push(`<path class="iso-line desk-cord" data-tone="mid" d="${run}"/>`);
   out.push(D([at([STAND.x + STAND.w - 2, STAND.y + STAND.d - 12, 1.6])], { size: 0.9, tone: "mid" }));
-  return out.join("");
+  return `<g data-part="cable">${out.join("")}</g>`;
 }
 
 // ── Controller (black) ──────────────────────────────────────────────────
@@ -484,10 +493,73 @@ const CSS = `
 .iso[data-theme="light"] .desk-black>.iso-edge{stroke:#111}
 `;
 
+// ── Exploded view (lab) ─────────────────────────────────────────────────
+// Screen vectors for one world unit along each axis, and where each part sits on the desk,
+// so the page can lift parts along z and peel the screen's layers toward the viewer.
+const vec = (dx, dy, dz) => {
+  const [ax, ay] = at([0, 0, 0]);
+  const [bx, by] = at([dx, dy, dz]);
+  return [+(bx - ax).toFixed(4), +(by - ay).toFixed(4)];
+};
+const spot = (x, y, z = 0) => at([x, y, z]).map((n) => +n.toFixed(1));
+const GEOM = {
+  origin: spot(0, 0),
+  floor: -TOP_H - LEG_H,
+  up: vec(0, 0, 1),
+  toward: vec(0, 1, 0),
+  right: vec(1, 0, 0),
+  anchors: {
+    plant: spot(POT.x, POT.y),
+    monitor: spot(0, STAND.y + STAND.d / 2),
+    sticky: spot(MON.x + MON.w - 27, MON_FRONT, MON_Z0 + 29),
+    photo: spot(FRAME.x + FRAME.w / 2, FRAME.y),
+    tickets: spot(TICKETS.x + 31, TICKETS.y + 12),
+    folders: spot(FOLDERS.x + FOLDERS.w / 2, FOLDERS.y + FOLDERS.d / 2),
+    keyboard: spot(KB.x + KB.w / 2, KB.y + KB.d / 2),
+    controller: spot(PAD.x, PAD.y),
+    clipboard: spot(CLIP.x + CLIP.w / 2, CLIP.y + CLIP.d / 2),
+    screen: spot((SCREEN.x0 + SCREEN.x1) / 2, MON_FRONT, (SCREEN.z0 + SCREEN.z1) / 2),
+  },
+};
+
+// The screen's layers: the onboarding agent from the glass back to the model. Each pane is
+// drawn in the screen's plane; the page slides them toward the viewer.
+const PANES = [
+  { n: "04", title: "MODEL", lines: ["an LLM reads each document", "and proposes fields"], art: "model" },
+  { n: "03", title: "GUARDRAILS", lines: ["output must match a schema;", "bad output retries, then falls back"], art: "guard" },
+  { n: "02", title: "AGENT LOOP", lines: ["LangGraph: each step is a node", "that calls a tool"], art: "graph" },
+  { n: "01", title: "INTERFACE", lines: ["seller uploads KYC, tax, legal", "activation: days → minutes"], art: "ui" },
+];
+function pane({ n, title, lines, art }, i) {
+  const { x0, x1, z0, z1 } = SCREEN;
+  const shape = flat(x0, z0, x1, z1, 1.6);
+  const tx = x0 + 8;
+  const text = (t, x, z, size, cls = "xp-pane-text") => `<text class="${cls}" x="${x}" y="${-z}" font-size="${size}">${t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</text>`;
+  const parts = [`<path class="xp-pane" d="${shape}"/>`];
+  parts.push(text(`${n}`, tx, z1 - 14, 6, "xp-pane-num"), text(title, tx + 14, z1 - 14, 7.2, "xp-pane-title"));
+  lines.forEach((line, j) => parts.push(text(line, tx, z1 - 64 - j * 9, 5.6)));
+  // A small diagram per layer, in the same hairline.
+  const box = (x, z, w, h, label) => `<path class="xp-pane-box" d="${flat(x, z, x + w, z + h, 1)}"/>` + text(label, x + 3, z + h / 2 - 1.6, 4.6, "xp-pane-small");
+  const arrow = (xa, xb, z) => `<path class="xp-pane-wire" d="M${xa} ${-z}H${xb - 2}M${xb - 4} ${-z - 1.6}L${xb - 1.4} ${-z}L${xb - 4} ${-z + 1.6}"/>`;
+  const zb = z1 - 38;
+  if (art === "graph") {
+    parts.push(box(tx, zb, 34, 12, "read"), arrow(tx + 34, tx + 46, zb + 6), box(tx + 46, zb, 40, 12, "validate"), arrow(tx + 86, tx + 98, zb + 6), box(tx + 98, zb, 40, 12, "look up"));
+    parts.push(`<path class="xp-pane-wire" data-dash="" d="M${tx + 66} ${-zb}C${tx + 66} ${-(zb - 12)} ${tx + 20} ${-(zb - 12)} ${tx + 17} ${-(zb - 1)}"/>`, text("retry", tx + 36, zb - 13, 4.4, "xp-pane-small"));
+  } else if (art === "guard") {
+    parts.push(box(tx, zb, 36, 12, "{ schema }"), arrow(tx + 36, tx + 50, zb + 6), text("✓ pass", tx + 52, zb + 7.6, 5, "xp-pane-small"), text("✗ retry → fallback", tx + 52, zb + 0.6, 5, "xp-pane-small"));
+  } else if (art === "model") {
+    parts.push(box(tx, zb, 30, 12, "LLM"), text("· eval set on every prompt change", tx + 34, zb + 4.4, 5, "xp-pane-small"));
+  } else {
+    parts.push(box(tx, zb, 52, 12, "documents"), arrow(tx + 52, tx + 66, zb + 6), box(tx + 66, zb, 34, 12, "live ✓"));
+  }
+  return `<g class="xp-pane-layer" data-pane="${i}"><g transform="${planeOf(MON_FRONT + 0.6)}">${parts.join("")}</g></g>`;
+}
+const PANES_SVG = PANES.map(pane).join("");
+
 // The site imports the SVG and CSS from a generated module.
 const out = join(ROOT, "src", "desk");
 mkdirSync(out, { recursive: true });
-writeFileSync(join(out, "desk-art.ts"), `// Generated by figures/desk/build.mjs. Do not edit.\nexport const DESK_SVG = ${JSON.stringify(svg)};\nexport const DESK_CSS = ${JSON.stringify(CSS)};\n`);
+writeFileSync(join(out, "desk-art.ts"), `// Generated by figures/desk/build.mjs. Do not edit.\nexport const DESK_SVG = ${JSON.stringify(svg)};\nexport const DESK_CSS = ${JSON.stringify(CSS)};\nexport const DESK_GEOM = ${JSON.stringify(GEOM)};\nexport const DESK_PANES = ${JSON.stringify(PANES_SVG)};\n`);
 
 const body = `<style>${CSS}</style>` + k.plateHtml({ fig: "Fig 1", title: "Rohan's desk", hint: "static · step 1", readout: "", body: svg });
 const page = k.pageHtml({ title: "Rohan's desk", theme, body, width: 1100 }).replace('href="/me.jpg"', `href="file://${join(ROOT, "public", "me.jpg")}"`);

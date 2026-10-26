@@ -26,8 +26,11 @@ export function Toy() {
   const logEnd = useRef<HTMLLIElement>(null);
   const agent = useRef<HTMLDivElement>(null);
 
+  // Keep the newest line in view by scrolling the log's own box, never the page: on load
+  // scrollIntoView would drag the whole page down to the toy.
   useEffect(() => {
-    logEnd.current?.scrollIntoView({ block: "nearest" });
+    const log = logEnd.current?.parentElement;
+    if (log) log.scrollTop = log.scrollHeight;
   }, [lines, question]);
 
   const busy = active !== null && status[active.id] === "running";
