@@ -200,7 +200,10 @@ export function Exploded({
       const free = wide
         ? { x: t.right + 16 - r.left, y: 0, w: Math.min(edge, innerWidth) - 12 - t.right - 16, h: r.height }
         : { x: 0, y: t.bottom + 8 - r.top, w: r.width, h: r.bottom - t.bottom - 8 };
-      if (free.w < 80 || free.h < 80) return void (framed = null);
+      // Stacked, a desk squeezed under the text is too small to read and crowds the buttons, so
+      // it needs a real strip of its own; otherwise it waits for the text to scroll away.
+      const least = wide ? 80 : 160;
+      if (free.w < least || free.h < least) return void (framed = null);
       const k = Math.min(free.w / still.w, free.h / still.h);
       framed = {
         x: still.x + still.w / 2 - (free.x + free.w / 2) / k,
@@ -226,9 +229,15 @@ export function Exploded({
       const wide = Math.max(...texts.map((t) => t.getComputedTextLength()));
       const x = g.left - st.left + g.width * 0.42;
       const y = g.top - st.top + g.height * 0.2;
-      const reach = Math.max(90, g.height * 0.8);
+      let reach = Math.max(90, g.height * 0.8);
       let side = 1;
       if (x + reach + wide + 12 > st.width - 8) side = -1;
+      // Running left, the label must stay clear of the hero text and below the bar: shorten the
+      // leader until it does, and leave the callout off when even a short one can't.
+      const lead = introRef.current?.firstElementChild?.getBoundingClientRect();
+      if (side < 0 && lead) reach = Math.min(reach, x - wide - 16 - (lead.right - st.left));
+      const bar = document.querySelector(".nav")?.getBoundingClientRect().bottom ?? 0;
+      if (reach < 40 || y - reach * 0.577 - 8 - (texts.length - 1) * 16 - 14 < bar - st.top) return void mark.classList.add("is-off");
       const ex = x + side * reach;
       const ey = y - reach * 0.577;
       const sx = ex + side * (wide + 4);
@@ -326,16 +335,19 @@ export function Exploded({
         w: mix(mix(mix(still.w, apart.w, back), zoom.w, dive), f.w, hero),
         h: mix(mix(mix(still.h, apart.h, back), zoom.h, dive), f.h, hero),
       };
+      // The text leaves first, so the desk never slides across it. With no room to frame the
+      // desk beside or below the text (a short window), the text still shows and the desk only
+      // fades in as the text leaves.
+      const stay = 1 - span(p, 0, 0.035);
+      svg.style.opacity = framed ? "" : String(1 - stay);
       const lead = introRef.current;
       if (lead) {
-        // The text leaves first, so the desk never slides across it.
-        const stay = framed ? 1 - span(p, 0, 0.035) : 0;
         lead.style.opacity = String(stay);
         lead.style.translate = `0 ${(-32 * (1 - stay)).toFixed(1)}px`;
         lead.style.visibility = stay < 0.02 ? "hidden" : "visible";
         if (pointerRef.current) pointerRef.current.style.opacity = String(stay);
       }
-      if (captionRef.current) captionRef.current.style.opacity = String(1 - hero);
+      if (captionRef.current) captionRef.current.style.opacity = String(framed ? 1 - hero : 1 - stay);
       svg.setAttribute("viewBox", `${v.x.toFixed(1)} ${v.y.toFixed(1)} ${v.w.toFixed(1)} ${v.h.toFixed(1)}`);
 
       let c = 0;
