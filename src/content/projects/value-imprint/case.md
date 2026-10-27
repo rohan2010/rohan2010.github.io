@@ -37,6 +37,10 @@ The same figures show something else: the chosen and rejected halves of hh-rlhf 
 
 All numbers are from the paper (Obi et al., NeurIPS 2024). [Read the paper](https://arxiv.org/abs/2411.11937), or get the hand-labelled set and the classified datasets from [the paper's repository](https://github.com/hv-rsrch/valueimprint) (CC BY 4.0).
 
+## try-it
+
+The classifier reads a preference and scores it against the seven values. The third one is the kind it gets wrong: it reaches for Information Seeking, the most common value, and a person relabels it as Justice & Rights. Then the audit, with the paper's own figures.
+
 ## around
 
 The paper names its limits. A preference often carries more than one value, and picking the dominant one is a judgment call. The taxonomy leans Western, like the journals it came from and the three datasets. And it doesn't fit specialised preference data such as code or maths.

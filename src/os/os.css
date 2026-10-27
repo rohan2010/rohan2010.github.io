@@ -19,7 +19,8 @@
 .os.is-off {
   transition: transform 0.4s cubic-bezier(.32,.72,0,1) !important;
 }
-.os button {
+/* The reset stops at the project simulators, which bring their own buttons. */
+.os button:where(:not(.sim button)) {
   font: inherit;
   color: inherit;
   background: none;
@@ -340,36 +341,15 @@
   font: 11px var(--text);
 }
 
-/* The demo app: the toy, in black and white. */
+/* The demo app: the project's simulator, in the site's own palette and faces. */
 .os-demo {
-  padding: 14px;
-  -webkit-font-smoothing: auto;
-}
-.os-demo .toy {
-  max-width: none;
-  color: #000;
-}
-.os-demo .toy-card {
-  border: 1px solid #000;
-  padding: 12px 96px 12px 14px;
-}
-.os-demo .toy-ask button,
-.os-demo .toy-over button {
-  border: 1px solid #000;
-  padding: 0 14px;
-  box-shadow: 1px 1px 0 #000;
-}
-.os-demo .toy-card,
-.os-demo .toy-doc {
-  background: #fff;
-  border-color: #000;
-  border-radius: 0;
-  box-shadow: 1px 1px 0 #000;
-}
-.os-demo .toy-agent {
-  background: #fff;
-  border-color: #000;
-  border-radius: 0;
+  --sans: var(--font-sans), "Helvetica Neue", Arial, sans-serif;
+  --mono: var(--font-mono), ui-monospace, Menlo, monospace;
+  padding: 12px;
+  background: var(--paper);
+  font: 400 14px/1.45 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  user-select: text;
 }
 
 /* Phones: one window at a time, full screen under the menu bar. */

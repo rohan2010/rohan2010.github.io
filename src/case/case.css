@@ -229,30 +229,9 @@
   margin: 4px 0 0;
 }
 
-/* The demo, set in the page's own palette. */
+/* The demo: the project's simulator, full width of the column. */
 .case-demo {
   margin-top: 24px;
-  padding: clamp(16px, 2vw, 24px);
-  border: 1px solid var(--rule);
-  --t-ink: var(--ink);
-  --t-ink-2: var(--ink-2);
-  --t-ink-3: var(--ink-3);
-  --t-rule: var(--ink-3);
-  --t-hair: var(--rule);
-  --t-paper: var(--paper);
-  --t-card: color-mix(in oklab, var(--paper), #fff 55%);
-  --t-checking: color-mix(in oklab, var(--signal) 18%, var(--paper));
-  --t-ok-bg: color-mix(in oklab, var(--ink) 7%, var(--paper));
-  --t-bad-bg: color-mix(in oklab, var(--brand) 16%, var(--paper));
-  --t-fixed-bg: color-mix(in oklab, var(--signal) 10%, var(--paper));
-  --t-ok: var(--ink);
-  --t-bad: var(--brand);
-  --t-fix: var(--signal-ink);
-  --t-font: var(--sans);
-  --t-mono: var(--mono);
-}
-.case-demo .toy {
-  max-width: none;
 }
 
 /* Before and after: when, what changed, what it did. */

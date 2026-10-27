@@ -1,4 +1,4 @@
-// The toy agent's documents and scripted runs. Everything here is made up;
+// The Review Simulator's documents and scripted reviews. Everything here is made up;
 // the ideas (tool calls, retries, guardrails, a human in the loop) are real.
 
 export type Field = { key: string; label: string; value: string };
@@ -20,9 +20,9 @@ export type Doc = {
   /** Each attempt is a list of steps; every attempt but the last ends in a "fail". */
   attempts: Step[][];
   /** What happens after the last attempt. "ask" docs decide from the visitor's answer. */
-  end: "escaped" | "dead" | "ask";
+  end: "cleared" | "sent-back" | "ask";
   route: string;
-  deathNote?: string;
+  backNote?: string;
 };
 
 export const docs: Doc[] = [
@@ -44,7 +44,7 @@ export const docs: Doc[] = [
         { kind: "ok", say: "ID verified", field: "number" },
       ],
     ],
-    end: "escaped",
+    end: "cleared",
     route: "KYC",
   },
   {
@@ -70,7 +70,7 @@ export const docs: Doc[] = [
         { kind: "ok", say: "Registered in Delhi", field: "state" },
       ],
     ],
-    end: "escaped",
+    end: "cleared",
     route: "Tax",
   },
   {
@@ -100,7 +100,7 @@ export const docs: Doc[] = [
     ],
     end: "ask",
     route: "Legal",
-    deathNote: "Signature rejected by a human. Seller asked to re-upload.",
+    backNote: "Signature rejected by a human. Seller asked to re-upload.",
   },
   {
     id: "licence",
@@ -121,8 +121,8 @@ export const docs: Doc[] = [
         { kind: "fail", say: "No renewal anywhere. Can’t retry my way out of this", field: "expiry" },
       ],
     ],
-    end: "dead",
+    end: "sent-back",
     route: "Legal",
-    deathNote: "Seller notified to renew the licence.",
+    backNote: "Seller notified to renew the licence.",
   },
 ];

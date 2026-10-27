@@ -22,7 +22,7 @@ Across the platform's AI features, nothing downstream uses a model's answer unti
 
 ## try-it
 
-The documents are made up, but the toy checks, fails, retries and routes the way the real one does. The step where it asks you for help isn't from this agent. It comes from an internship at Container Corporation of India, where I built a pipeline that sent the least confident 15% of a model's predictions to a person and retrained on their answers.
+The documents are made up, but the simulator checks, fails, retries and routes the way the production agent does. The step where it asks you for help isn't from this agent. It comes from an internship at Container Corporation of India, where I built a pipeline that sent the least confident 15% of a model's predictions to a person and retrained on their answers.
 
 ## around
 

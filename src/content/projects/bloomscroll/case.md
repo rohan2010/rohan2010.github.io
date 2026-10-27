@@ -34,4 +34,4 @@ Cached decisions are keyed on a hash of everything they depend on: topics, thres
 
 ## try-it
 
-A made-up feed for someone learning Rust. Press run and each title is settled by the cheapest stage that's sure. Off-topic ones dissolve, and one the model can't answer stays. The titles, scores and verdicts are invented for the demo; the real extension runs on YouTube.
+A made-up feed for someone learning Rust. Each title is settled by the cheapest stage that's sure. Off-topic ones dissolve, and one the model can't answer stays. The titles, scores and verdicts are invented for the demo; the real extension runs on YouTube.

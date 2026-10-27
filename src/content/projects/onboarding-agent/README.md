@@ -14,4 +14,4 @@ New sellers waited days to go live. I built a LangGraph agent that checks their 
 - Malformed output gets a retry, then a fallback path.
 - Prompt changes are regression-tested against a curated eval set.
 
-This is work for my day job, so the code stays private. The demo is a toy with made-up documents.
+This is work for my day job, so the code stays private. The Review Simulator runs on made-up documents.
