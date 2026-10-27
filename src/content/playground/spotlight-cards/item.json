@@ -1,0 +1,71 @@
+{
+  "title": "A feature grid lit by the *cursor*",
+  "dek": "A bento grid of features with one soft light that follows the pointer across the cards. Borders glow where it passes, the card underneath tilts a few degrees, and its little drawing does its one trick. React renders it once and never hears about the mouse.",
+  "kind": "Feature section",
+  "date": "2026-10-27",
+  "order": 4,
+  "stack": ["React", "CSS"],
+  "template": "Build a features section for my landing page. Stack: {stack}. Put a short heading above it, with one word set in an italic serif as the accent. Below it, lay out these features as a bento grid of cards in different sizes: {features}. Use this layout: {layout}. Each card gets a small hand-drawn line drawing as inline SVG in the text colour (no icon library, no emoji), a short title and one line of copy. Use my colours: {palette}. Light the grid with one soft light that follows the pointer: {light}. Use one pointermove listener on the whole grid, not one per card. Throttle it with requestAnimationFrame and write the pointer position as CSS custom properties straight onto the grid element; never put it in React state. Read each card's offset inside the grid once, and again on resize, and store it on the card as custom properties, so CSS works out where the light falls on each card. Draw the light as a radial gradient on a pseudo-element of each card, and the border glow as the same gradient on a second pseudo-element masked down to a 1px ring. Don't use box-shadow for the glow. Tilt the card under the pointer by at most {tilt} degrees, using transform only so nothing around it moves, and ease it with a CSS transition. Make each card's drawing do one small thing on hover. Cards are links: on :focus-visible, show the same light centred on the card. With prefers-reduced-motion, no tilt and no drifting. On touch screens there's no hover: use a single column, no tilt, and light whichever card is crossing the middle of the screen, with the light drifting slowly. Nothing may scroll sideways at phone width, and don't touch window during render.",
+  "variables": [
+    { "key": "stack", "label": "Your stack", "value": "Next.js with plain CSS" },
+    {
+      "key": "features",
+      "label": "Your features",
+      "value": "Sync on every device; Search that keeps up; Share with a link; Every version kept; Private by default",
+      "hint": "5 or 6, each a title and one line"
+    },
+    {
+      "key": "layout",
+      "label": "The layout",
+      "value": "a six-column grid; the first card is four columns wide and two rows tall, one card in the last row is four wide, the rest two",
+      "hint": "Which card is big"
+    },
+    { "key": "palette", "label": "Your colours", "value": "warm off-white text on a deep tobacco brown panel, one brass colour for the light", "hint": "Dark panels show a light best" },
+    { "key": "light", "label": "The light", "value": "brass, about 300px across, faint on the surface and strong on the border" },
+    { "key": "tilt", "label": "Most tilt", "value": "3", "hint": "In degrees; past 5 it looks like a toy" }
+  ],
+  "mistakesTitle": "Where this breaks",
+  "mistakesIntro": "The obvious version works in a demo and stutters on a real page. Each of these comes from building it the first way that comes to mind.",
+  "mistakes": [
+    {
+      "then": "Each card has an onMouseMove that puts x and y in React state.",
+      "cost": "Every pixel of movement re-renders the card. On a slow laptop the light trails behind the cursor.",
+      "now": "The handler writes two CSS variables on the grid, at most once a frame. React renders once.",
+      "line": "write the pointer position as CSS custom properties straight onto the grid element; never put it in React state"
+    },
+    {
+      "then": "One listener per card, each calling getBoundingClientRect on every event.",
+      "cost": "Layout reads on every move, and the light stops dead in the gaps between cards, so it flickers as you cross the grid.",
+      "now": "One listener on the grid. Card offsets are read on resize, so the light runs across gaps and lights the edges of the cards beside it.",
+      "line": "Read each card's offset inside the grid once, and again on resize"
+    },
+    {
+      "then": "The glow is a big coloured box-shadow on hover.",
+      "cost": "The whole card glows at once, like a button. There's no light moving, just a halo switching on.",
+      "now": "A radial gradient masked to a 1px ring, so only the stretch of border near the pointer lights up.",
+      "line": "the border glow as the same gradient on a second pseudo-element masked down to a 1px ring"
+    },
+    {
+      "then": "The tilt is set straight from the event, measured from the card's rect while it's tilted.",
+      "cost": "The tilted rect feeds back into the next tilt, so the card shivers near its edges. Margins changed for the effect move its neighbours.",
+      "now": "Transform only, measured from untransformed offsets, eased by a CSS transition.",
+      "line": "using transform only so nothing around it moves, and ease it with a CSS transition"
+    },
+    {
+      "then": "On a phone the hover effect just isn't there, or the first tap sticks it on.",
+      "cost": "Most visitors see a flat grid, and some see one card stuck glowing.",
+      "now": "One column, no tilt, and the card crossing the middle of the screen holds a slow light of its own.",
+      "line": "light whichever card is crossing the middle of the screen, with the light drifting slowly"
+    }
+  ],
+  "files": [
+    {
+      "path": "src/playground/spotlight-cards/SpotlightCards.tsx",
+      "label": "SpotlightCards.tsx",
+      "note": "The section and the one pointer listener: rAF, cached card offsets, tilt, and the touch fallback."
+    },
+    { "path": "src/playground/spotlight-cards/spotlight.css", "label": "spotlight.css", "note": "The stage, the bento grid, both light layers, and what each drawing does when its card is hot." },
+    { "path": "src/playground/spotlight-cards/cards.tsx", "label": "cards.tsx", "note": "The sample features and their line drawings." },
+    { "path": "src/playground/spotlight-cards/Naive.tsx", "label": "Naive.tsx", "note": "The obvious version, for comparison: state per card, box-shadow glow." }
+  ]
+}

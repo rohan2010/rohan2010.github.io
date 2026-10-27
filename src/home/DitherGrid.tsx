@@ -2,11 +2,11 @@
 
 import { useEffect, useRef } from "react";
 
-// A Bayer-dithered grid of small square cells behind the hero, after "Dither Grid" by Vikers on
-// 21st.dev, in the identity's colours. At rest every cell is a pencil dot, like dot-grid paper,
+// A Bayer-dithered grid of small square cells behind the hero, after "Dither Grid" by Vikers,
+// in the identity's colours. At rest every cell is a pencil dot, like dot-grid paper,
 // strongest toward the desk's corner, with a few dots twinkling at any moment. The cursor warms it:
 // dots near the pointer grow into soft brass squares and cool back to dots as it moves on. It
-// fades on scroll.
+// fades on scroll, unless it sits in its own box further down a page (fadeOnScroll off).
 
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((n) => (n + 0.5) / 16);
 const CELL = 16;
@@ -33,7 +33,7 @@ const WARM: { token: string; alpha: number }[] = [
   { token: "--signal", alpha: 0.44 },
 ];
 
-export function DitherGrid() {
+export function DitherGrid({ fadeOnScroll = true, className = "dither" }: { fadeOnScroll?: boolean; className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -57,6 +57,7 @@ export function DitherGrid() {
     let px: number | null = null;
     let py = 0;
     let moved = false;
+    let onScreen = true;
 
     const read = () => {
       const css = getComputedStyle(canvas);
@@ -158,9 +159,9 @@ export function DitherGrid() {
     let warmLeft = false;
     const tick = (now: number) => {
       raf = 0;
-      const fade = Math.max(0, 1 - scrollY / (innerHeight * 0.5));
+      const fade = fadeOnScroll ? Math.max(0, 1 - scrollY / (innerHeight * 0.5)) : 1;
       canvas.style.opacity = String(fade);
-      if (fade === 0 || document.hidden) return;
+      if (fade === 0 || !onScreen || document.hidden) return;
       if (now - lastDraw >= (warmLeft || moved ? 16 : 33)) {
         lastDraw = now;
         warmLeft = step();
@@ -190,7 +191,7 @@ export function DitherGrid() {
       px = null;
     };
     const scroll = () => {
-      canvas.style.opacity = String(Math.max(0, 1 - scrollY / (innerHeight * 0.5)));
+      if (fadeOnScroll) canvas.style.opacity = String(Math.max(0, 1 - scrollY / (innerHeight * 0.5)));
       if (!reduced) wake();
     };
 
@@ -198,11 +199,17 @@ export function DitherGrid() {
     size();
     draw();
     scroll();
-    const resize = () => {
+    // The canvas's own size, so it follows its box as well as the window.
+    const resized = new ResizeObserver(() => {
       size();
       draw();
-    };
-    addEventListener("resize", resize);
+    });
+    resized.observe(canvas);
+    const seen = new IntersectionObserver(([e]) => {
+      onScreen = e.isIntersecting;
+      if (onScreen && !reduced) wake();
+    });
+    seen.observe(canvas);
     addEventListener("scroll", scroll, { passive: true });
     if (fine && !reduced) {
       addEventListener("pointermove", move, { passive: true });
@@ -215,13 +222,14 @@ export function DitherGrid() {
     if (!reduced) wake();
     return () => {
       cancelAnimationFrame(raf);
-      removeEventListener("resize", resize);
+      resized.disconnect();
+      seen.disconnect();
       removeEventListener("scroll", scroll);
       removeEventListener("pointermove", move);
       document.documentElement.removeEventListener("pointerleave", leave);
       document.removeEventListener("visibilitychange", visible);
     };
-  }, []);
+  }, [fadeOnScroll]);
 
-  return <canvas className="dither" ref={ref} aria-hidden="true" />;
+  return <canvas className={className} ref={ref} aria-hidden="true" />;
 }

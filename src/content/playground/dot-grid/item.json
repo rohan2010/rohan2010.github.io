@@ -1,0 +1,58 @@
+{
+  "title": "A dot grid that *warms* under the cursor",
+  "dek": "Dot-grid paper behind a hero, drawn on one canvas. A few dots twinkle at rest; near the cursor they grow into soft dithered squares that cool back to dots as it moves on. It's the background of my home page.",
+  "kind": "Hero background",
+  "date": "2026-10-27",
+  "order": 6,
+  "stack": ["Canvas 2D", "React"],
+  "template": "Build a dot-grid background for the hero of my landing page in {stack}. Draw it on one canvas behind the hero copy, not as DOM elements. Lay small square dots on a {cell}px grid, like dot-grid paper, in {ink} at low opacity, strongest toward {corner} and fading away from it. At rest, a few dots twinkle at any moment: each one fades up and back down on a sine over about a second, so the page is never dead. Near the cursor, dots warm up: each one keeps a heat value that the pointer adds to within {radius}px and that cools a little every frame. Warm dots grow into larger squares and step through three tints of {accent}, picked with a 4×4 Bayer threshold so the glow dithers instead of fading smoothly. Run one requestAnimationFrame loop: 30 frames a second while only the twinkle moves, 60 while anything is warm, and stop it when the canvas is off screen or the tab is hidden. Read the colours from my CSS variables at runtime, never hard-code them. Size the canvas from its own box with a ResizeObserver, cap devicePixelRatio at 2, and keep the canvas aria-hidden with the hero text as real HTML above it. Only listen to the pointer on devices with a fine pointer, and draw one still frame for people who prefer reduced motion.",
+  "variables": [
+    { "key": "stack", "label": "Your stack", "value": "Next.js with plain CSS" },
+    { "key": "cell", "label": "Grid size", "value": "16", "hint": "Pixels between dots. 12 is busy, 24 is calm" },
+    { "key": "ink", "label": "Dot colour", "value": "my ink colour", "hint": "Name the CSS variable if you have one" },
+    { "key": "corner", "label": "Where they're strongest", "value": "the bottom-right corner, behind the product image" },
+    { "key": "radius", "label": "Cursor reach", "value": "150" },
+    { "key": "accent", "label": "Warm colour", "value": "my brass accent colour" }
+  ],
+  "mistakesTitle": "Where this breaks",
+  "mistakesIntro": "The first is my own first version; the rest are what the obvious version does.",
+  "mistakes": [
+    {
+      "then": "My first version sat completely still until a cursor arrived.",
+      "cost": "On a phone, or for anyone reading rather than pointing, it was a flat grey pattern. It looked broken, not calm.",
+      "now": "A few dots twinkle at any moment, so it reads as alive before anyone touches it.",
+      "line": "At rest, a few dots twinkle at any moment"
+    },
+    {
+      "then": "A few thousand spans in a CSS grid, each growing on :hover.",
+      "cost": "Thousands of DOM nodes, and only the one dot exactly under the cursor reacts. There's no trail and no falloff.",
+      "now": "One canvas, and a heat value per dot that the pointer adds to and that cools every frame. That's where the trail comes from.",
+      "line": "Draw it on one canvas behind the hero copy, not as DOM elements"
+    },
+    {
+      "then": "The glow fades smoothly with opacity.",
+      "cost": "It looks like a blurred spotlight, and the grid stops looking like a grid where it's lit.",
+      "now": "Heat steps through three tints by a Bayer threshold, so the glow is made of dots too.",
+      "line": "picked with a 4×4 Bayer threshold so the glow dithers"
+    },
+    {
+      "then": "The loop runs at 60fps forever, whether anyone's looking or not.",
+      "cost": "A background burning battery in a tab nobody's on.",
+      "now": "30fps for the twinkle, 60 only while something's warm, parked off screen and in hidden tabs.",
+      "line": "stop it when the canvas is off screen or the tab is hidden"
+    },
+    {
+      "then": "The canvas sizes itself from the window.",
+      "cost": "Fine as a full-width hero. Put it in a card or a column and it draws at the wrong size, blurry or cropped.",
+      "now": "It measures its own box with a ResizeObserver, so it fits wherever it's placed.",
+      "line": "Size the canvas from its own box with a ResizeObserver"
+    }
+  ],
+  "files": [
+    { "path": "src/home/DitherGrid.tsx", "note": "The grid itself, exactly as my home page runs it. fadeOnScroll turns off the fade for a grid inside its own box." },
+    { "path": "src/playground/dot-grid/DotGrid.tsx", "note": "The example above: the grid under a sample hero." },
+    { "path": "src/playground/dot-grid/dot-grid.css", "note": "The stage, and the obvious version's span grid." },
+    { "path": "src/playground/dot-grid/Naive.tsx", "note": "The obvious version: a few thousand spans growing on hover." }
+  ],
+  "seenIn": [{ "label": "My home page", "href": "/" }]
+}

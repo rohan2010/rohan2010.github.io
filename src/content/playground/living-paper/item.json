@@ -1,0 +1,58 @@
+{
+  "title": "A shader background that moves like *ink* in water",
+  "dek": "A hero background drawn by one fragment shader: mostly paper, ink pooling at the edges, a thin brass vein, and a cursor that works like a soft lens. The words on top are real text, and the shader keeps quiet behind them.",
+  "kind": "Hero background",
+  "date": "2026-10-27",
+  "order": 3,
+  "stack": ["three.js", "GLSL", "React"],
+  "template": "Build a hero section for my landing page with a live shader background. Stack: {stack}. Use three.js: a 2×2 plane, a ShaderMaterial and an OrthographicCamera. The shader draws slow, domain-warped fbm noise, three octaves at most, in my colours: {palette}. Mostly the background colour; the dark colour settles in the low areas near the edges, multiplied in like a wash; one contour of the field is a thin vein in the accent colour. The mood is {mood}, and one full cycle takes {speed}. Read the colours from my CSS custom properties at runtime and convert them from sRGB to linear before they go in as uniforms; encode back to sRGB at the end of the shader. Add fine animated film grain after encoding so gradients never band. Measure where the copy sits and pass it to the shader, which calms down there. Pass the drawing-buffer size and work in height-normalised coordinates so the noise isn't stretched. Drive the motion with a phase that wraps from 0 to 2π, never raw seconds. The cursor is a soft lens: it bends the flow and warms the colour near it. Ease its position, fade it out when the pointer leaves, and handle touch. Render at 0.6 of the pixel ratio, capped at 2, and let CSS scale it up; resize with a ResizeObserver. Only render while the hero is on screen, at 30 frames a second. With reduced motion, draw one still frame. Dispose of everything on unmount. Without WebGL, show layered radial gradients in the same colours. Over it, centred and in real DOM: the headline \"{headline}\", the line \"{subhead}\" and a button, \"{cta}\". The canvas is aria-hidden.",
+  "variables": [
+    { "key": "stack", "label": "Your stack", "value": "Next.js with React and plain CSS" },
+    { "key": "palette", "label": "Your colours", "value": "warm ivory paper, tobacco brown and near-black ink, brass for the vein", "hint": "A light ground, a dark colour, one accent" },
+    { "key": "mood", "label": "The mood", "value": "a printed page that breathes, not a lava lamp", "hint": "Say what it shouldn't be, too" },
+    { "key": "speed", "label": "How slow", "value": "about two minutes", "hint": "Slower than you think" },
+    { "key": "headline", "label": "Headline", "value": "Plan the week on one quiet *page*", "hint": "Star the one word to set in serif italic" },
+    { "key": "subhead", "label": "Subhead", "value": "Tasks, notes and meetings in one calm view that keeps up with your day." },
+    { "key": "cta", "label": "Button", "value": "Start for free" }
+  ],
+  "mistakesTitle": "Where this breaks",
+  "mistakesIntro": "A shader background looks finished on the first try. These are what the first try gets wrong, and none of them show up in a screenshot.",
+  "mistakes": [
+    {
+      "then": "The canvas drew at the device's full density, every frame, forever. Six octaves, five times a pixel.",
+      "cost": "Laptop fans spin up on a page that barely moves. With a few of these on one page, the browser starts dropping WebGL contexts.",
+      "now": "It draws at 0.6 of the pixel ratio and lets CSS scale it up, at 30 frames a second, and stops when it's scrolled away.",
+      "line": "Render at 0.6 of the pixel ratio, capped at 2, and let CSS scale it up"
+    },
+    {
+      "then": "Smooth gradients written straight to an 8-bit canvas.",
+      "cost": "Soft paper tones band into visible steps, worst on a wide light ground.",
+      "now": "Fine grain goes on after the colour is encoded, a few levels either way, new every frame. The steps dissolve.",
+      "line": "Add fine animated film grain after encoding so gradients never band"
+    },
+    {
+      "then": "Colours passed in as they're written in CSS, or through a colour class that quietly converts them, and written out as they came.",
+      "cost": "The canvas comes out darker and muddier than the same paper colour around it, and the edge of the hero shows.",
+      "now": "Tokens are read off the page, converted to linear, mixed there, and encoded back. The paper matches the page.",
+      "line": "convert them from sRGB to linear before they go in as uniforms; encode back to sRGB at the end of the shader"
+    },
+    {
+      "then": "The noise ran full strength under the headline.",
+      "cost": "Wherever a dark swirl passed behind the words, the contrast went, a different word each minute.",
+      "now": "The component measures the copy block and the shader fades the ink and the vein out around it.",
+      "line": "Measure where the copy sits and pass it to the shader, which calms down there"
+    },
+    {
+      "then": "Time went in as seconds since the page loaded.",
+      "cost": "After an hour in a background tab, float precision runs out and the motion starts to stutter.",
+      "now": "One phase from 0 to 2π, and every motion uses whole multiples of it, so it loops with no seam.",
+      "line": "Drive the motion with a phase that wraps from 0 to 2π, never raw seconds"
+    }
+  ],
+  "files": [
+    { "path": "src/playground/living-paper/LivingPaper.tsx", "note": "The stage and its copy: real DOM over an aria-hidden canvas holder." },
+    { "path": "src/playground/living-paper/paper.ts", "note": "The three.js side: colours from the tokens, sizing, the eased lens, the on-screen loop and the cleanup." },
+    { "path": "src/playground/living-paper/shader.ts", "note": "The GLSL: warped noise, the ink wash, the brass vein, the lens and the grain." },
+    { "path": "src/playground/living-paper/living-paper.css", "note": "The stage, the CSS fallback behind the canvas, and the type." }
+  ]
+}

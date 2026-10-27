@@ -1,0 +1,60 @@
+{
+  "title": "A headline that *decodes* itself",
+  "dek": "A hero headline that resolves from scrambled glyphs into words as it scrolls into view, one letter at a time. A subhead follows, and the button leans toward your cursor. The line never moves while it scrambles.",
+  "kind": "Headline",
+  "date": "2026-10-27",
+  "order": 5,
+  "stack": ["React", "CSS"],
+  "template": "Build a hero headline for my landing page that decodes itself when it scrolls into view. Stack: {stack}. The headline is \"{headline}\", and the word \"{accent}\" is the accent. Split it into one span per character, wrap each word in a nowrap span so no word breaks inside, and keep every real letter in the line in its final font. While a letter scrambles, make it transparent and draw a glyph from {glyphs} on top of it, in a monospace font, absolutely positioned and a little smaller, so the line never reflows. Settle the letters left to right, {speed}; the accent word lands last, a beat later, in a serif italic and my accent colour. Give the heading its real text from the first frame, in a visually hidden span, and mark the animated spans aria-hidden. Render the final text on the server and start scrambling only after mount, once the heading is half in view, and only once. Drive every letter from one requestAnimationFrame loop that writes to the DOM directly, and cancel it on unmount. Pick each glyph with a hash of the letter's index and the time, not Math.random in render. Add a small Replay button that runs it again. Once the headline has settled, fade up a one-line subhead and a call-to-action button. Make the button magnetic: within {radius} of its edge it leans toward the cursor, with transform only, on a damped spring, and springs back when the cursor leaves. Measure a wrapper that doesn't move, not the button. Turn the magnet off on (hover: none) screens. If the visitor prefers reduced motion, show the final text straight away, with no magnet and no Replay. Use my colours: {palette}.",
+  "variables": [
+    { "key": "stack", "label": "Your stack", "value": "Next.js with plain CSS" },
+    { "key": "headline", "label": "Your headline", "value": "Every meeting ends with a decision.", "hint": "One sentence, short words wrap best on a phone" },
+    { "key": "accent", "label": "The accent word", "value": "decision", "hint": "One word from the headline" },
+    { "key": "glyphs", "label": "Scramble glyphs", "value": "#%&*+=/<> and the digits", "hint": "A small set; letters and digits look calmer than block characters" },
+    { "key": "speed", "label": "Speed", "value": "about 35ms apart, each glyph changing every 60ms", "hint": "Slower than you think reads as calm" },
+    { "key": "radius", "label": "Magnet radius", "value": "140px", "hint": "Measured from the button's edge" },
+    { "key": "palette", "label": "Your colours", "value": "warm off-white paper, near-black ink, one brass for the accent word" }
+  ],
+  "mistakesTitle": "Where this breaks",
+  "mistakesIntro": "The obvious version swaps the heading's text for random characters on a timer. Here is what that costs, and what this one does instead.",
+  "mistakes": [
+    {
+      "then": "It rewrote the heading's text with random characters on every tick.",
+      "cost": "Random glyphs aren't as wide as the real letters, so the line rewrapped and jumped every frame, and the page below it jumped too.",
+      "now": "Every real letter stays in the line, transparent, with a mono glyph drawn over it. Its width is reserved, so nothing moves.",
+      "line": "so the line never reflows"
+    },
+    {
+      "then": "The heading's text was the scramble.",
+      "cost": "A screen reader that reached it mid-animation read out gibberish, and the heading's name changed thirty times a second.",
+      "now": "The real sentence sits in a visually hidden span from the first frame. The letters you see are aria-hidden.",
+      "line": "Give the heading its real text from the first frame"
+    },
+    {
+      "then": "It played on mount, with a setTimeout for every letter.",
+      "cost": "Below the fold, it was over before anyone scrolled to it. Forty timers drift apart, and strict mode's second mount left half of them running.",
+      "now": "One rAF loop for all the letters, started when the headline is half in view and cancelled on unmount.",
+      "line": "Drive every letter from one requestAnimationFrame loop"
+    },
+    {
+      "then": "It picked the random glyphs during render.",
+      "cost": "The server and the browser drew different characters, so React reported a hydration mismatch and redrew the heading.",
+      "now": "The server renders the finished text. Scrambling starts after mount, with glyphs from a hash, so one run is the same every time.",
+      "line": "not Math.random in render"
+    },
+    {
+      "then": "The magnet moved the button with left and top, measured the button itself, and ran on phones.",
+      "cost": "Every move cost a layout, the button chased its own position and jittered, and on touch it jumped to wherever the finger landed.",
+      "now": "Transform only, on a spring, measured from a wrapper that stays put. Off where there's no hover, and for reduced motion.",
+      "line": "with transform only, on a damped spring"
+    }
+  ],
+  "files": [
+    { "path": "src/playground/decode-headline/DecodeHeadline.tsx", "note": "The example above: headline, subhead, button and Replay." },
+    { "path": "src/playground/decode-headline/DecodeText.tsx", "note": "Splits the headline into letters and words, with the real sentence hidden for screen readers." },
+    { "path": "src/playground/decode-headline/useDecode.ts", "note": "The decode: one rAF loop, started in view, seeded glyphs, Replay." },
+    { "path": "src/playground/decode-headline/Magnetic.tsx", "note": "Leans its child toward the cursor on a damped spring. Transform only." },
+    { "path": "src/playground/decode-headline/decode.css", "note": "The stage, the reserved letters and the glyphs drawn over them." },
+    { "path": "src/playground/decode-headline/Naive.tsx", "note": "The obvious version, kept to show the difference." }
+  ]
+}
