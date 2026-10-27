@@ -1,0 +1,27 @@
+{
+  "type": "Tutorial",
+  "title": "The *Empathy* Engine: Fine-Tuning Gemma 3 270M with LoRA for Mental Health Chatbots",
+  "dek": "We aren’t just running a model; we are teaching it. Gemma 3, Unsloth and the MentalChat16K dataset, on the free tier of Google Colab.",
+  "date": "2026-01-22",
+  "tags": ["Fine-tuning", "LoRA", "Gemma 3"],
+  "motif": "layers",
+  "takeaways": [
+    "LoRA trains a thin layer on top of the model instead of the whole model, so this fits on Colab’s free tier.",
+    "Put MentalChat16K into Gemma 3’s chat template, then train on the assistant’s replies only.",
+    "Ask the original model the same question to check that the fine-tune changed its behaviour."
+  ],
+  "youNeed": ["A Google account and a Colab notebook (the free GPU is enough)", "Some Python", "About 10,000 examples from MentalChat16K, loaded in the code"],
+  "resources": [
+    { "label": "Unsloth", "by": "GitHub", "note": "the library that makes the training fast and light", "url": "https://github.com/unslothai/unsloth" },
+    { "label": "unsloth/gemma-3-270m-it", "by": "Hugging Face", "note": "the base model", "url": "https://huggingface.co/unsloth/gemma-3-270m-it" },
+    { "label": "ShenLab/MentalChat16K", "by": "Hugging Face", "note": "the dataset", "url": "https://huggingface.co/datasets/ShenLab/MentalChat16K" },
+    { "label": "LoRA: Low-Rank Adaptation of Large Language Models", "by": "arXiv", "note": "the paper behind the sticky notes", "url": "https://arxiv.org/abs/2106.09685" },
+    { "label": "SFTTrainer", "by": "Hugging Face TRL docs", "note": "the trainer used in Part 5", "url": "https://huggingface.co/docs/trl/sft_trainer" },
+    { "label": "Ollama", "by": "ollama.com", "note": "run your GGUF export locally", "url": "https://ollama.com" },
+    { "label": "LM Studio", "by": "lmstudio.ai", "note": "the same, with a desktop app", "url": "https://lmstudio.ai" }
+  ],
+  "original": {
+    "site": "Medium",
+    "url": "https://medium.com/@rohanpant2010/the-empathy-engine-a-guide-to-fine-tuning-gemma-3-b9fe96898dd1"
+  }
+}

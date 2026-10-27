@@ -1,0 +1,24 @@
+{
+  "type": "Experiment",
+  "title": "LLMs Learned to Talk. Jev Wants AI to *Decide*.",
+  "dek": "A small experiment into what happens when we separate reasoning from decision-making.",
+  "date": "2026-10-27",
+  "tags": ["Agents", "Jev", "System One models"],
+  "motif": "decide",
+  "takeaways": [
+    "A lot of software needs a decision, not a paragraph: team, priority, escalate.",
+    "Jev answers predefined questions with a choice, a score or a yes/no probability. The developer sets the answer space.",
+    "Early results are promising but narrow. The real question is which decisions actually need an LLM."
+  ],
+  "sources": [
+    { "label": "Introducing System One Models & Jev", "by": "TypeSafe AI", "url": "https://typesafe.ai/blog/introducing-system-one-models-and-jev" },
+    { "label": "Can Jev Be a Better Agent Evaluator?", "by": "LangChain", "url": "https://www.langchain.com/blog/jev-agent-evals-langsmith" },
+    { "label": "jev-as-a-judge: the benchmark code", "by": "GitHub", "url": "https://github.com/danielgshea/jev-as-a-judge" },
+    { "label": "TypeSafe’s Jev hits 13% of Vercel paid teams in 24 hours", "by": "AI Weekly", "url": "https://aiweekly.co/alerts/typesafes-jev-hits-13-of-vercel-paid-teams-in-24-hours" },
+    { "label": "Jev reaches 13% of Vercel paid teams as Cloudflare adds TypeSafe’s model", "by": "TS2", "url": "https://ts2.tech/en/jev-reaches-13-of-vercel-paid-teams-as-cloudflare-adds-typesafes-model/" }
+  ],
+  "original": {
+    "site": "Medium",
+    "url": "https://medium.com/@rohanpant2010/llms-learned-to-talk-jev-wants-ai-to-decide-bda18b141cf7"
+  }
+}
