@@ -166,10 +166,12 @@ export function Exploded({
     const callouts = CALLOUTS.map((c) => {
       const g = document.createElementNS(NS, "g");
       g.innerHTML = `<path class="xp-leader"/><circle class="xp-ring" r="9"/><text class="xp-num" text-anchor="middle" dy="3">${c.n}</text><text class="xp-label"></text>`;
-      g.querySelector(".xp-label")!.textContent = c.label;
+      const text = g.querySelector<SVGTextElement>(".xp-label")!;
+      text.textContent = c.label;
+      text.setAttribute("text-anchor", c.side > 0 ? "start" : "end");
       notes.appendChild(g);
       const part = parts.find((p) => p.key === c.key && (c.key !== "folders" || p.z === FOLDER_Z[0]))!;
-      return { ...c, g, part };
+      return { ...c, g, part, text, leader: g.querySelector(".xp-leader")!, ring: g.querySelector(".xp-ring")!, num: g.querySelector(".xp-num")! };
     });
 
     // Where the camera ends up: around the lifted monitor and its fully peeled layers.
@@ -189,10 +191,18 @@ export function Exploded({
     // Where the desk sits while the hero is up: the viewBox that maps the still desk
     // into the free rectangle beside (or below) the hero text.
     let framed: typeof still | null = null;
+    // The svg's own box, without the camera's transform. Only read on mount and resize.
+    const plain = () => {
+      const was = svg.style.transform;
+      svg.style.transform = "none";
+      const r = svg.getBoundingClientRect();
+      svg.style.transform = was;
+      return r;
+    };
     const frame = () => {
       const lead = introRef.current;
       if (!lead) return;
-      const r = svg.getBoundingClientRect();
+      const r = plain();
       const t = lead.getBoundingClientRect();
       const wide = innerWidth >= 900;
       // The stage clips, so the desk may reach its edge but no further.
@@ -254,10 +264,25 @@ export function Exploded({
       });
     };
 
+    // Points the camera at a view box; set up below, once the drawing is built.
+    let camera: (v: { x: number; y: number; w: number; h: number }) => void = () => {};
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     let shown = 0;
     let raf = 0;
     let last = -1;
+
+    // Writes only what changed. Every SVG attribute write makes the browser recheck the drawing,
+    // even when the value is the same, and most of the scroll changes only a few of them.
+    const wrote = new WeakMap<Element, Record<string, string>>();
+    const put = (el: Element, name: string, value: string) => {
+      const was = wrote.get(el) ?? {};
+      if (was[name] === value) return;
+      was[name] = value;
+      wrote.set(el, was);
+      if (name === "opacity") (el as SVGElement).style.opacity = value;
+      else el.setAttribute(name, value);
+    };
+    const fade = (el: Element, value: number) => put(el, "opacity", String(Math.round(value * 1000) / 1000));
 
     const render = (p: number) => {
       const hero = framed ? 1 - ease(span(p, 0.02, 0.1)) : 0;
@@ -269,62 +294,69 @@ export function Exploded({
       for (const part of parts) {
         const t = ease(span(explode, part.at, part.at + 0.55));
         const [dx, dy] = lift(part.z * t);
-        part.el.setAttribute("transform", `translate(${dx.toFixed(2)} ${dy.toFixed(2)})`);
-        part.el.style.opacity = part === monitor || part.key === "sticky" ? "1" : String(1 - 0.9 * dive);
+        put(part.el, "transform", `translate(${dx.toFixed(2)} ${dy.toFixed(2)})`);
+        fade(part.el, part === monitor || part.key === "sticky" ? 1 : 1 - 0.9 * dive);
       }
-      if (cable) cable.el.style.opacity = String((1 - span(explode, 0, 0.2)) * (1 - dive));
-      if (halo) halo.style.opacity = String(1 - span(explode, 0, 0.3));
-      floor.style.opacity = String(1 - 0.85 * dive);
-      lines.style.opacity = String(span(explode, 0.05, 0.3) * (1 - dive));
-      for (const { part, path } of travel) {
-        const t = ease(span(explode, part.at, part.at + 0.55));
-        const [ax, ay] = part.anchor!;
-        const [dx, dy] = lift(part.z * t);
-        path.setAttribute("d", `M${ax} ${ay}L${(ax + dx).toFixed(1)} ${(ay + dy).toFixed(1)}`);
-      }
+      if (cable) fade(cable.el, (1 - span(explode, 0, 0.2)) * (1 - dive));
+      if (halo) fade(halo, 1 - span(explode, 0, 0.3));
+      fade(floor, 1 - 0.85 * dive);
+      const trail = span(explode, 0.05, 0.3) * (1 - dive);
+      fade(lines, trail);
+      // Hidden lines don't need moving.
+      if (trail > 0)
+        for (const { part, path } of travel) {
+          const t = ease(span(explode, part.at, part.at + 0.55));
+          const [ax, ay] = part.anchor!;
+          const [dx, dy] = lift(part.z * t);
+          put(path, "d", `M${ax} ${ay}L${(ax + dx).toFixed(1)} ${(ay + dy).toFixed(1)}`);
+        }
 
       // The panel lifts off its stand; the sticky note comes forward off the glass.
       const sticky = parts.find((p) => p.key === "sticky");
       const off = ease(span(explode, 0.7, 1));
-      panel?.setAttribute("transform", `translate(${lift(18 * off).join(" ")})`);
-      panes.setAttribute("transform", `translate(${lift(18 * off).join(" ")})`);
+      const rise = `translate(${lift(18 * off)
+        .map((n) => n.toFixed(2))
+        .join(" ")})`;
+      if (panel) put(panel, "transform", rise);
+      put(panes, "transform", rise);
       if (sticky) {
         const t = ease(span(explode, sticky.at, sticky.at + 0.55));
         const [dx, dy] = lift((sticky.z + 18 * off) * t);
-        sticky.el.setAttribute("transform", `translate(${(dx + G.toward[0] * 26 * off).toFixed(2)} ${(dy + G.toward[1] * 26 * off).toFixed(2)})`);
-        sticky.el.style.opacity = String(1 - dive);
+        put(sticky.el, "transform", `translate(${(dx + G.toward[0] * 26 * off).toFixed(2)} ${(dy + G.toward[1] * 26 * off).toFixed(2)})`);
+        fade(sticky.el, 1 - dive);
       }
 
       layers.forEach((layer, i) => {
         const t = ease(span(peel, i * 0.12, 0.6 + i * 0.12));
         const d = PEEL * (i + 1) * t;
-        layer.setAttribute("transform", `translate(${(G.toward[0] * d).toFixed(2)} ${(G.toward[1] * d).toFixed(2)})`);
-        layer.style.opacity = String(span(peel, i * 0.12, i * 0.12 + 0.15));
+        put(layer, "transform", `translate(${(G.toward[0] * d).toFixed(2)} ${(G.toward[1] * d).toFixed(2)})`);
+        fade(layer, span(peel, i * 0.12, i * 0.12 + 0.15));
       });
 
-      notes.style.opacity = String(label);
-      for (const c of callouts) {
-        const t = ease(span(explode, c.part.at, c.part.at + 0.55));
-        const [ax, ay] = c.part.anchor!;
-        const [dx, dy] = lift(c.part.z * t);
-        const sx = ax + dx;
-        const sy = ay + dy;
-        // Leader at the drawing's 30° then a short shelf, like a callout on a drawing.
-        const ex = sx + c.side * c.reach * 0.866;
-        const ey = sy - c.rise * c.reach * 0.5;
-        const shelf = ex + c.side * 14;
-        c.g.querySelector(".xp-leader")!.setAttribute("d", `M${sx.toFixed(1)} ${sy.toFixed(1)}L${ex.toFixed(1)} ${ey.toFixed(1)}H${shelf.toFixed(1)}`);
-        const ring = c.g.querySelector(".xp-ring")!;
-        ring.setAttribute("cx", String(shelf + c.side * 9));
-        ring.setAttribute("cy", String(ey));
-        const num = c.g.querySelector(".xp-num")!;
-        num.setAttribute("x", String(shelf + c.side * 9));
-        num.setAttribute("y", String(ey));
-        const text = c.g.querySelector(".xp-label")!;
-        text.setAttribute("x", String(shelf + c.side * 24));
-        text.setAttribute("y", String(ey + 4.5));
-        text.setAttribute("text-anchor", c.side > 0 ? "start" : "end");
-      }
+      // The callouts only show while the desk is apart; moving their text while they're
+      // invisible was the most expensive thing on the page (SVG text is laid out on every move).
+      fade(notes, label);
+      if (label > 0)
+        for (const c of callouts) {
+          const t = ease(span(explode, c.part.at, c.part.at + 0.55));
+          const [ax, ay] = c.part.anchor!;
+          const [dx, dy] = lift(c.part.z * t);
+          const sx = ax + dx;
+          const sy = ay + dy;
+          // Leader at the drawing's 30° then a short shelf, like a callout on a drawing.
+          const ex = sx + c.side * c.reach * 0.866;
+          const ey = sy - c.rise * c.reach * 0.5;
+          const shelf = ex + c.side * 14;
+          put(c.leader, "d", `M${sx.toFixed(1)} ${sy.toFixed(1)}L${ex.toFixed(1)} ${ey.toFixed(1)}H${shelf.toFixed(1)}`);
+          const ring = (shelf + c.side * 9).toFixed(1);
+          const y = ey.toFixed(1);
+          put(c.ring, "cx", ring);
+          put(c.ring, "cy", y);
+          put(c.num, "x", ring);
+          put(c.num, "y", y);
+          put(c.text, "x", (shelf + c.side * 24).toFixed(1));
+          put(c.text, "y", (ey + 4.5).toFixed(1));
+        }
 
       const back = ease(explode);
       const mix = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -348,7 +380,7 @@ export function Exploded({
         if (pointerRef.current) pointerRef.current.style.opacity = String(stay);
       }
       if (captionRef.current) captionRef.current.style.opacity = String(framed ? 1 - hero : 1 - stay);
-      svg.setAttribute("viewBox", `${v.x.toFixed(1)} ${v.y.toFixed(1)} ${v.w.toFixed(1)} ${v.h.toFixed(1)}`);
+      camera(v);
 
       let c = 0;
       CAPTIONS.forEach((cap, i) => {
@@ -372,6 +404,39 @@ export function Exploded({
       raf = requestAnimationFrame(tick);
     };
     svg.setAttribute("overflow", "visible");
+
+    // The camera. Moving it by rewriting the viewBox, or by transforming anything inside the
+    // drawing, makes the browser lay out all ~2,000 objects of it again, every frame (about
+    // 12 ms a frame on a phone, even when the value hasn't changed). So the viewBox stays put
+    // and the camera moves the <svg> box itself with a CSS transform, which never touches the
+    // drawing's layout: the same picture, mapped the same way (preserveAspectRatio's "meet":
+    // scale to fit, centred), and only written when it moves. Layout is left to the frames
+    // where parts really lift.
+    svg.setAttribute("viewBox", `${still.x} ${still.y} ${still.w} ${still.h}`);
+    svg.style.transformOrigin = "0 0";
+    let size = { w: 0, h: 0 };
+    let shot = "";
+    const measure = () => {
+      const r = plain();
+      size = { w: r.width, h: r.height };
+    };
+    // A view box placed in the svg's box: screen = point * s + o.
+    const fit = (b: typeof still) => {
+      const s = Math.min(size.w / b.w, size.h / b.h);
+      return { s, ox: (size.w - b.w * s) / 2 - b.x * s, oy: (size.h - b.h * s) / 2 - b.y * s };
+    };
+    camera = (v) => {
+      if (!size.w || !size.h) return;
+      const want = fit(v);
+      const base = fit(still);
+      const k = want.s / base.s;
+      const next = `translate(${(want.ox - base.ox * k).toFixed(2)}px, ${(want.oy - base.oy * k).toFixed(2)}px) scale(${k.toFixed(5)})`;
+      if (next === shot) return;
+      shot = next;
+      svg.style.transform = next;
+    };
+    measure();
+
     render(0.56);
     // Frame the exploded desk, not the floor under it.
     floor.style.display = "none";
@@ -381,6 +446,7 @@ export function Exploded({
     frame();
     aim();
     const resize = () => {
+      measure();
       frame();
       aim();
       render(shown);
@@ -389,7 +455,19 @@ export function Exploded({
     shown = target();
     render(shown);
     raf = requestAnimationFrame(tick);
+    // The svg's box changes without the window resizing (the caption row above it changes
+    // height as the captions change), and the camera has to fit the box it's in. A
+    // ResizeObserver reports the box without the camera's transform.
+    const resized = new ResizeObserver(([e]) => {
+      const { width, height } = e.contentRect;
+      if (width === size.w && height === size.h) return;
+      size = { w: width, h: height };
+      shot = "";
+      render(shown);
+    });
+    resized.observe(svg);
     return () => {
+      resized.disconnect();
       cancelAnimationFrame(raf);
       removeEventListener("resize", resize);
       // Put the untouched drawing back, so a second mount starts clean.
