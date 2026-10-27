@@ -72,27 +72,63 @@
 :root:has(.home) {
   scroll-padding-top: var(--nav-h, 64px);
 }
+/* The bar is an invisible strip; the pane of glass floats in it. Only the pane takes clicks. */
 .nav {
   position: fixed;
   z-index: 40;
   inset: 0 0 auto;
   height: var(--nav-h);
-  border-bottom: 1px solid transparent;
-  transition: background-color 200ms var(--ease-hover), border-color 200ms var(--ease-hover);
+  padding-top: 8px;
+  pointer-events: none;
 }
-.nav.is-moved {
-  background: color-mix(in oklab, var(--paper) 88%, transparent);
-  border-bottom-color: var(--rule);
-  backdrop-filter: blur(8px);
-}
+/* Liquid glass, in the identity's colours: a warm paper tint that thickens once the page has
+   moved, blur with a little extra saturation so what's behind glows through, a bright rim
+   along the top edge where light catches it (::before, masked to a 1px ring), and a soft
+   tobacco shadow under it. The pane, not the bar, carries the blur, so the phone menu (fixed,
+   inside the bar) still measures from the screen. */
 .nav-in {
+  --glass: color-mix(in oklab, var(--paper) 46%, transparent);
+  --rim: color-mix(in oklab, var(--lift, #fff) 90%, transparent);
+  position: relative;
   display: flex;
   align-items: center;
   gap: clamp(16px, 3vw, 36px);
-  max-width: 1200px;
-  height: 100%;
+  width: min(100% - 2 * clamp(10px, 3vw, 32px), 1160px);
+  height: 50px;
   margin: 0 auto;
-  padding: 0 clamp(16px, 4vw, 40px);
+  padding: 0 6px 0 12px;
+  border-radius: 16px;
+  pointer-events: auto;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--glass), var(--lift, #fff) 18%), var(--glass));
+  -webkit-backdrop-filter: blur(16px) saturate(170%);
+  backdrop-filter: blur(16px) saturate(170%);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--ink) 8%, transparent),
+    0 10px 30px -14px color-mix(in oklab, var(--deep) 45%, transparent),
+    0 2px 6px -3px color-mix(in oklab, var(--deep) 18%, transparent);
+  transition:
+    background 300ms var(--ease-hover),
+    box-shadow 300ms var(--ease-hover);
+}
+.nav-in::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(180deg, var(--rim), color-mix(in oklab, var(--rim) 20%, transparent) 45%, color-mix(in oklab, var(--ink) 6%, transparent));
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.nav.is-moved .nav-in {
+  --glass: color-mix(in oklab, var(--paper) 72%, transparent);
 }
 .home .nav a {
   text-decoration: none;
@@ -131,28 +167,90 @@
   font: 600 16px/1 var(--sans);
   letter-spacing: -0.01em;
 }
+.nav-track {
+  position: relative;
+}
 .nav-links {
+  position: relative;
   display: flex;
-  gap: clamp(16px, 2.4vw, 28px);
+  gap: 2px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.nav-links a {
+.home .nav-links a {
+  display: block;
+  padding: 10px clamp(8px, 1.1vw, 13px);
   font: 500 12px/1 var(--mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-2);
   transition: color 160ms var(--ease-hover);
 }
-.home .nav-links a:hover {
+.home .nav-links a:is(:hover, :focus-visible, [aria-current]) {
   color: var(--ink);
+}
+.nav-links a:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+  border-radius: 9px;
+}
+/* The lens: a smaller, clearer drop of glass on the pane, with its own rim and a brass bead
+   under the page you're on. It slides between links; the first placement doesn't. */
+.nav-lens {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: var(--lw, 0px);
+  height: 32px;
+  border-radius: 10px;
+  translate: var(--lx, 0px) -50%;
+  opacity: 0;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--lift, #fff) 70%, transparent), color-mix(in oklab, var(--lift, #fff) 30%, transparent));
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--lift, #fff) 95%, transparent),
+    inset 0 -1px 0 color-mix(in oklab, var(--ink) 6%, transparent),
+    0 0 0 1px color-mix(in oklab, var(--ink) 7%, transparent),
+    0 4px 10px -6px color-mix(in oklab, var(--deep) 40%, transparent);
+  pointer-events: none;
+  transition: opacity 200ms var(--ease-hover);
+}
+.nav-track[data-ready] .nav-lens {
+  transition:
+    translate 420ms var(--ease),
+    width 420ms var(--ease),
+    opacity 200ms var(--ease-hover);
+}
+.nav-track[data-lens="on"] .nav-lens {
+  opacity: 1;
+}
+.nav-track:has(a[aria-current]) .nav-lens::after {
+  content: "";
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  width: 4px;
+  height: 2px;
+  border-radius: 1px;
+  translate: -50% 0;
+  background: var(--signal);
+  opacity: 0;
+  transition: opacity 200ms var(--ease-hover);
+}
+.nav-track:has(a[aria-current]:not(:hover)):not(:has(a:hover)) .nav-lens::after {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-track[data-ready] .nav-lens {
+    transition: opacity 200ms var(--ease-hover);
+  }
 }
 .nav-cta {
   display: inline-flex;
   align-items: center;
-  min-height: 36px;
-  padding: 0 14px;
+  min-height: 38px;
+  padding: 0 16px;
+  border-radius: 11px;
   font: 600 14px/1 var(--sans);
   color: var(--brand-ink);
   background: var(--brand);
@@ -164,9 +262,322 @@
 .home .nav-cta:hover {
   background: var(--deep);
 }
+/* Phone: the five links move into a menu. The button is the mark's cousin: a tobacco square
+   of 3×3 pixels, the last one brass, that folds into an × when open. The menu is a tobacco
+   screen that grows as a circle from the button (--ox, --oy), on a faint dot grid, the links
+   rising in one after another. */
+.nav-menu,
+.nav-panel {
+  display: none;
+}
 @media (max-width: 640px) {
-  .nav-links {
+  .nav-track {
     display: none;
+  }
+  .nav-in {
+    gap: 8px;
+  }
+  .nav-menu {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 0;
+    border-radius: 11px;
+    background: var(--brand);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-menu svg {
+    width: 20px;
+    height: 20px;
+    overflow: visible;
+  }
+  .nav-menu-px {
+    fill: var(--brand-ink);
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      transform 380ms var(--ease) calc(var(--i) * 30ms),
+      opacity 240ms var(--ease-hover) calc(var(--i) * 30ms),
+      fill 240ms var(--ease-hover);
+  }
+  .nav-menu-px.is-last {
+    fill: var(--signal);
+  }
+  /* Open: the four edge pixels shrink away; the corners and centre are left as a pixel ×. */
+  .nav.is-open .nav-menu-px:not(.is-x) {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  /* On the dark screen the square gets an edge so it doesn't melt into it. */
+  .nav.is-open .nav-menu {
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--on-deep, var(--paper)) 30%, transparent);
+  }
+  .nav-menu:focus-visible,
+  .nav-panel a:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+  }
+
+  /* Open, the bar sits on the tobacco screen: no paper, light name, the ask moves into the menu. */
+  /* Open, the pane turns to dark glass over the tobacco screen. */
+  .nav.is-open .nav-in {
+    --glass: color-mix(in oklab, var(--on-deep, var(--paper)) 7%, transparent);
+    --rim: color-mix(in oklab, var(--on-deep, var(--paper)) 40%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--on-deep, var(--paper)) 10%, transparent);
+  }
+  .nav.is-open .nav-name {
+    color: var(--on-deep, var(--paper));
+  }
+  .nav.is-open .nav-cta {
+    visibility: hidden;
+  }
+  .nav-in {
+    position: relative;
+    z-index: 1;
+  }
+
+  .nav-panel {
+    --np-on: var(--on-deep, var(--paper));
+    position: fixed;
+    /* The bar lets taps through around the glass; the open menu has to take them. */
+    pointer-events: auto;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 32px;
+    padding: calc(var(--nav-h) + 16px) 20px max(28px, env(safe-area-inset-bottom));
+    overflow-y: auto;
+    color: var(--np-on);
+    background:
+      radial-gradient(circle, color-mix(in oklab, var(--np-on) 14%, transparent) 1px, transparent 1.5px) 0 0 / 16px 16px,
+      radial-gradient(120% 70% at 100% 0%, color-mix(in oklab, var(--signal) 22%, transparent), transparent 60%),
+      linear-gradient(170deg, var(--brand), var(--deep) 75%);
+    visibility: hidden;
+    clip-path: circle(0 at var(--ox) var(--oy));
+    transition:
+      clip-path 420ms var(--ease),
+      visibility 0s 420ms;
+  }
+  .nav.is-open .nav-panel {
+    visibility: visible;
+    clip-path: circle(150vmax at var(--ox) var(--oy));
+    transition:
+      clip-path 560ms var(--ease),
+      visibility 0s;
+  }
+  .nav-panel ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  /* The links arrive one after another: each rule draws in from the left, then the number,
+     word and note wipe up into place, like type being set. */
+  .nav-panel li {
+    position: relative;
+  }
+  .nav-panel li::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 1px;
+    background: color-mix(in oklab, var(--np-on) 16%, transparent);
+    transform-origin: left;
+    scale: 0 1;
+    transition: scale 200ms var(--ease-hover);
+  }
+  .nav-panel-n,
+  .nav-panel-label,
+  .nav-panel-note,
+  .nav-panel-arrow {
+    clip-path: inset(0 0 100% 0);
+    translate: 0 0.5em;
+    transition:
+      clip-path 180ms var(--ease-hover),
+      translate 180ms var(--ease-hover),
+      color 200ms var(--ease-hover);
+  }
+  .nav.is-open .nav-panel li::after {
+    scale: 1 1;
+    transition: scale 640ms var(--ease) calc(120ms + var(--i) * 60ms);
+  }
+  .nav.is-open .nav-panel :is(.nav-panel-n, .nav-panel-label, .nav-panel-note, .nav-panel-arrow) {
+    clip-path: inset(-0.2em -0.2em -0.3em -0.2em);
+    translate: 0 0;
+    transition:
+      clip-path 560ms var(--ease) calc(180ms + var(--i) * 60ms),
+      translate 560ms var(--ease) calc(180ms + var(--i) * 60ms),
+      color 200ms var(--ease-hover);
+  }
+  .nav.is-open .nav-panel .nav-panel-note {
+    transition-delay: calc(240ms + var(--i) * 60ms);
+  }
+  .nav-panel-foot {
+    opacity: 0;
+    translate: 0 12px;
+    transition:
+      opacity 200ms var(--ease-hover),
+      translate 200ms var(--ease-hover);
+  }
+  .nav.is-open .nav-panel-foot {
+    opacity: 1;
+    translate: 0 0;
+    transition:
+      opacity 420ms var(--ease) 520ms,
+      translate 520ms var(--ease) 520ms;
+  }
+  .home .nav-panel li a {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    color: var(--np-on);
+  }
+  .nav-panel-text {
+    display: grid;
+    gap: 6px;
+  }
+  .nav-panel-note {
+    font: 400 14px/1.3 var(--sans);
+    color: color-mix(in oklab, var(--np-on) 58%, transparent);
+  }
+  /* The mark's R in the space under the links, a pixel at a time. */
+  .nav-panel-r {
+    flex: 1 1 0;
+    align-self: end;
+    width: min(34vw, 140px);
+    min-height: 0;
+    max-height: 200px;
+  }
+  .nav-panel-r rect {
+    fill: color-mix(in oklab, var(--np-on) 22%, transparent);
+    transform-box: fill-box;
+    transform-origin: center;
+    opacity: 0;
+    scale: 0.3;
+    transition:
+      opacity 160ms var(--ease-hover),
+      scale 160ms var(--ease-hover);
+  }
+  .nav-panel-r rect.is-last {
+    fill: var(--signal);
+  }
+  .nav.is-open .nav-panel-r rect {
+    opacity: 1;
+    scale: 1;
+    transition:
+      opacity 300ms var(--ease) calc(420ms + var(--i) * 45ms),
+      scale 420ms var(--ease) calc(420ms + var(--i) * 45ms);
+  }
+  .nav.is-open .nav-panel-r rect.is-last {
+    transition-delay: 1000ms;
+  }
+  .nav-panel-time {
+    font: 400 12px/1.4 var(--mono);
+    color: color-mix(in oklab, var(--np-on) 50%, transparent);
+  }
+  .nav-panel-n {
+    font: 500 11px/1 var(--mono);
+    letter-spacing: 0.08em;
+    color: color-mix(in oklab, var(--signal), var(--lift, var(--paper)) 38%);
+  }
+  .nav-panel-label {
+    font: 500 clamp(30px, 9vw, 40px) / 1.05 var(--sans);
+    letter-spacing: -0.03em;
+  }
+  /* Pressed, focused or the page you're on: the word turns to the serif, in brass. */
+  .home .nav-panel li a:is(:hover, :focus-visible, :active, [aria-current]) .nav-panel-label {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    color: color-mix(in oklab, var(--signal), var(--lift, var(--paper)) 38%);
+  }
+  .nav-panel-arrow {
+    margin-left: auto;
+    font-size: 20px;
+    color: color-mix(in oklab, var(--np-on) 45%, transparent);
+    transition: translate 240ms var(--ease);
+  }
+  .nav.is-open .nav-panel li a:is(:hover, :focus-visible, :active) .nav-panel-arrow {
+    translate: 4px 0;
+    color: var(--np-on);
+  }
+  .nav-panel-foot {
+    display: grid;
+    gap: 14px;
+  }
+  .nav-panel-foot p {
+    margin: 0;
+  }
+  .nav-panel-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font: 500 11.5px/1.4 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--np-on) 70%, transparent);
+  }
+  .nav-panel-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .home .nav-panel-links a {
+    padding: 10px 16px;
+    border: 1px solid color-mix(in oklab, var(--np-on) 28%, transparent);
+    font: 500 15px/1 var(--sans);
+    color: var(--np-on);
+  }
+  .home .nav-panel-links a:first-child {
+    border-color: transparent;
+    background: var(--np-on);
+    color: var(--deep);
+  }
+}
+/* A short phone: tighter rows so the whole menu fits without scrolling; the R makes room. */
+@media (max-width: 640px) and (max-height: 760px) {
+  .nav-panel {
+    gap: 20px;
+    padding-top: calc(var(--nav-h) + 4px);
+  }
+  .home .nav-panel li a {
+    padding: 11px 0;
+  }
+  .nav-panel-label {
+    font-size: 30px;
+  }
+  .nav-panel-text {
+    gap: 3px;
+  }
+  .nav-panel-note {
+    font-size: 13px;
+  }
+  .nav-panel-r {
+    display: none;
+  }
+}
+@media (max-width: 640px) and (max-height: 620px) {
+  .nav-panel-note {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-panel,
+  .nav.is-open .nav-panel,
+  .nav-panel li,
+  .nav.is-open .nav-panel li,
+  .nav-panel-foot,
+  .nav.is-open .nav-panel-foot,
+  .nav-panel li::after,
+  .nav-panel :is(.nav-panel-n, .nav-panel-label, .nav-panel-note, .nav-panel-arrow),
+  .nav-panel-r rect,
+  .nav-menu-px {
+    transition: none !important;
   }
 }
 /* rohanOS is the whole screen: it lives inside the desk's sticky stage, so it can't rise
@@ -178,21 +589,34 @@
 /* ── Hero ─────────────────────────────────────────────── */
 /* The hero lives in the desk's sticky stage: beside the desk on wide screens,
    above it on narrow ones. Exploded.tsx frames the desk into the space left. */
+/* Wide: the box fills the height under the bar and centres the text in it. "safe" pins it to
+   the top instead when a short window can't fit it, so it never slides under the bar. The box
+   itself lets clicks through to the desk; only the text takes them. */
 .home .xp-hero {
   position: absolute;
   z-index: 2;
-  top: calc(50% + var(--nav-h) / 2);
+  top: var(--nav-h);
+  bottom: 0;
   left: clamp(0px, 3vw, 40px);
   width: min(46%, 600px);
-  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: safe center;
+  padding-block: clamp(8px, 2vh, 24px);
+  pointer-events: none;
+}
+.home .xp-hero > * {
+  pointer-events: auto;
 }
 @media (max-width: 899px) {
   .home .xp-hero {
     top: calc(var(--nav-h) + clamp(12px, 3vh, 32px));
     right: 8px;
+    bottom: auto;
     left: 8px;
     width: auto;
-    transform: none;
+    display: block;
+    padding-block: 0;
   }
 }
 .hero-status {
@@ -302,6 +726,8 @@
   }
   .hero-proof dd {
     margin: 0;
+    white-space: normal;
+    text-align: right;
   }
 }
 .hero-actions {
@@ -310,6 +736,27 @@
   align-items: center;
   gap: 14px 28px;
   margin-top: 28px;
+}
+/* A short, wide window (a laptop with the dock up, an editor's preview pane): the hero sits
+   beside the desk in the stage's height, so it tightens up to fit, buttons included. */
+@media (min-width: 900px) and (max-height: 720px) {
+  .hero-status {
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-size: min(clamp(36px, 2.6vw + 24px, 62px), 7.4vh);
+  }
+  .hero-sub {
+    margin-top: 12px;
+    font-size: 16px;
+    line-height: 1.45;
+  }
+  .hero-proof {
+    margin-top: 14px;
+  }
+  .hero-actions {
+    margin-top: 16px;
+  }
 }
 
 /* Buttons: solid ink, like the controller; a redline bar arrives on hover. */

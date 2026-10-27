@@ -1,0 +1,782 @@
+/* The Notebook: the index and a post. Sits on the home page's tokens and pieces (home.css)
+   and the case study's contents rail (case.css). Only what reading adds lives here. */
+
+.nb h1 em,
+.nb h2 em,
+.nb h3 em,
+.nb-card-title em {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.1em;
+  letter-spacing: -0.01em;
+  line-height: 0;
+}
+.nb-label {
+  margin: 0 0 12px;
+  font: 500 11px/1.4 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.nb-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  margin: 0;
+  font: 400 12.5px/1.4 var(--mono);
+  color: var(--ink-2);
+}
+.nb-type {
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--signal-ink);
+}
+.nb-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+}
+.nb-tags span {
+  padding: 4px 9px;
+  border-radius: 99px;
+  font: 500 11.5px/1.3 var(--sans);
+  color: var(--ink-2);
+  background: color-mix(in oklab, var(--ink) 6%, var(--paper));
+}
+.nb-takeaways {
+  margin: 0 0 28px;
+  padding: 0;
+  list-style: none;
+  counter-reset: take;
+  display: grid;
+  gap: 12px;
+}
+.nb-takeaways li {
+  counter-increment: take;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 10px;
+  line-height: 1.5;
+}
+.nb-takeaways li::before {
+  content: counter(take, decimal-leading-zero);
+  padding-top: 3px;
+  font: 500 11.5px/1.4 var(--mono);
+  color: var(--signal-ink);
+}
+
+/* ── Cover: the simulators' desktop, the accent word, a drawing of the idea ── */
+.cv {
+  position: relative;
+  display: grid;
+  align-content: space-between;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  padding: clamp(18px, 2.4vw, 28px);
+  border-radius: 16px;
+  color: var(--paper);
+  background:
+    radial-gradient(120% 90% at 85% 0%, color-mix(in oklab, var(--signal) 42%, transparent), transparent 60%),
+    radial-gradient(90% 80% at 0% 100%, color-mix(in oklab, var(--brand) 70%, transparent), transparent 70%),
+    linear-gradient(160deg, var(--brand), var(--deep));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ink) 25%, transparent);
+}
+.cv-kicker {
+  position: relative;
+  z-index: 1;
+  font: 500 11px/1 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--paper) 72%, transparent);
+}
+.cv {
+  grid-template-rows: auto 1fr;
+}
+.cv-word {
+  grid-row: 2;
+  align-self: end;
+  position: relative;
+  z-index: 1;
+  font: italic 400 clamp(48px, 5vw, 76px) / 0.9 var(--serif);
+  letter-spacing: -0.02em;
+}
+.cv-art {
+  position: absolute;
+  right: 4%;
+  top: 14%;
+  width: 62%;
+}
+.cv-art svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.cv-pill {
+  fill: color-mix(in oklab, var(--paper) 10%, transparent);
+  stroke: color-mix(in oklab, var(--paper) 28%, transparent);
+}
+.cv-pick {
+  fill: var(--signal);
+}
+.cv-dot {
+  fill: none;
+  stroke: color-mix(in oklab, var(--paper) 45%, transparent);
+}
+.cv-dot-on {
+  fill: var(--deep);
+}
+.cv-text,
+.cv-text-on {
+  font: 500 11px var(--mono);
+  fill: color-mix(in oklab, var(--paper) 65%, transparent);
+}
+.cv-text-on {
+  fill: var(--paper);
+}
+.cv-pick + .cv-dot-on + .cv-text-on {
+  fill: var(--deep);
+}
+.cv-line {
+  fill: color-mix(in oklab, var(--paper) 30%, transparent);
+}
+.cv-glass {
+  fill: color-mix(in oklab, var(--paper) 8%, transparent);
+  stroke: color-mix(in oklab, var(--paper) 40%, transparent);
+  stroke-dasharray: 4 4;
+}
+.cv-note {
+  fill: var(--signal);
+}
+.cv-note-line {
+  fill: var(--deep);
+  opacity: 0.6;
+}
+.cv-sm {
+  aspect-ratio: 16 / 9;
+  padding: 16px 18px;
+  border-radius: 12px;
+}
+.cv-sm .cv-word {
+  font-size: clamp(34px, 3vw, 46px);
+}
+.cv-sm .cv-art {
+  width: 48%;
+  top: 10%;
+}
+.cv.is-soon {
+  background: repeating-linear-gradient(135deg, transparent 0 10px, color-mix(in oklab, var(--ink) 5%, transparent) 10px 11px), var(--paper-2);
+  color: var(--ink-3);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+.cv.is-soon .cv-kicker {
+  color: var(--ink-3);
+}
+
+/* ── Index ── */
+.nb-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 40px;
+  padding-top: calc(var(--nav-h) + clamp(40px, 7vw, 88px));
+  padding-bottom: clamp(28px, 4vw, 44px);
+  border-bottom: 2px solid var(--ink);
+}
+.nb-head h1 {
+  margin: 0;
+  font-size: clamp(38px, 2.6vw + 24px, 64px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  font-weight: 500;
+}
+.nb-head-sub {
+  max-width: 52ch;
+  margin: 20px 0 0;
+  font-size: clamp(17px, 0.4vw + 15px, 19px);
+  color: var(--ink-2);
+}
+.nb-stats {
+  display: flex;
+  gap: 32px;
+  margin: 0;
+}
+.nb-stats dt {
+  font: 500 10.5px/1.4 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.nb-stats dd {
+  margin: 4px 0 0;
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 500;
+}
+.nb-stats dd a {
+  font-size: 15px;
+}
+
+.nb-feature {
+  display: grid;
+  grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+  gap: clamp(28px, 4vw, 56px);
+  align-items: center;
+  padding: clamp(32px, 5vw, 56px) 0;
+  border-bottom: 1px solid var(--rule);
+}
+.home .nb-feature-cover {
+  display: block;
+  text-decoration: none;
+}
+.nb-feature-cover .cv {
+  transition: transform 0.5s var(--ease);
+}
+.nb-feature-cover:hover .cv {
+  transform: translateY(-3px);
+}
+.nb-feature-text h3 {
+  margin: 14px 0 0;
+  font-size: clamp(28px, 1.4vw + 20px, 42px);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  font-weight: 500;
+  text-wrap: balance;
+}
+.home .nb-feature-text h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+.nb-feature-text h3 a:hover {
+  color: var(--brand);
+}
+.nb-feature-dek {
+  margin: 14px 0 28px;
+  color: var(--ink-2);
+  font-size: 17px;
+}
+
+.nb-writing {
+  padding: clamp(56px, 8vw, 96px) 0 clamp(64px, 9vw, 112px);
+}
+.nb-writing > .nb-section-title {
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--ink);
+}
+.nb-writing .nb-feature {
+  padding-top: clamp(24px, 4vw, 40px);
+}
+.nb-writing .nb-cards {
+  padding-top: clamp(32px, 5vw, 48px);
+}
+.nb-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 32px 28px;
+}
+.home .nb-card {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+.nb-card .cv {
+  margin-bottom: 4px;
+  transition: transform 0.5s var(--ease);
+}
+.nb-card:hover .cv {
+  transform: translateY(-3px);
+}
+.nb-card-title {
+  font-size: 21px;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  font-weight: 500;
+  text-wrap: balance;
+  transition: color 0.2s;
+}
+a.nb-card:hover .nb-card-title {
+  color: var(--brand);
+}
+.nb-card-dek {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.nb-card.is-soon {
+  color: var(--ink-2);
+}
+
+.home .nb-feature a:focus-visible,
+.home .nb-card:focus-visible,
+.home .nb-next a:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
+@media (max-width: 860px) {
+  .nb-head,
+  .nb-feature {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .nb-head {
+    gap: 28px;
+  }
+}
+
+/* ── A post ── */
+.nb-progress {
+  position: fixed;
+  z-index: 60;
+  top: var(--nav-h);
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--signal);
+  transform-origin: 0 50%;
+}
+.nb-post-head {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+  gap: clamp(28px, 5vw, 64px);
+  align-items: end;
+  padding-top: calc(var(--nav-h) + clamp(28px, 5vw, 64px));
+  padding-bottom: clamp(28px, 4vw, 44px);
+}
+.nb-post-intro .nb-meta {
+  margin-bottom: 18px;
+}
+.nb-post-head h1 {
+  margin: 0;
+  font-size: clamp(32px, 2vw + 22px, 52px);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  font-weight: 500;
+  text-wrap: balance;
+}
+.nb-post-dek {
+  max-width: 56ch;
+  margin: 20px 0 0;
+  font-size: clamp(17px, 0.4vw + 15px, 20px);
+  line-height: 1.5;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+.nb-post-origin {
+  margin: 18px 0 0;
+  font: 400 12.5px/1.4 var(--mono);
+  color: var(--ink-2);
+}
+
+/* At a glance: what you'll take away, and what you need. */
+.nb-glance {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+  gap: clamp(24px, 4vw, 56px);
+  padding: clamp(24px, 3vw, 36px);
+  border-radius: 16px;
+  background: var(--paper-2);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+.nb-glance .nb-takeaways {
+  margin: 0;
+}
+.nb-glance .nb-tags span {
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+.nb-needs {
+  margin: 0 0 24px;
+  padding-left: 18px;
+  list-style: square;
+  line-height: 1.5;
+}
+.nb-needs li {
+  margin-bottom: 6px;
+}
+.nb-needs li::marker {
+  color: var(--signal);
+}
+
+@media (max-width: 860px) {
+  .nb-post-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .nb-post-head .cv {
+    display: none;
+  }
+  .nb-glance {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.nb-layout {
+  padding-bottom: clamp(48px, 7vw, 96px);
+}
+@media (min-width: 1100px) {
+  .nb-layout > .contents {
+    margin-top: clamp(40px, 5vw, 64px);
+  }
+}
+.nb-body {
+  min-width: 0;
+  max-width: 720px;
+}
+
+/* The text: one comfortable measure. */
+.nb-prose {
+  padding-top: clamp(40px, 5vw, 64px);
+  font-size: clamp(17px, 0.25vw + 16px, 18.5px);
+  line-height: 1.7;
+}
+.nb-prose > p:first-child {
+  font-size: 1.15em;
+  line-height: 1.55;
+}
+.nb-prose p,
+.nb-prose ul,
+.nb-prose ol {
+  margin: 0 0 1.05em;
+}
+.nb-prose h2,
+.nb-refs h2 {
+  position: relative;
+  margin: 2.4em 0 0.7em;
+  padding-top: 0.9em;
+  border-top: 1px solid var(--rule);
+  font-size: clamp(24px, 0.8vw + 19px, 31px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  scroll-margin-top: calc(var(--nav-h) + 16px);
+}
+.nb-anchor {
+  position: absolute;
+  left: -1.1em;
+  opacity: 0;
+  color: var(--ink-3);
+  font-weight: 400;
+  transition: opacity 0.2s;
+}
+.home .nb-anchor {
+  text-decoration: none;
+}
+.nb-prose h2:hover .nb-anchor {
+  opacity: 1;
+}
+.nb-prose h3 {
+  margin: 1.8em 0 0.5em;
+  font-size: 1.1em;
+  font-weight: 600;
+}
+.nb-prose strong {
+  font-weight: 600;
+}
+.nb-prose ul {
+  padding-left: 22px;
+  list-style: square;
+}
+.nb-prose li {
+  margin-bottom: 0.4em;
+}
+.nb-prose li::marker {
+  color: var(--signal);
+}
+/* Quotes: the serif, set in from the text. No side bar; the quotes carry their own marks. */
+.nb-prose blockquote {
+  margin: 1.4em 0 1.4em 1.4em;
+  font-family: var(--serif);
+  font-size: 1.3em;
+  line-height: 1.4;
+}
+.nb-prose blockquote p {
+  margin: 0;
+}
+.nb-prose :not(pre) > code {
+  position: relative;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font: 500 0.84em/1.4 var(--mono);
+  background: color-mix(in oklab, var(--ink) 6%, var(--paper));
+  overflow-wrap: anywhere;
+  cursor: copy;
+  transition: background 0.2s;
+}
+/* Inline code copies on click; "Copied" shows above it for a moment. */
+.nb-prose a > code {
+  cursor: pointer;
+}
+.nb-prose :not(pre) > code:hover {
+  background: color-mix(in oklab, var(--ink) 11%, var(--paper));
+}
+.nb-prose :not(pre) > code.is-copied::after {
+  content: "Copied";
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  translate: -50% 0;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font: 500 11px/1 var(--sans);
+  white-space: nowrap;
+  color: var(--paper);
+  background: var(--deep);
+  pointer-events: none;
+}
+
+/* Callouts: a whole box with a border, its label set into the top edge. No tint, no side bar. */
+.nb-callout {
+  position: relative;
+  margin: 2em 0 1.6em;
+  padding: 20px 22px 16px;
+  border: 1px solid color-mix(in oklab, var(--ink) 35%, var(--paper));
+  border-radius: 10px;
+  font-size: 0.94em;
+  line-height: 1.6;
+}
+.nb-callout p {
+  margin: 0;
+}
+.nb-callout p + p {
+  margin-top: 0.6em;
+}
+.nb-callout-title {
+  position: absolute;
+  top: 0;
+  left: 16px;
+  translate: 0 -50%;
+  padding: 0 8px;
+  background: var(--paper);
+  font: 500 11px/1.4 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.nb-callout.is-tip .nb-callout-title {
+  color: var(--signal-ink);
+}
+.nb-callout.is-caution {
+  border-color: var(--ink);
+}
+.nb-callout.is-caution .nb-callout-title {
+  color: var(--ink);
+}
+
+/* Tables: hairlines, the first column as labels. */
+.nb-table {
+  margin: 1.4em 0 1.6em;
+  overflow-x: auto;
+}
+.nb-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+.nb-table th {
+  padding: 0 16px 8px 0;
+  text-align: left;
+  font: 500 11px/1.4 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  border-bottom: 2px solid var(--ink);
+}
+.nb-table td {
+  padding: 12px 16px 12px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* Code: the simulators' dark console, with a Copy button. */
+.nb-code {
+  position: relative;
+  margin: 1.4em 0 1.6em;
+  overflow: hidden;
+  border-radius: 12px;
+  color-scheme: dark;
+  background: var(--deep);
+  color: color-mix(in oklab, var(--paper), #fff 30%);
+  box-shadow: 0 0 0 1px color-mix(in oklab, #000 25%, transparent);
+}
+.nb-code pre {
+  margin: 0;
+  padding: 40px 20px 18px;
+  overflow-x: auto;
+  font: 400 13px/1.65 var(--mono);
+  tab-size: 4;
+}
+/* Code shows what you type: no ligatures turning == or >= into single glyphs. */
+.nb-prose code,
+.nb-code pre {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+.nb-code-lang {
+  position: absolute;
+  top: 12px;
+  left: 20px;
+  font: 500 10.5px/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--paper) 45%, transparent);
+}
+.nb-copy {
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid color-mix(in oklab, var(--paper) 30%, transparent);
+  border-radius: 6px;
+  font: 500 12px/1 var(--sans);
+  color: var(--paper);
+  background: none;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.nb-copy::before {
+  content: "";
+  width: 11px;
+  height: 11px;
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+  box-shadow: 2.5px -2.5px 0 -1px var(--deep), 2.5px -2.5px 0 0 currentColor;
+}
+.nb-copy:hover {
+  border-color: var(--paper);
+  background: color-mix(in oklab, var(--paper) 10%, transparent);
+}
+.nb-copy.is-copied {
+  border-color: var(--signal);
+  color: color-mix(in oklab, var(--signal), var(--lift) 38%);
+}
+.nb-copy:focus-visible {
+  outline: 2px solid var(--signal);
+}
+
+.nb-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 1.6em 0;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+  background: var(--lift);
+}
+
+/* Resources and sources: links you can act on. */
+.nb-refs-note {
+  margin: 0 0 18px;
+  color: var(--ink-2);
+}
+.nb-resources {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.home .nb-resources a,
+.home .nb-sources a {
+  display: grid;
+  gap: 3px;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+.nb-resources a {
+  padding: 14px 16px;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px var(--rule);
+  transition:
+    box-shadow 0.2s,
+    background 0.2s;
+}
+.nb-resources a:hover {
+  background: var(--paper-2);
+  box-shadow: inset 0 0 0 1px var(--ink-3);
+}
+.nb-link-title {
+  font-weight: 600;
+  line-height: 1.35;
+}
+.nb-link-meta {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+.nb-sources {
+  margin: 0;
+  padding-left: 22px;
+}
+.nb-sources li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.nb-sources li::marker {
+  font: 500 12px var(--mono);
+  color: var(--signal-ink);
+}
+.nb-sources a:hover .nb-link-title {
+  color: var(--brand);
+}
+@media (max-width: 560px) {
+  .nb-resources {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Next post: its cover beside its title. */
+.nb-next {
+  padding: clamp(32px, 5vw, 56px) 0;
+  border-top: 2px solid var(--ink);
+}
+.home .nb-next a {
+  display: grid;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  gap: clamp(20px, 3vw, 40px);
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+}
+.nb-next-text {
+  display: grid;
+  gap: 10px;
+}
+.nb-next a:hover .nb-card-title {
+  color: var(--brand);
+}
+@media (max-width: 640px) {
+  .home .nb-next a {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nb *,
+  .nb-progress {
+    transition: none !important;
+  }
+}
+
+/* A section heading, on the Notebook and the Playground. */
+.nb-section-title {
+  margin: 0 0 20px;
+  font-size: clamp(24px, 0.8vw + 19px, 31px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+}

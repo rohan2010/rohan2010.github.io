@@ -1,0 +1,374 @@
+/* The Playground: web UI from the site, each running live with its prompt, its mistakes and
+   its code. Boxes are whole bordered boxes, never a tint with a side bar. */
+
+/* ── The index ─────────────────────────────────────────────── */
+
+.pg-head {
+  grid-template-columns: minmax(0, 1fr);
+}
+.pg-list {
+  display: grid;
+  gap: clamp(40px, 6vw, 72px);
+  margin: clamp(32px, 5vw, 56px) 0 clamp(64px, 9vw, 120px);
+  padding: 0;
+  list-style: none;
+}
+.pg-card {
+  display: grid;
+  gap: clamp(20px, 3vw, 28px);
+}
+.pg-card-text {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 40px;
+  align-items: end;
+}
+.pg-card-text .nb-meta {
+  grid-column: 1 / -1;
+}
+.pg-card h2 {
+  margin: 4px 0 0;
+  font-size: clamp(26px, 1.2vw + 20px, 36px);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  font-weight: 500;
+  text-wrap: balance;
+}
+.pg-card h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+.pg-card h2 a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.12em;
+}
+.pg-card-dek {
+  max-width: 62ch;
+  margin: 6px 0 0;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+.pg-card-actions {
+  grid-row: 2 / 4;
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin: 0;
+}
+.pg-card-actions a {
+  font-weight: 500;
+}
+.pg-copy {
+  padding: 11px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--brand);
+  font: 600 14px/1 var(--sans);
+  color: var(--brand-ink);
+  cursor: pointer;
+  transition: background 0.2s var(--ease-hover);
+}
+.pg-copy:hover {
+  background: color-mix(in oklab, var(--brand), var(--paper) 18%);
+}
+.pg-copy.is-copied {
+  background: var(--signal-ink);
+}
+.pg-copy:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+/* ── The preview and its Now / First try switch ─────────────── */
+
+.pg-preview {
+  display: grid;
+  gap: 12px;
+}
+.pg-switch {
+  justify-self: start;
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--paper-2);
+}
+.pg-switch button {
+  padding: 7px 14px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  font: 500 13px/1 var(--sans);
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.pg-switch button[aria-pressed="true"] {
+  color: var(--ink);
+  background: var(--paper);
+  box-shadow:
+    0 0 0 1px var(--rule),
+    0 1px 2px color-mix(in oklab, #000 8%, transparent);
+}
+.pg-switch button:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+.pg-before {
+  display: grid;
+  gap: 12px;
+}
+.pg-before-note {
+  margin: 0 4px;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+/* My first try, styled the way it was: ink on white, a pixel-ish mono, a bordered box. */
+.ft {
+  padding: 16px;
+  border: 1px solid #111;
+  background: #fff;
+  color: #111;
+  font: 13px/1.45 var(--mono);
+}
+.ft button {
+  min-height: 32px;
+  margin-bottom: 12px;
+  padding: 0 16px;
+  border: 1px solid #111;
+  border-radius: 6px;
+  background: #fff;
+  font: inherit;
+  font-weight: 700;
+  color: #111;
+  box-shadow:
+    0 0 0 1px #fff,
+    0 0 0 2px #111;
+  cursor: pointer;
+}
+.ft button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.ft ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid #111;
+}
+.ft li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) repeat(3, 84px);
+  gap: 8px;
+  padding: 8px 10px;
+}
+.ft li + li {
+  border-top: 1px solid #111;
+}
+.ft li span:not(:first-child) {
+  min-height: 1.45em;
+  background: repeating-conic-gradient(#111 0 25%, #fff 0 50%) 0 0 / 2px 2px;
+  opacity: 0.25;
+}
+.ft li span.is-on {
+  background: none;
+  opacity: 1;
+  font-weight: 700;
+}
+@media (max-width: 560px) {
+  .ft li {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .ft li span:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ── An item's page ────────────────────────────────────────── */
+
+.pg-item .pp-head {
+  padding-bottom: clamp(28px, 4vw, 44px);
+}
+.pg-section {
+  margin-top: clamp(56px, 8vw, 104px);
+}
+.pg-section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 8px 40px;
+  align-items: baseline;
+  margin-bottom: clamp(20px, 3vw, 28px);
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--ink);
+}
+.pg-section-head .nb-section-title {
+  margin: 0;
+}
+.pg-section-head p {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--ink-2);
+}
+
+/* What I got wrong: a full box per mistake, then → why → now → the line that fixes it. */
+.pg-mistakes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: mistake;
+}
+.pg-mistakes li {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 12px;
+  padding: 20px 22px 22px;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  background: var(--paper);
+  counter-increment: mistake;
+}
+.pg-mistakes p {
+  margin: 0;
+}
+.pg-then {
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+.pg-then::before {
+  content: counter(mistake, decimal-leading-zero);
+  display: block;
+  margin-bottom: 10px;
+  font: 500 12px/1 var(--mono);
+  color: var(--signal-ink);
+}
+.pg-cost {
+  font-size: 15px;
+  color: var(--ink-2);
+}
+.pg-now,
+.pg-line {
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+  font-size: 15px;
+}
+.pg-now .nb-label,
+.pg-line .nb-label {
+  display: block;
+  margin-bottom: 6px;
+}
+.pg-line {
+  font: 400 13px/1.55 var(--mono);
+  color: var(--ink-2);
+}
+
+/* The code: tabs over a dark panel, one file at a time. */
+.pg-code {
+  overflow: hidden;
+  border-radius: 14px;
+  color-scheme: dark;
+  background: var(--deep);
+  color: color-mix(in oklab, var(--paper), #fff 30%);
+  box-shadow: 0 0 0 1px color-mix(in oklab, #000 25%, transparent);
+}
+.pg-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 6px 6px 0;
+  overflow-x: auto;
+  border-bottom: 1px solid color-mix(in oklab, var(--paper) 14%, transparent);
+}
+.pg-tabs button {
+  flex: none;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 8px 8px 0 0;
+  background: none;
+  font: 500 12.5px/1 var(--mono);
+  color: color-mix(in oklab, var(--paper) 55%, transparent);
+  cursor: pointer;
+}
+.pg-tabs button:hover {
+  color: var(--paper);
+}
+.pg-tabs button[aria-selected="true"] {
+  color: var(--paper);
+  background: color-mix(in oklab, var(--paper) 10%, transparent);
+}
+.pg-tabs button:focus-visible,
+.pg-code pre:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: -2px;
+}
+.pg-code-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 96px 0 20px;
+  font: 400 12px/1.3 var(--mono);
+  color: color-mix(in oklab, var(--paper) 50%, transparent);
+}
+.pg-code-note {
+  max-width: 72ch;
+  margin: 0;
+  padding: 0 20px 4px;
+  font-size: 14px;
+  color: color-mix(in oklab, var(--paper) 72%, transparent);
+}
+.pg-code pre {
+  max-height: 560px;
+  margin: 0;
+  padding: 16px 20px 22px;
+  overflow: auto;
+  font: 400 13px/1.65 var(--mono);
+  font-variant-ligatures: none;
+  font-feature-settings:
+    "liga" 0,
+    "calt" 0;
+  tab-size: 2;
+}
+
+.pg-seen ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pg-seen a {
+  display: inline-flex;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--ink);
+}
+.pg-seen a:hover {
+  border-color: var(--ink);
+}
+.pg-item .close {
+  margin-top: clamp(64px, 9vw, 120px);
+}
+
+@media (max-width: 760px) {
+  .pg-card-text,
+  .pg-section-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pg-card-actions {
+    grid-row: auto;
+    grid-column: auto;
+    margin-top: 10px;
+  }
+}

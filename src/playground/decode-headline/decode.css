@@ -1,0 +1,197 @@
+/* The decoding hero. Warm paper, big sans, one serif word in brass. While a letter scrambles it
+   keeps its place in the line and only goes transparent; the mono glyph sits on top of it,
+   smaller, so it never pushes the line about. */
+
+.dh {
+  position: relative;
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  min-height: clamp(380px, 50vw, 520px);
+  padding: clamp(28px, 6vw, 72px) clamp(20px, 6vw, 80px);
+  border: 1px solid var(--rule);
+  border-radius: 18px;
+  background: color-mix(in oklab, var(--paper), var(--lift) 30%);
+  color: var(--ink);
+  overflow: hidden;
+}
+.dh-kicker {
+  margin: 0 0 clamp(16px, 2.4vw, 24px);
+  font: 500 12px/1.4 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+/* ── The headline ─────────────────────────────────────────── */
+
+.dh .dh-h1 {
+  max-width: 15ch;
+  margin: 0;
+  font: 500 clamp(34px, 4.2vw + 14px, 72px) / 1.04 var(--sans);
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.dh-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.dh-w {
+  white-space: nowrap;
+}
+.dh-c {
+  position: relative;
+}
+/* The accent word: serif italic, a touch larger, in brass. line-height 0 keeps it from
+   opening up its line. */
+.dh-a {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.1em;
+  letter-spacing: -0.01em;
+  line-height: 0;
+  color: var(--signal-ink);
+}
+/* The glyph drawn over a scrambling letter. Empty, it's nothing. */
+.dh-g {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: 400 0.56em/1 var(--mono);
+  font-style: normal;
+  letter-spacing: 0;
+  color: var(--ink-3);
+  pointer-events: none;
+}
+.dh-a .dh-g {
+  color: color-mix(in oklab, var(--signal), var(--paper) 25%);
+}
+.dh-c.is-scr {
+  color: transparent;
+}
+/* A letter lands in brass and cools to ink; the accent fades up in its own colour. */
+.dh-text[data-state] .dh-c:not(.is-scr) {
+  animation: dh-land 520ms var(--ease) both;
+}
+.dh-text[data-state] .dh-a:not(.is-scr) {
+  animation-name: dh-land-accent;
+  animation-duration: 700ms;
+}
+@keyframes dh-land {
+  from {
+    color: var(--signal-ink);
+  }
+}
+@keyframes dh-land-accent {
+  from {
+    opacity: 0.15;
+  }
+}
+
+/* ── Subhead and button: up once the headline has settled ─── */
+
+.dh-sub {
+  max-width: 44ch;
+  margin: clamp(18px, 2.4vw, 26px) 0 0;
+  font-size: clamp(16px, 0.4vw + 15px, 19px);
+  line-height: 1.5;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+.dh-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-top: clamp(24px, 3vw, 32px);
+}
+.dh-sub,
+.dh-actions {
+  transition:
+    opacity 600ms var(--ease) 120ms,
+    transform 700ms var(--ease) 120ms;
+}
+.dh-actions {
+  transition-delay: 260ms;
+}
+.dh:has(.dh-text[data-state="run"]) :is(.dh-sub, .dh-actions) {
+  opacity: 0;
+  transform: translateY(12px);
+  transition-duration: 160ms;
+  transition-delay: 0s;
+}
+.dh-note {
+  font: 400 13px/1.4 var(--mono);
+  color: var(--ink-3);
+}
+
+/* The magnet moves the button inside a wrapper that stays put. */
+.dh-mag {
+  display: inline-block;
+}
+.dh .dh-cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 24px;
+  border-radius: 10px;
+  background: var(--brand);
+  font: 600 15px/1 var(--sans);
+  color: var(--brand-ink);
+  text-decoration: none;
+  will-change: transform;
+  transition: background 200ms var(--ease-hover);
+}
+.dh-cta span {
+  display: inline-block;
+}
+.dh .dh-cta:hover {
+  background: color-mix(in oklab, var(--brand), var(--paper) 16%);
+}
+.dh .dh-cta:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+}
+
+/* ── Replay ───────────────────────────────────────────────── */
+
+.dh-replay {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 7px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--paper);
+  font: 500 12px/1 var(--mono);
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition:
+    color 160ms var(--ease-hover),
+    border-color 160ms var(--ease-hover);
+}
+.dh-replay:hover {
+  color: var(--ink);
+  border-color: var(--ink-3);
+}
+.dh-replay:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dh-replay {
+    display: none;
+  }
+  .dh-sub,
+  .dh-actions {
+    transition: none;
+  }
+}

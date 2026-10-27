@@ -1,0 +1,149 @@
+/* The brass ring hero: a stage with the copy on one side and the WebGL object on the other.
+   The stage is its own container, so it stacks the object above the copy whenever it's narrow,
+   whatever the viewport. Only the site's tokens; the canvas reads them too. */
+
+.br {
+  container-type: inline-size;
+}
+.br-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  align-items: stretch;
+  height: clamp(440px, 60vw, 620px);
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 18px;
+  background: var(--paper-2);
+  /* Vertical scrolling still works over the stage on touch screens. */
+  touch-action: pan-y;
+}
+
+/* ── The copy ─────────────────────────────────────────────── */
+
+.br-copy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: 18px;
+  padding: clamp(28px, 5cqi, 64px);
+  padding-right: 0;
+}
+.br-eyebrow {
+  margin: 0;
+  font: 400 12px/1.4 var(--mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.br-title {
+  max-width: 12ch;
+  margin: 0;
+  font: 500 clamp(32px, 4.6cqi, 54px) / 1.04 var(--sans);
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.br-title em {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.08em;
+  letter-spacing: -0.01em;
+  color: var(--signal-ink);
+}
+.br-sub {
+  max-width: 34ch;
+  margin: 0;
+  font-size: clamp(15px, 1.4cqi, 17px);
+  line-height: 1.5;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+.br-button {
+  margin-top: 6px;
+  padding: 13px 20px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--brand);
+  font: 600 15px/1 var(--sans);
+  color: var(--brand-ink);
+  cursor: pointer;
+  transition: background 0.2s var(--ease-hover);
+}
+.br-button:hover {
+  background: color-mix(in oklab, var(--brand), var(--paper) 18%);
+}
+.br-button:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+}
+
+/* ── The object ───────────────────────────────────────────── */
+
+.br-object {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+.br-object canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* No WebGL: a still ring in CSS, with its shadow on the paper. */
+.br-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.br-fallback::before {
+  content: "";
+  width: min(52%, 280px);
+  aspect-ratio: 1;
+  border: clamp(22px, 4.5cqi, 44px) solid var(--signal);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 2px color-mix(in oklab, var(--paper) 40%, transparent),
+    0 0 0 2px color-mix(in oklab, var(--ink) 18%, transparent);
+  transform: rotateX(18deg);
+}
+.br-fallback::after {
+  content: "";
+  position: absolute;
+  bottom: 14%;
+  left: 50%;
+  width: min(44%, 240px);
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--ink) 16%, transparent), transparent);
+  transform: translateX(-50%);
+}
+
+/* ── Narrow: the object above the copy ───────────────────── */
+
+@container (max-width: 640px) {
+  .br-stage {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 250px auto;
+    height: auto;
+    min-height: 440px;
+  }
+  .br-object {
+    grid-row: 1;
+  }
+  .br-copy {
+    grid-row: 2;
+    align-content: start;
+    gap: 14px;
+    padding: 4px 24px 28px;
+  }
+  .br-title {
+    font-size: clamp(30px, 9cqi, 40px);
+  }
+}

@@ -1,0 +1,351 @@
+/* Spotlight cards: a features grid on a deep tobacco stage, lit by one soft brass light that
+   follows the pointer. The grid holds the pointer (--x, --y); each card holds its own offset in
+   the grid (--ox, --oy), so the light's place on a card is a subtraction CSS does itself. Two
+   layers per card: ::before is the wash on the surface, ::after the same light masked down to
+   a 1px ring, which is the border glowing where the light is. */
+
+.sc {
+  --sc-on: var(--on-deep, var(--paper));
+  --sc-brass: color-mix(in oklab, var(--signal), var(--lift, var(--paper)) 38%);
+  --sc-face: color-mix(in oklab, var(--deep), var(--sc-on) 5%);
+  --sc-edge: color-mix(in oklab, var(--sc-on) 13%, transparent);
+  /* The light: how far it reaches, and how strong it is on the surface and on the border. */
+  --sc-r: 340px;
+  --sc-wash: color-mix(in oklab, var(--sc-brass) 30%, transparent);
+  --sc-ring: var(--sc-brass);
+  container: sc / inline-size;
+  overflow: hidden;
+  padding: clamp(24px, 5cqi, 56px);
+  border-radius: 18px;
+  color: var(--sc-on);
+  background: linear-gradient(165deg, var(--brand), var(--deep) 70%);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ink) 25%, transparent);
+}
+
+/* ── Heading ─────────────────────────────────────────────── */
+
+.sc-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  gap: 12px 48px;
+  align-items: end;
+  margin-bottom: clamp(24px, 4cqi, 40px);
+}
+.sc-kicker {
+  grid-column: 1 / -1;
+  margin: 0;
+  font: 500 11px/1.4 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sc-brass);
+}
+.sc-head h2 {
+  margin: 0;
+  font: 500 clamp(28px, 3.4cqi + 14px, 48px) / 1.05 var(--sans);
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.sc-head em {
+  font: italic 400 1.08em/1 var(--serif);
+  letter-spacing: -0.01em;
+  color: var(--sc-brass);
+}
+.sc-sub {
+  margin: 0;
+  max-width: 40ch;
+  line-height: 1.55;
+  color: color-mix(in oklab, var(--sc-on) 72%, transparent);
+}
+
+/* ── Grid ────────────────────────────────────────────────── */
+
+/* position: relative makes the grid every card's offsetParent, so offsetLeft is grid-relative. */
+.sc-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-auto-rows: minmax(168px, auto);
+  gap: 12px;
+}
+.sc-big {
+  grid-column: 1 / 5;
+  grid-row: 1 / 3;
+}
+.sc-small {
+  grid-column: span 2;
+}
+.sc-wide {
+  grid-column: span 4;
+}
+
+/* ── Card ────────────────────────────────────────────────── */
+
+.sc-card {
+  /* Where the light falls on this card. Before the first pointer move it sits far off. */
+  --lx: calc(var(--x, -1000px) - var(--ox, 0px));
+  --ly: calc(var(--y, -1000px) - var(--oy, 0px));
+  --lit: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 22px;
+  border: 1px solid var(--sc-edge);
+  border-radius: 12px;
+  color: inherit;
+  background: var(--sc-face);
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 600ms var(--ease, ease-out);
+}
+.sc-card::before,
+.sc-card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--lit);
+  transition: opacity 400ms var(--ease-hover, ease);
+}
+.sc-card::before {
+  background: radial-gradient(var(--sc-r) circle at var(--lx) var(--ly), var(--sc-wash), transparent 70%);
+}
+/* The border light: the same gradient, with the padding box masked out so only the 1px ring
+   shows. The ring is full strength; the falloff does the rest. */
+.sc-card::after {
+  padding: 1px;
+  background: radial-gradient(var(--sc-r) circle at var(--lx) var(--ly), var(--sc-ring), transparent 70%);
+  -webkit-mask:
+    linear-gradient(white 0 0) content-box,
+    linear-gradient(white 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(white 0 0) content-box,
+    linear-gradient(white 0 0);
+  mask-composite: exclude;
+}
+/* The light is on while the pointer is over the grid. Cards near it catch the edge of it too. */
+.sc-grid[data-on] .sc-card {
+  --lit: 1;
+}
+/* Keyboard: the same light, centred on the focused card. */
+/* .sc in front so these beat the page's own link and focus styles. */
+.sc .sc-card {
+  text-decoration: none;
+}
+.sc .sc-card:focus-visible {
+  --lx: 50%;
+  --ly: 50%;
+  --lit: 1;
+  outline: 2px solid var(--sc-brass);
+  outline-offset: 3px;
+}
+
+.sc-text {
+  position: relative;
+  display: grid;
+  gap: 4px;
+}
+.sc-title {
+  font-weight: 500;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+}
+.sc-copy {
+  max-width: 36ch;
+  font-size: 15px;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--sc-on) 66%, transparent);
+}
+.sc-big .sc-title {
+  font-size: clamp(20px, 1.4cqi + 10px, 24px);
+}
+.sc-wide {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 28px;
+}
+
+/* ── Drawings ────────────────────────────────────────────── */
+
+.sc-art {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  overflow: visible;
+  fill: none;
+  stroke: color-mix(in oklab, var(--sc-on) 80%, transparent);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sc-big .sc-art {
+  width: min(100%, 300px);
+  height: auto;
+  margin: 8px auto 0;
+  stroke-width: 1.2;
+}
+.sc-art * {
+  transform-box: fill-box;
+  transition:
+    transform 500ms var(--ease, ease-out),
+    stroke-dashoffset 900ms var(--ease, ease-out),
+    stroke 300ms ease,
+    opacity 300ms ease;
+}
+.sc-arc {
+  stroke-dasharray: 0.04 0.04;
+  stroke-dashoffset: 0;
+}
+.sc-dot {
+  fill: var(--sc-brass);
+  stroke: none;
+  opacity: 0;
+}
+.sc-lens {
+  transform-origin: 40% 40%;
+}
+.sc-hand {
+  transform-origin: 0% 50%;
+}
+.sc-shackle {
+  transform: translateY(-4px);
+}
+
+/* What each drawing does when its card is hot: hovered, focused, or lit on a phone. */
+.sc-card:is(:hover, :focus-visible, [data-lit]) .sc-art {
+  stroke: var(--sc-on);
+}
+/* The dashes run from the laptop to the phone. */
+.sc-card:is(:hover, :focus-visible, [data-lit]) .sc-arc {
+  stroke: var(--sc-brass);
+  stroke-dashoffset: -0.32;
+}
+.sc-card:is(:hover, :focus-visible, [data-lit]) .sc-dot {
+  opacity: 1;
+  transition-delay: 500ms;
+}
+.sc-card:is(:hover, :focus-visible, [data-lit]) .sc-lens {
+  transform: translate(-3px, -3px) rotate(-10deg);
+}
+.sc-card:is(:hover, :focus-visible, [data-lit]) .sc-link-a {
+  transform: translateX(4px);
+}
+.sc-card:is(:hover, :focus-visible, [data-lit]) .sc-link-b {
+  transform: translateX(-4px);
+  stroke: var(--sc-brass);
+}
+.sc-card:is(:hover, :focus-visible, [data-lit]) .sc-hand {
+  transform: rotate(-120deg);
+}
+.sc-card:is(:hover, :focus-visible, [data-lit]) .sc-shackle {
+  transform: none;
+  stroke: var(--sc-brass);
+}
+
+/* ── No hover (phones) ───────────────────────────────────── */
+
+/* The card crossing the middle of the screen holds a light that drifts slowly across it. The
+   gradient is twice the card's size, so moving its position moves the light. */
+.sc-grid[data-touch] .sc-card[data-lit] {
+  --lit: 1;
+}
+.sc-grid[data-touch] .sc-card::before,
+.sc-grid[data-touch] .sc-card::after {
+  background-size: 200% 200%;
+  background-repeat: no-repeat;
+  background-position: 50% 70%;
+  animation: sc-drift 14s ease-in-out infinite alternate;
+}
+.sc-grid[data-touch] .sc-card::before {
+  background-image: radial-gradient(var(--sc-r) circle at 50% 50%, var(--sc-wash), transparent 70%);
+}
+.sc-grid[data-touch] .sc-card::after {
+  background-image: radial-gradient(calc(var(--sc-r) * 0.8) circle at 50% 50%, var(--sc-ring), transparent 70%);
+}
+@keyframes sc-drift {
+  from {
+    background-position: 30% 80%;
+  }
+  to {
+    background-position: 70% 60%;
+  }
+}
+
+/* ── Narrow ──────────────────────────────────────────────── */
+
+@container sc (max-width: 720px) {
+  .sc-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sc-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sc-big {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+  .sc-small,
+  .sc-wide {
+    grid-column: span 1;
+  }
+  .sc-wide {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 24px;
+  }
+}
+@container sc (max-width: 520px) {
+  .sc-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: auto;
+  }
+  .sc-small,
+  .sc-wide {
+    grid-column: 1 / -1;
+  }
+  .sc-card {
+    gap: 20px;
+    padding: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-card,
+  .sc-art * {
+    transition: none;
+  }
+  .sc-card {
+    transform: none;
+  }
+  .sc-grid[data-touch] .sc-card::before,
+  .sc-grid[data-touch] .sc-card::after {
+    animation: none;
+  }
+}
+
+/* ── The naive version (Naive.tsx) ───────────────────────── */
+
+/* It draws its own light inline, so the shared layers stay off. */
+.sc-naive .sc-card::before,
+.sc-naive .sc-card::after {
+  content: none;
+}
+.sc-naive .sc-card {
+  transition: none;
+}
+/* Its drawings stay still: the reactions belong to the live version. */
+.sc-naive .sc-art,
+.sc-naive .sc-art * {
+  transition: none !important;
+  transform: none !important;
+  stroke-dashoffset: 0 !important;
+}
+.sc-sub b {
+  font: 600 1em/1 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--sc-brass);
+}

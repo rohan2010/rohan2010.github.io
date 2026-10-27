@@ -1,0 +1,59 @@
+{
+  "title": "A field of *brass* dots that ripples under the cursor",
+  "dek": "A hero background in three.js: a grid of dots seen from low down, rolling slowly to a horizon. Move the cursor and rings spread from where it touches. The copy on top is plain text.",
+  "kind": "Hero background",
+  "date": "2026-10-27",
+  "order": 1,
+  "stack": ["three.js", "React"],
+  "mistakesTitle": "Where this breaks",
+  "mistakesIntro": "The obvious version looks the same in a screenshot. These are the ways it goes wrong on a real page.",
+  "template": "Build a hero background for my landing page: a field of dots on a plane that rolls slowly and ripples under the cursor. Stack: {stack}, with three.js. Lay a grid of about {density} points on a flat plane and look at it with a perspective camera from low down, so it recedes to a horizon. In a vertex shader, lift each point with a few slow, layered sines, and add ripple rings that spread from where the pointer hits the plane: raycast the pointer onto the plane, keep the last four ripples as uniforms (position and start time), and let each ring fade as it grows. Ease the pointer, never snap to it. Motion should feel {motion}. Make the points round and soft, smaller with distance, and fade them out toward the horizon so they melt into the background. Use my colours, {palette}, read at runtime from my CSS custom properties, not hard-coded in the shader. Put the headline, \"{headline}\", a one-line subhead and a button as real HTML on top; the canvas is aria-hidden and only decoration. Keep the text readable with a soft wash of the background colour behind it. Only render while the hero is on screen: use an IntersectionObserver and stop the animation loop when it scrolls away or the tab is hidden. If the visitor prefers reduced motion, draw one still frame and no loop. Cap devicePixelRatio at 2 and resize with a ResizeObserver on the container, not the window. Dispose the geometry, material and renderer on unmount, and create the canvas inside the effect. No ripples when the pointer isn't over the hero; on touch, a tap drops a ring and vertical scrolling still works. If WebGL isn't available, show a still dot pattern in CSS instead.",
+  "variables": [
+    { "key": "stack", "label": "Your stack", "value": "Next.js with React", "hint": "Framework and styling" },
+    { "key": "density", "label": "How many dots", "value": "200 by 110", "hint": "20,000 points is still cheap" },
+    { "key": "motion", "label": "How it moves", "value": "calm, like a slow swell, never busy" },
+    { "key": "palette", "label": "Your colours", "value": "warm paper background, near-black dots, brass where a ring passes", "hint": "Background, dots, accent" },
+    { "key": "headline", "label": "Your headline", "value": "Release notes your users actually read." }
+  ],
+  "mistakes": [
+    {
+      "then": "The loop ran from mount to unmount, scrolled away or not.",
+      "cost": "Four WebGL heroes on one page all drew sixty frames a second. Fans spin, phones get warm, and scrolling stutters.",
+      "now": "An IntersectionObserver starts and stops the loop. Off screen or in a hidden tab, it draws nothing. Idle, it drops to 30 frames a second.",
+      "line": "use an IntersectionObserver and stop the animation loop when it scrolls away or the tab is hidden"
+    },
+    {
+      "then": "The renderer took window.devicePixelRatio as it came, and resized on the window's resize event.",
+      "cost": "A 3× phone draws nine times the pixels for no visible gain. And when the column changes width without the window changing, the canvas stretches.",
+      "now": "Pixel ratio capped at 2. A ResizeObserver on the stage sets the size.",
+      "line": "Cap devicePixelRatio at 2 and resize with a ResizeObserver on the container"
+    },
+    {
+      "then": "Nothing was disposed, and the canvas lived in the JSX.",
+      "cost": "React's strict mode mounts twice in development, so every reload leaked a WebGL context. Browsers allow about sixteen, then the oldest goes blank.",
+      "now": "Unmount disposes the geometry, material and renderer and releases the context. Each mount makes its own canvas, so the second mount doesn't get a dead one.",
+      "line": "Dispose the geometry, material and renderer on unmount, and create the canvas inside the effect"
+    },
+    {
+      "then": "The pointer was a screen position, and the rings were drawn around it in screen space.",
+      "cost": "Rings stayed perfect circles on a surface lying flat, so they looked pasted on. Moving off the hero left the last ring stuck in place.",
+      "now": "The pointer is raycast onto the plane, so rings spread across the ground in perspective. The mound under the cursor eases in and out.",
+      "line": "raycast the pointer onto the plane"
+    },
+    {
+      "then": "The headline was drawn into the canvas, and the colours were hex values in the shader.",
+      "cost": "Screen readers and search engines saw nothing, nobody could select it, and the field ignored the site's colour scheme.",
+      "now": "The copy is HTML on top of an aria-hidden canvas. The shader's colours are read from the page's tokens when it comes on screen.",
+      "line": "read at runtime from my CSS custom properties, not hard-coded in the shader"
+    }
+  ],
+  "files": [
+    { "path": "src/playground/dot-terrain/DotTerrain.tsx", "label": "DotTerrain.tsx", "note": "The stage: renderer, grid, pointer raycast and rings, the on-screen loop, and clean-up." },
+    {
+      "path": "src/playground/dot-terrain/shaders.ts",
+      "label": "shaders.ts",
+      "note": "The vertex shader lifts the dots with sines and rings; the fragment shader makes them round and fades them to the horizon."
+    },
+    { "path": "src/playground/dot-terrain/dot-terrain.css", "label": "dot-terrain.css", "note": "The stage, the paper wash behind the copy, and the CSS fallback, all in the site's tokens." }
+  ]
+}

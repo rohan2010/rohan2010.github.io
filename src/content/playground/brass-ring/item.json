@@ -1,0 +1,59 @@
+{
+  "title": "A 3D object hero in polished *brass*",
+  "dek": "One brass ring beside a headline. It turns slowly, leans toward your cursor and turns a little further as you scroll past. The reflections come from a room built in code, so there's no file to download, and the brass takes its colour from the page.",
+  "kind": "Hero",
+  "date": "2026-10-27",
+  "order": 2,
+  "stack": ["three.js", "React"],
+  "template": "Build a hero section in {stack} with one polished 3D object beside the copy: {object}, rendered with three.js. Make it {material}, using MeshPhysicalMaterial with metalness near 1 and low roughness. Metal only shows what it reflects, so light it with RoomEnvironment through PMREMGenerator instead of loading an HDR file. Use ACES filmic tone mapping and sRGB output, and put a soft shadow on the ground under it. Read the colours from my CSS custom properties at runtime and convert them to THREE.Color, so the object follows my palette: {palette}. The object turns slowly on its own, leans toward the pointer (mouse and touch) and eases back to rest when the pointer leaves. Damp every movement with a frame-rate independent lerp. As the visitor scrolls, add rotation from the stage's own progress through the viewport, not the page's scroll position. Only render while the stage is on screen: use an IntersectionObserver and stop the animation loop when it scrolls away or the tab is hidden. Cap devicePixelRatio at 2, resize with a ResizeObserver on the container, and fit the camera to the object's bounding sphere at any aspect ratio so it never crops on a narrow screen. If the visitor prefers reduced motion, draw one still, well-lit frame and skip the loop and the scroll rotation. On unmount, dispose the geometry, materials, the PMREM render target and the renderer, and keep it safe for React strict mode, which mounts twice. If WebGL isn't available, show a static CSS version of the object. Beside it, in real HTML text, put the headline \"{headline}\", a one-line subhead and a button. The canvas is aria-hidden. On phones, stack the object above the text.",
+  "variables": [
+    { "key": "stack", "label": "Your stack", "value": "Next.js with React and plain CSS" },
+    { "key": "object", "label": "The object", "value": "a thick ring, like a torus with a fat tube", "hint": "One simple shape reads best; a torus knot if you want more going on" },
+    { "key": "material", "label": "The finish", "value": "polished brass with a light clearcoat", "hint": "Metal, lacquer, ceramic: say how shiny" },
+    { "key": "palette", "label": "Your colours", "value": "warm paper background, near-black ink, brass as the one accent", "hint": "Name the CSS variables if you have them" },
+    { "key": "headline", "label": "Your headline", "value": "Made to be *handled*, not just used.", "hint": "Short. Mark one word for the serif italic" }
+  ],
+  "mistakesTitle": "Where this breaks",
+  "mistakesIntro": "The first version of a 3D hero usually looks fine on the laptop it was made on. These are the ways it goes wrong everywhere else.",
+  "mistakes": [
+    {
+      "then": "A standard material set to metal, one directional light and an ambient light.",
+      "cost": "Metal only shows what it reflects. With nothing around it, the brass goes dark brown with one hard highlight, like plastic.",
+      "now": "A room built in code, blurred by PMREM into an environment map. Soft reflections all round, and no HDR file to download.",
+      "line": "light it with RoomEnvironment through PMREMGenerator instead of loading an HDR file"
+    },
+    {
+      "then": "The animation loop starts on mount and never stops.",
+      "cost": "A page with several of these draws all of them at 60 frames a second, on screen or not. Laptops get warm and phones get slow.",
+      "now": "It only draws while the stage is on screen and the tab is open.",
+      "line": "use an IntersectionObserver and stop the animation loop when it scrolls away or the tab is hidden"
+    },
+    {
+      "then": "Scroll rotation from window.scrollY.",
+      "cost": "Lower down a page, the ring has already spun several times before you reach it, and moving the section changes how it behaves.",
+      "now": "Rotation follows the stage's progress through the viewport, 0 to 1, wherever it sits on the page.",
+      "line": "from the stage's own progress through the viewport, not the page's scroll position"
+    },
+    {
+      "then": "A camera distance tuned once on a wide screen.",
+      "cost": "On a phone the stage is narrower than it is tall, and the ring is cut off at both sides.",
+      "now": "The camera backs off until the ring's bounding sphere fits the tighter of the two angles.",
+      "line": "fit the camera to the object's bounding sphere at any aspect ratio so it never crops on a narrow screen"
+    },
+    {
+      "then": "No cleanup when the component unmounts.",
+      "cost": "Strict mode mounts twice in development, and every visit leaves a WebGL context behind. Browsers cap them, then drop the oldest, and a hero goes blank.",
+      "now": "Geometry, materials, the environment map and the renderer are disposed, and the context is released.",
+      "line": "On unmount, dispose the geometry, materials, the PMREM render target and the renderer"
+    }
+  ],
+  "files": [
+    { "path": "src/playground/brass-ring/BrassRing.tsx", "label": "BrassRing.tsx", "note": "The hero: scene, lighting, motion, the on-screen and reduced-motion rules, and the cleanup." },
+    {
+      "path": "src/playground/brass-ring/brass-ring.css",
+      "label": "brass-ring.css",
+      "note": "The stage and the copy in the site's tokens, the CSS fallback ring, and the stacked layout for narrow stages."
+    },
+    { "path": "src/playground/brass-ring/Naive.tsx", "label": "Naive.tsx", "note": "The obvious version, for comparison: metal with no environment to reflect." }
+  ]
+}

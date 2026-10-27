@@ -1,0 +1,125 @@
+/* The prompt builder on a Playground item: the live prompt beside the fields that fill it.
+   The blanks are highlighted, and turn brass once they're yours. */
+.pb-text mark {
+  padding: 0 2px;
+  color: var(--ink);
+  background: color-mix(in oklab, var(--signal) 16%, transparent);
+  border-bottom: 1.5px dotted var(--signal-ink);
+}
+.pb {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: clamp(20px, 3vw, 40px);
+  align-items: start;
+}
+.pb-prompt {
+  position: sticky;
+  top: calc(var(--nav-h) + 16px);
+  border-radius: 16px;
+  color: color-mix(in oklab, var(--paper), var(--lift) 30%);
+  background: var(--deep);
+  box-shadow: 0 0 0 1px color-mix(in oklab, #000 25%, transparent);
+}
+.pb-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 10px 10px 20px;
+  border-bottom: 1px solid color-mix(in oklab, var(--paper) 14%, transparent);
+  font: 500 11px/1.4 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--paper) 60%, transparent);
+}
+.pb-count {
+  margin-left: auto;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.pb-head .nb-copy {
+  position: static;
+}
+.pb-text {
+  margin: 0;
+  padding: 20px 22px 24px;
+  font-size: clamp(16px, 0.3vw + 15px, 18px);
+  line-height: 1.7;
+}
+.pb-text mark {
+  color: var(--paper);
+  background: color-mix(in oklab, var(--signal) 22%, transparent);
+  border-bottom-color: color-mix(in oklab, var(--signal), var(--lift) 38%);
+  transition: background 0.2s;
+}
+.pb-text mark.is-yours {
+  color: var(--deep);
+  background: color-mix(in oklab, var(--signal), var(--lift) 45%);
+}
+
+.pb-form {
+  padding: 20px 22px 22px;
+  border: 1px solid color-mix(in oklab, var(--ink) 35%, var(--paper));
+  border-radius: 16px;
+}
+.pb-form-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.pb-reset {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 500 13px/1.4 var(--sans);
+  color: var(--ink-2);
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.pb-reset:hover {
+  color: var(--ink);
+}
+.pb-field {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+}
+.pb-field-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+.pb-field-label small {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--ink-2);
+}
+.pb-field textarea {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  font: 400 15px/1.45 var(--sans);
+  color: var(--ink);
+  background: color-mix(in oklab, var(--paper), var(--lift) 50%);
+  resize: vertical;
+  field-sizing: content;
+}
+.pb-field textarea:focus {
+  outline: 2px solid var(--signal);
+  outline-offset: 0;
+  border-color: transparent;
+}
+
+/* Why it's written this way, beside tips and what people made. */
+@media (max-width: 900px) {
+  .pb {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pb-prompt {
+    position: static;
+  }
+}
