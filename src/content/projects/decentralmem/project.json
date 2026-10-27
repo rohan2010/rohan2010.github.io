@@ -7,6 +7,7 @@
   "links": {
     "code": "https://github.com/rohan2010/decenz-mcp"
   },
+  "demo": "memory",
   "caseStudy": "/work/decentralmem/",
   "design": {
     "nodes": [

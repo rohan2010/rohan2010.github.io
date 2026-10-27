@@ -5,7 +5,7 @@
   "year": "2024 – now",
   "status": "In production at my day job",
   "links": {},
-  "demo": "onboarding-toy",
+  "demo": "review",
   "caseStudy": "/work/onboarding-agent/",
   "design": {
     "nodes": [
@@ -39,7 +39,7 @@
       "when": "2024 – now",
       "role": "Software engineer. Built the agent workflow.",
       "builtWith": ["LangGraph", "tool calling", "conditional routing", "schema validation", "an eval set"],
-      "note": "Work for an employer, so the code, data and internal details stay private. The demo on this page is a toy."
+      "note": "Work for an employer, so the code, data and internal details stay private. The Review Simulator on this page runs on sample documents."
     },
     "pattern": "a stateful graph that routes on each check and loops back on a failure",
     "details": [

@@ -22,8 +22,10 @@ Live at **[rohan2010.github.io](https://rohan2010.github.io)**.
     auditing the human values inside RLHF datasets.
   - [DecentralMem](https://rohan2010.github.io/work/decentralmem/): project memory for AI
     assistants, served over MCP.
-- **Two demos you can play.** A toy version of the onboarding agent (drag a document in and watch
-  it check, fail and retry) and bloomScroll's filtering cascade on a made-up feed.
+- **A simulator for every project.** Each case study runs its project in a Mac-style window that
+  plays itself or steps by hand, with the pipeline lit up as it goes: the Review Simulator
+  (onboarding agent), Cascade Simulator (bloomScroll), Values Audit Simulator (Value Imprint) and
+  Memory Simulator (DecentralMem).
 - **A hero that reacts to the cursor.** A dither grid on a canvas: faint dots that twinkle at rest
   and warm to brass where the pointer passes.
 
@@ -65,7 +67,7 @@ src/
   home/           hero dot grid and the take-apart scroll
   os/             rohanOS, the retro desktop
   theme/          the colour tokens
-  demos/, toy/    the playable demos
+  sim/            the project simulators and the screen they run in
 figures/desk/     the script that draws the desk
 ```
 

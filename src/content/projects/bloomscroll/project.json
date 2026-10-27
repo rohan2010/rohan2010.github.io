@@ -59,7 +59,7 @@
       ]
     ]
   },
-  "demo": "bloomscroll-cascade",
+  "demo": "cascade",
   "case": {
     "title": "A YouTube filter that *shows* what it can’t judge.",
     "lede": "You open YouTube to learn something and the feed pulls you somewhere else. bloomScroll is a Chrome extension that hides the off-topic videos. By default it decides on your own computer, so nothing you watch is sent anywhere.",

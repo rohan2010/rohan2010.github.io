@@ -1,0 +1,212 @@
+/* Cascade Simulator: a feed in a browser-ish view, settled stage by stage. */
+
+.cs {
+  display: grid;
+  gap: 14px;
+}
+.cs-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.cs-search {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 99px;
+  background: var(--sim-window);
+  box-shadow: inset 0 0 0 1px var(--sim-line);
+  font-size: 13px;
+  color: var(--ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.cs-search strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.cs-search svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.cs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 600 11.5px/1 var(--sans);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.cs-badge i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--signal);
+}
+
+.cs-stages {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.cs-stages li {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: var(--sim-soft);
+  font-size: 12px;
+  color: var(--ink-3);
+  transition:
+    background 0.35s,
+    color 0.35s;
+}
+.cs-stages strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.cs-stages b {
+  position: absolute;
+  top: 9px;
+  right: 11px;
+  font: 600 13px/1 var(--mono);
+}
+.cs-stages li.is-done {
+  background: var(--sim-window);
+  box-shadow: 0 0 0 1px var(--sim-line);
+  color: var(--ink-2);
+}
+.cs-stages li.is-done strong {
+  color: var(--ink);
+}
+.cs-stages li.is-done b {
+  color: var(--signal-ink);
+}
+.cs-stages li.is-next {
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--signal) 50%, transparent);
+}
+
+.cs-feed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+  gap: 12px 10px;
+}
+.cs-tile {
+  min-width: 0;
+  transition:
+    opacity 0.6s,
+    filter 0.6s,
+    transform 0.6s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.cs-thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--brand), var(--deep));
+}
+.cs-thumb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 80% at 75% 20%, color-mix(in oklab, var(--lift) 22%, transparent), transparent 70%);
+}
+.cs-thumb.tone-1 {
+  background: linear-gradient(135deg, var(--signal), var(--brand));
+}
+.cs-thumb.tone-2 {
+  background: linear-gradient(135deg, color-mix(in oklab, var(--ink-2), var(--paper) 30%), var(--deep));
+}
+.cs-thumb.tone-3 {
+  background: linear-gradient(135deg, color-mix(in oklab, var(--paper-2), var(--signal) 30%), var(--ink-2));
+}
+.cs-len,
+.cs-verdict {
+  position: absolute;
+  z-index: 1;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font: 600 10px/1.3 var(--sans);
+}
+.cs-len {
+  right: 6px;
+  bottom: 6px;
+  color: var(--paper);
+  background: color-mix(in oklab, #000 62%, transparent);
+}
+.cs-verdict {
+  left: 6px;
+  top: 6px;
+  color: var(--deep);
+  background: var(--paper);
+}
+.cs-title {
+  margin: 7px 0 2px;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cs-by {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.cs-why {
+  margin: 3px 0 0;
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--ink-2);
+}
+.cs-why b {
+  color: var(--signal-ink);
+  font-weight: 600;
+}
+
+.cs-tile.is-hidden {
+  opacity: 0.32;
+  filter: grayscale(1) blur(0.4px);
+  transform: scale(0.96);
+}
+.cs-tile.is-hidden .cs-verdict {
+  color: var(--paper);
+  background: var(--ink-2);
+}
+.cs-tile.is-kept .cs-thumb {
+  box-shadow: 0 0 0 2px var(--signal);
+}
+.cs-tile.is-fresh .cs-why {
+  animation: sim-in 0.35s ease-out both;
+}
+
+@container sim-main (max-width: 560px) {
+  .cs-stages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cs-badge {
+    display: none;
+  }
+  .cs-feed {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

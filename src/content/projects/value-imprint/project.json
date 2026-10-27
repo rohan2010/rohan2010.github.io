@@ -7,6 +7,7 @@
   "links": {
     "paper": "https://arxiv.org/abs/2411.11937"
   },
+  "demo": "values-audit",
   "caseStudy": "/work/value-imprint/",
   "design": {
     "nodes": [

@@ -34,6 +34,10 @@ There is also a weighted score: half similarity, plus recency, memory type and h
 - **Bad keys bounce.** Writes and searches with an invalid API key are rejected, and so is an unknown memory type.
 - The repo has 50 tests across seven files. They run against a Docker test stack: PostgreSQL, Qdrant, Redis and the embedding service.
 
+## try-it
+
+The promise in one replay. On Monday, a chat saves two decisions and ends. On Thursday, a new chat that knows nothing asks a question and gets the constraint back, with every store on the way lighting up as it's used.
+
 ## around
 
 API keys are stored only as SHA-256 hashes and shown once. A small dashboard on port 8080 shows what's in PostgreSQL, Qdrant and Redis side by side. There are setup guides for macOS and Windows, and one for connecting Claude Desktop or Claude Code.

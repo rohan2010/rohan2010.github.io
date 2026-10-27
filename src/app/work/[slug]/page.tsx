@@ -7,9 +7,8 @@ import { Contents, type ContentsItem } from "@/case/Contents";
 import { Facts } from "@/case/Facts";
 import { getCase, getProjects } from "@/content/projects";
 import { EMAIL, GITHUB, LINKEDIN } from "@/content/site";
-import { Cascade } from "@/demos/Cascade";
 import { Design } from "@/os/Design";
-import { Toy } from "@/toy/Toy";
+import { SIMS } from "@/sim/sims";
 import "../../home.css";
 import "@/case/case.css";
 
@@ -32,10 +31,6 @@ export async function generateMetadata({ params }: PageProps<"/work/[slug]">): P
 }
 
 const MAIL = `mailto:${EMAIL}?subject=${encodeURIComponent("Interview: Rohan Pant")}`;
-const DEMOS: Record<string, { label: string; cta: string; note: string; render: () => React.ReactNode }> = {
-  "onboarding-toy": { label: "Try a toy version", cta: "Play the toy version", note: "made-up documents", render: () => <Toy /> },
-  "bloomscroll-cascade": { label: "Try the cascade", cta: "Try the cascade", note: "a made-up feed", render: () => <Cascade /> },
-};
 
 // "*word*" in a title becomes the one accent word.
 function Title({ text }: { text: string }) {
@@ -55,7 +50,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
   const { project, study, prose } = found;
   const projects = getProjects();
   const pad = (n: number) => String(n).padStart(2, "0");
-  const demo = project.demo && DEMOS[project.demo];
+  const demo = project.demo ? SIMS[project.demo] : undefined;
   const next = projects[(projects.indexOf(projects.find((p) => p.slug === project.slug)!) + 1) % projects.length];
   const nextHref = next.case ? `/work/${next.slug}/` : `/#os/${next.slug}`;
 
@@ -130,12 +125,14 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
   if (demo)
     sections.push({
       id: "try-it",
-      label: demo.label,
+      label: demo.name,
       note: demo.note,
       body: (
         <>
           <Prose html={prose["try-it"]} />
-          <div className="case-demo">{demo.render()}</div>
+          <div className="case-demo">
+            <demo.Sim />
+          </div>
         </>
       ),
     });
@@ -170,7 +167,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
             <a className="btn" href={MAIL}>
               Email me
             </a>
-            {demo && <a href="#try-it">{demo.cta} ↓</a>}
+            {demo && <a href="#try-it">Run the {demo.name} ↓</a>}
             {project.links.paper && <a href={project.links.paper}>Read the paper ↗</a>}
             {project.links.code && <a href={project.links.code}>Code on GitHub ↗</a>}
           </p>
