@@ -10,8 +10,13 @@ Live at **[rohan2010.github.io](https://rohan2010.github.io)**.
 - **A desk you can take apart.** The hero is an isometric desk drawn in code. Every object opens
   something: the photo is an intro, the keyboard lists skills, the boarding passes are the career
   so far. Scroll and the desk comes apart piece by piece.
-- **rohanOS.** Click the monitor and you sit down at a small retro desktop. Each project is a
-  folder with its README, a system diagram and, where there is one, a live demo.
+- **Ambit OS.** Click the monitor and you sit down at a concept operating system for when the
+  agent inside it is more capable than you. It runs a made-up person's week: you hand work off,
+  read the plan and its budget, approve what goes out, and undo the rest. A guard written as plain
+  code decides what the agent may do at every step, and it's tested (`npm test`). Nothing runs a
+  model; the agent's words are written in advance. My own projects are in its Projects app, each
+  with its README, a system diagram and, where there is one, a live demo. On a phone it's the
+  voice-sized version: a status line, a caption and two buttons.
 - **Case studies.** One page per project at `/work/<project>/`: the problem, how it's built, the
   decisions worth explaining, how it was tested, and before and after.
   - [Seller onboarding agent](https://rohan2010.github.io/work/onboarding-agent/): a LangGraph
@@ -45,10 +50,10 @@ Live at **[rohan2010.github.io](https://rohan2010.github.io)**.
   component library. **three.js** for the Playground's WebGL pieces.
 - **The desk** is generated as SVG by `figures/desk/build.mjs` before every dev run and build,
   then made interactive in React.
-- **Fonts:** Instrument Sans, Instrument Serif and JetBrains Mono, plus B612 and Pixelify Sans
-  inside rohanOS. All are under the SIL Open Font License and self-hosted through `next/font`.
+- **Fonts:** Instrument Sans, Instrument Serif and JetBrains Mono, plus B612 on the desk.
+  All are under the SIL Open Font License and self-hosted through `next/font`.
 - **Content** lives in `src/content/projects/<slug>/`: `project.json` for the facts and the system
-  diagram, `case.md` for the case study, `README.md` for rohanOS. Pages are generated from it at
+  diagram, `case.md` for the case study, `README.md` for the desk's folders and Ambit OS's Projects app. Pages are generated from it at
   build time, so adding a folder adds a project. Notebook posts live in
   `src/content/notebook/<slug>/` (`entry.json` + `post.md`) and Playground items in
   `src/content/playground/<slug>/item.json`, the same way.
@@ -60,6 +65,7 @@ npm install
 npm run dev     # http://localhost:3000
 npm run build   # static site in out/
 npm run check   # validate Notebook and Playground content (also runs before every deploy)
+npm test        # Ambit OS: the guard, the plans and the undo, as tests
 ```
 
 Needs Node 22 (the version the deploy uses).
@@ -76,7 +82,8 @@ src/
   home/           hero dot grid and the take-apart scroll
   notebook/       post covers and reading tools
   playground/     the Playground's components, prompt builder and code view
-  os/             rohanOS, the retro desktop
+  ambit/          Ambit OS, the computer on the desk, and its tests
+  os/             Design.tsx, the system diagram drawing
   theme/          the colour tokens
   sim/            the project simulators and the screen they run in
 figures/desk/     the script that draws the desk

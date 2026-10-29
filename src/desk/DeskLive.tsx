@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { RohanOS, type OsProject } from "@/os/RohanOS";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AmbitOS } from "@/ambit/AmbitOS";
+import type { Project } from "@/content/projects";
 import { LABELS, PANELS, type Panel } from "./content";
 
 type Open = { kind: "panel"; id: string } | { kind: "folder"; slug: string } | null;
@@ -11,12 +12,17 @@ type Tip = { text: string; x: number; y: number } | null;
 // Makes the static desk drawing interactive: hover labels, click or Enter to
 // open, Esc to close. The SVG comes in as markup; objects are found by
 // [data-object] with event delegation, so the art stays server-rendered.
-export function DeskLive({ svg, css, projects }: { svg: string; css: string; projects: OsProject[] }) {
+// The fields of a project the desk and the computer on it need.
+export type DeskProject = Pick<Project, "slug" | "name" | "oneLine" | "status" | "year" | "readmeHtml" | "links" | "demo" | "caseStudy" | "design">;
+
+export function DeskLive({ svg, css, projects }: { svg: string; css: string; projects: DeskProject[] }) {
   const stage = useRef<HTMLDivElement>(null);
   const [tip, setTip] = useState<Tip>(null);
   const [open, setOpen] = useState<Open>(null);
   const [computer, setComputer] = useState<Computer>(null);
   const returnTo = useRef<Element | null>(null);
+  // The computer on the desk is Ambit OS (plans/ambit.md); its Projects app holds these.
+  const ambit = useMemo(() => projects.map((p) => ({ ...p, caseStudy: p.caseStudy ?? undefined, code: p.links.code, paper: p.links.paper })), [projects]);
 
   const labelOf = useCallback(
     (el: Element) => {
@@ -108,7 +114,6 @@ export function DeskLive({ svg, css, projects }: { svg: string; css: string; pro
     history.replaceState(null, "", window.location.pathname);
     stage.current?.querySelector<HTMLElement>('[data-object="monitor"]')?.focus();
   }, []);
-  const route = useCallback((slug?: string) => history.replaceState(null, "", slug ? `#os/${slug}` : "#os"), []);
 
   const close = useCallback(() => {
     setOpen(null);
@@ -126,7 +131,7 @@ export function DeskLive({ svg, css, projects }: { svg: string; css: string; pro
     <div className="desk-stage" ref={stage}>
       <style>{css}</style>
       <div dangerouslySetInnerHTML={{ __html: svg }} />
-      {computer && <RohanOS projects={projects} from={computer.from} start={computer.start} onExit={standUp} onRoute={route} />}
+      {computer && <AmbitOS projects={ambit} from={computer.from} start={computer.start} onExit={standUp} />}
       {tip && !open && (
         <span className="desk-tip" style={{ left: tip.x, top: tip.y }} aria-hidden="true">
           {tip.text}
@@ -175,7 +180,7 @@ function PanelView({ panel }: { panel: Panel }) {
   );
 }
 
-function FolderView({ project }: { project?: OsProject }) {
+function FolderView({ project }: { project?: DeskProject }) {
   if (!project) return null;
   return (
     <>

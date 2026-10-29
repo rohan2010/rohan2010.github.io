@@ -1,6 +1,6 @@
 // A system design drawn from project.json: nodes laid out left to right by
 // longest path, edges that point backwards (retries, loops) routed underneath.
-// One bit in rohanOS; a page can recolour it with --d-ink, --d-paper, --d-shadow and --d-loop.
+// Black on white by default; a page recolours it with --d-ink, --d-paper, --d-shadow and --d-loop.
 
 type Node = { id: string; label: string; note?: string };
 

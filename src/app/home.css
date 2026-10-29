@@ -68,7 +68,7 @@
 }
 
 /* ── Nav ──────────────────────────────────────────────── */
-/* Fixed over everything but what opens from the desk (sheets 50, rohanOS 100). */
+/* Fixed over everything but what opens from the desk (sheets 50, Ambit OS 100). */
 :root:has(.home) {
   scroll-padding-top: var(--nav-h, 64px);
 }
@@ -580,10 +580,14 @@
     transition: none !important;
   }
 }
-/* rohanOS is the whole screen: it lives inside the desk's sticky stage, so it can't rise
+/* Ambit OS is the whole screen: it lives inside the desk's sticky stage, so it can't rise
    above the fixed bar. The bar steps out while it's open. */
-:root:has(.os) .nav {
+:root:has(.am, .am-voice) .nav {
   visibility: hidden;
+}
+/* And the page behind it holds still, so a scroll inside a window never moves the desk. */
+:root:has(.am, .am-voice) {
+  overflow: hidden;
 }
 
 /* ── Hero ─────────────────────────────────────────────── */
@@ -1224,7 +1228,7 @@
   pointer-events: none;
 }
 /* Positioned after the grid, so it paints above it; no z-index, so what opens from the desk
-   (rohanOS, the sheets) can still rise above the hero. */
+   (Ambit OS, the sheets) can still rise above the hero. */
 .home .xp-desk {
   position: relative;
 }
