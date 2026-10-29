@@ -814,7 +814,10 @@
 .home-desk {
   margin-inline: clamp(-40px, -3vw, 0px);
 }
-/* The floor grid may run to the window's edge; only the page clips sideways. */
+/* The floor grid may run to the window's edge; only the page clips sideways. On the root as
+   well as the body: the body's clip alone didn't hold the viewport, so when the camera zoomed into
+   the monitor the drawing widened the page (390 → 549px on a phone, which zoomed out mid-scroll). */
+:root:has(.home),
 :root:has(.home) body {
   overflow-x: clip;
 }

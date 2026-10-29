@@ -32,7 +32,7 @@ const FOLDER_Z = [72, 60, 48, 36];
 
 // side: which way the leader runs; rise: 1 up, -1 down (both at the drawing's 30°).
 const CALLOUTS: { key: string; n: string; label: string; side: 1 | -1; rise: 1 | -1; reach: number }[] = [
-  { key: "monitor", n: "01", label: "computer · the agent, running", side: 1, rise: 1, reach: 120 },
+  { key: "monitor", n: "01", label: "computer · rohanOS, running", side: 1, rise: 1, reach: 120 },
   { key: "folders", n: "02", label: "folders · four projects", side: -1, rise: -1, reach: 50 },
   { key: "clipboard", n: "03", label: "clipboard · résumé", side: 1, rise: 1, reach: 36 },
   { key: "photo", n: "04", label: "photo · me, in Chicago", side: 1, rise: 1, reach: 80 },
@@ -83,6 +83,21 @@ export function Exploded({
     const svg = host.current?.querySelector("svg");
     const box = track.current;
     if (!svg || !box) return;
+
+    // Strokes. The drawing's lines are non-scaling (1px whatever the size), and a non-scaling
+    // stroke is worked out again for every path inside a group whenever that group moves: about
+    // 1,600 of them on every scroll frame, the biggest cost on a phone. The drawing's scale only
+    // changes on resize (the camera moves the <svg> box, not the viewBox), so each width is baked
+    // in once, divided by that scale through --xp-stroke. Lines under a skewed screen transform
+    // keep the CSS rule; they're few and only the monitor moves them.
+    for (const el of Array.from(svg.querySelectorAll<SVGElement>("path, circle"))) {
+      if (el.closest("[transform]")) continue;
+      // Fills too: Chrome does the non-scaling work for a shape with no stroke at all.
+      el.style.vectorEffect = "none";
+      const css = getComputedStyle(el);
+      if (css.stroke === "none") continue;
+      el.style.strokeWidth = `calc(${css.strokeWidth} * var(--xp-stroke, 1))`;
+    }
 
     // Wrap every movable top-level part so hover transforms on .desk-object keep working.
     type Part = { el: SVGGElement; z: number; at: number; anchor?: Vec; key: string };
@@ -389,17 +404,31 @@ export function Exploded({
       setCaption(c);
     };
 
+    // Progress through the track. The window's height is read on mount and on real resizes only:
+    // a phone's address bar sliding away changes innerHeight mid-scroll, and the desk would jump.
+    let view = innerHeight;
     const target = () => {
       const r = box.getBoundingClientRect();
-      return clamp(-r.top / (r.height - innerHeight));
+      return clamp(-r.top / (r.height - view));
     };
-    const tick = () => {
+    // While the desk moves, the <svg> gets a layer of its own, so the camera's transform is
+    // handled by the compositor instead of repainting the drawing every frame. The layer is
+    // dropped once it settles, and the drawing is redrawn sharp at its new scale.
+    let moving = false;
+    let moved = 0;
+    const tick = (now: number) => {
       const goal = target();
       shown = reduced ? goal : shown + (goal - shown) * 0.14;
       if (Math.abs(goal - shown) < 0.0005) shown = goal;
       if (shown !== last) {
+        if (!moving) svg.style.willChange = "transform";
+        moving = true;
+        moved = now;
         render(shown);
         last = shown;
+      } else if (moving && now - moved > 250) {
+        svg.style.willChange = "";
+        moving = false;
       }
       raf = requestAnimationFrame(tick);
     };
@@ -419,11 +448,18 @@ export function Exploded({
     const measure = () => {
       const r = plain();
       size = { w: r.width, h: r.height };
+      view = innerHeight;
+      stroke();
     };
     // A view box placed in the svg's box: screen = point * s + o.
     const fit = (b: typeof still) => {
       const s = Math.min(size.w / b.w, size.h / b.h);
       return { s, ox: (size.w - b.w * s) / 2 - b.x * s, oy: (size.h - b.h * s) / 2 - b.y * s };
+    };
+    // The baked strokes stay the width they'd have been as non-scaling strokes.
+    const stroke = () => {
+      const s = fit(still).s;
+      if (s > 0) svg.style.setProperty("--xp-stroke", String(1 / s));
     };
     camera = (v) => {
       if (!size.w || !size.h) return;
@@ -445,7 +481,14 @@ export function Exploded({
     apart = { x: b.x - 16, y: b.y - 16, w: b.width + 32, h: b.height + 32 };
     frame();
     aim();
+    // On a touch screen a height-only resize is the address bar showing or hiding while you
+    // scroll. The stage is sized in svh, so nothing on it changes; re-measuring then (with the
+    // camera taken off for a moment) is what made the first scroll on a phone stutter.
+    const coarse = matchMedia("(pointer: coarse)").matches;
+    let width = innerWidth;
     const resize = () => {
+      if (coarse && innerWidth === width) return;
+      width = innerWidth;
       measure();
       frame();
       aim();
@@ -462,6 +505,7 @@ export function Exploded({
       const { width, height } = e.contentRect;
       if (width === size.w && height === size.h) return;
       size = { w: width, h: height };
+      stroke();
       shot = "";
       render(shown);
     });
