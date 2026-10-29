@@ -11,7 +11,7 @@ const SECTIONS = [
   ["/#route", "Background"],
   ["/playground/", "Playground"],
   ["/notebook/", "Notebook"],
-  ["/#os", "rohanOS"],
+  ["/#os", "Ambit OS"],
 ] as const;
 
 // What's behind each link, one line each, for the phone menu.
@@ -124,7 +124,7 @@ export function SiteNav({ mail }: { mail: string }) {
         <div className="nav-track" ref={track} onPointerLeave={rest} onBlur={(e) => !track.current?.contains(e.relatedTarget as Node) && rest()}>
           <span className="nav-lens" aria-hidden="true" />
           <ul className="nav-links">
-            {/* Plain links on purpose: rohanOS opens on the browser's hashchange, which <Link> never fires. */}
+            {/* Plain links on purpose: Ambit OS opens on the browser's hashchange, which <Link> never fires. */}
             {SECTIONS.map(([href, label]) => (
               <li key={href}>
                 <a href={href} aria-current={here(href) ? "page" : undefined} onPointerEnter={(e) => lens(e.currentTarget)} onFocus={(e) => lens(e.currentTarget)}>

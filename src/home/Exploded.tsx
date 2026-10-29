@@ -32,7 +32,7 @@ const FOLDER_Z = [72, 60, 48, 36];
 
 // side: which way the leader runs; rise: 1 up, -1 down (both at the drawing's 30°).
 const CALLOUTS: { key: string; n: string; label: string; side: 1 | -1; rise: 1 | -1; reach: number }[] = [
-  { key: "monitor", n: "01", label: "computer · rohanOS, running", side: 1, rise: 1, reach: 120 },
+  { key: "monitor", n: "01", label: "computer · Ambit OS, running", side: 1, rise: 1, reach: 120 },
   { key: "folders", n: "02", label: "folders · four projects", side: -1, rise: -1, reach: 50 },
   { key: "clipboard", n: "03", label: "clipboard · résumé", side: 1, rise: 1, reach: 36 },
   { key: "photo", n: "04", label: "photo · me, in Chicago", side: 1, rise: 1, reach: 80 },
