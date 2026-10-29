@@ -33,7 +33,7 @@ export default function Home() {
       <div className="home-desk">
         <Exploded
           backdrop={<DitherGrid />}
-          pointer={["Live: this agent is running", "Click the screen to open it"]}
+          pointer={["Live: rohanOS is running", "Click the screen to use it"]}
           intro={
             <header className="hero">
               <p className="hero-status">

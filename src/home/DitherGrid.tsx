@@ -4,33 +4,37 @@ import { useEffect, useRef } from "react";
 
 // A Bayer-dithered grid of small square cells behind the hero, after "Dither Grid" by Vikers,
 // in the identity's colours. At rest every cell is a pencil dot, like dot-grid paper,
-// strongest toward the desk's corner, with a few dots twinkling at any moment. The cursor warms it:
-// dots near the pointer grow into soft brass squares and cool back to dots as it moves on. It
+// strongest toward the desk's corner, with a few dots twinkling at any moment. The cursor warms it,
+// quietly: dots near the pointer swell a little in a soft pencil tone, then cool back. It
 // fades on scroll, unless it sits in its own box further down a page (fadeOnScroll off).
 
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((n) => (n + 0.5) / 16);
 const CELL = 16;
-// Cell size as a share of the pitch: at rest, and fully warmed.
+// Cell size as a share of the pitch: at rest, and fully warmed. Kept small, so the glow reads
+// as the paper reacting, not as something chasing the pointer (it was 0.78 in brass, and
+// distracting).
 const REST = 0.16;
-const HOT = 0.78;
+const HOT = 0.5;
 // How far the dots' falloff reaches from its corner, as a share of the stage diagonal, and how
 // strong the dots stay past it.
 const REACH = 0.9;
 const FLOOR = 0.3;
 // Cursor glow radius in px, how much heat a frame adds, and how fast it cools.
-const RADIUS = 150;
-const GAIN = 0.16;
-const COOL = 0.955;
+const RADIUS = 110;
+const GAIN = 0.1;
+const COOL = 0.93;
 // Twinkle: the share of dots that start one each frame, and how many frames one lasts.
 const SPARK = 0.0007;
 const SPARK_FRAMES = 40;
 
-// Tints, all laid over paper at low alpha so nothing reads darker than a pencil wash.
+// Tints, all laid over paper at low alpha so nothing reads darker than a pencil wash. The glow
+// is the pencil tone, not brass: the page's one accent stays on the things you can click.
+// (--ink-2, a plain hex; --ink-3 is a color-mix(), which a canvas may not take as a fill.)
 const BASE = { token: "--ink", alpha: 0.24 };
 const WARM: { token: string; alpha: number }[] = [
-  { token: "--signal", alpha: 0.14 },
-  { token: "--signal", alpha: 0.28 },
-  { token: "--signal", alpha: 0.44 },
+  { token: "--ink-2", alpha: 0.16 },
+  { token: "--ink-2", alpha: 0.23 },
+  { token: "--ink-2", alpha: 0.3 },
 ];
 
 export function DitherGrid({ fadeOnScroll = true, className = "dither" }: { fadeOnScroll?: boolean; className?: string }) {
