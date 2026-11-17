@@ -1,0 +1,23 @@
+{
+  "type": "Experiment",
+  "title": "My AI agent didn't get better. It got *lucky*.",
+  "dek": "It solved a task, then failed the exact same task. Here's why.",
+  "date": "2026-11-17",
+  "tags": ["Agents", "Evaluation", "Local models"],
+  "motif": "lucky",
+  "takeaways": [
+    "Run your unchanged setup twice before you trust an improvement. In my runs the gap between two identical runs was bigger than the improvement I nearly kept.",
+    "Turning the temperature to zero doesn't make runs repeatable: batching changes the maths, and clocks and file paths leak into what the model sees.",
+    "Compare the same tasks task by task and count flips. Equal totals can hide 19 fixes and 19 breaks.",
+    "Report how often an agent succeeds on every try, not just the first. Mine passed 59% of tasks on the first try and 43% on all three."
+  ],
+  "resources": [
+    { "label": "batch_invariant_ops", "by": "GitHub", "note": "Thinking Machines' batch-invariant kernels for PyTorch", "url": "https://github.com/thinking-machines-lab/batch_invariant_ops" }
+  ],
+  "sources": [
+    { "label": "Understanding and Mitigating Numerical Sources of Nondeterminism in LLM Inference", "by": "Yuan et al., arXiv", "url": "https://arxiv.org/abs/2506.09501" },
+    { "label": "Defeating Nondeterminism in LLM Inference", "by": "Thinking Machines Lab", "url": "https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/" },
+    { "label": "Defeating Nondeterminism in LLM Inference (summary)", "by": "Simon Willison", "url": "https://simonwillison.net/2025/Sep/11/defeating-nondeterminism" },
+    { "label": "τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains", "by": "Yao et al., arXiv", "url": "https://arxiv.org/abs/2406.12045" }
+  ]
+}

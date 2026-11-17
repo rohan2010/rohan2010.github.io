@@ -40,6 +40,22 @@ const MOTIFS: Record<string, () => React.ReactNode> = {
       <rect x="136" y="45" width="18" height="2.5" className="cv-note-line" />
     </svg>
   ),
+  // Luck: two runs of the same agent match message for message, then split on a near-tie.
+  lucky: () => (
+    <svg viewBox="0 0 220 150" aria-hidden="true">
+      {Array.from({ length: 6 }, (_, i) => (
+        <circle key={i} cx={20 + i * 16} cy="75" r="4.5" className="cv-dot-on cv-run" />
+      ))}
+      <path d="M100 75 C 122 75, 128 38, 150 38 L 166 38" className="cv-path" />
+      <path d="M100 75 C 122 75, 128 112, 150 112 L 166 112" className="cv-path cv-path-off" />
+      <circle cx="100" cy="75" r="7" className="cv-fork" />
+      <text x="100" y="58" textAnchor="middle" className="cv-text">28</text>
+      <rect x="168" y="27" width="40" height="22" rx="11" className="cv-pick" />
+      <text x="188" y="42" textAnchor="middle" className="cv-text-dark">pass</text>
+      <rect x="168" y="101" width="40" height="22" rx="11" className="cv-pill" />
+      <text x="188" y="116" textAnchor="middle" className="cv-text">fail</text>
+    </svg>
+  ),
 };
 
 export function Cover({ word, motif, kicker, size = "lg" }: { word: string; motif: string; kicker?: string; size?: "lg" | "sm" }) {

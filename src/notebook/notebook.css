@@ -780,3 +780,23 @@ a.nb-card:hover .nb-card-title {
   letter-spacing: -0.02em;
   font-weight: 500;
 }
+
+.cv-run {
+  fill: color-mix(in oklab, var(--paper) 70%, transparent);
+}
+.cv-path {
+  fill: none;
+  stroke: var(--signal);
+  stroke-width: 2;
+}
+.cv-path-off {
+  stroke: color-mix(in oklab, var(--paper) 45%, transparent);
+  stroke-dasharray: 4 4;
+}
+.cv-fork {
+  fill: var(--signal);
+}
+.cv-text-dark {
+  font: 500 11px var(--mono);
+  fill: var(--deep);
+}
