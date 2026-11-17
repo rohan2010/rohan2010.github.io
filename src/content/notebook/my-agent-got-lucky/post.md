@@ -120,7 +120,7 @@ For the fourth source, the fix isn't in the code. It's in how you compare.
 - **Compare task by task, not totals.** Run both versions on exactly the same tasks and seeds, and count the tasks that
   flipped each way. 30 vs 30 with 19 flips each way is not "no change".
 - **Group by task when you judge.** In one recent comparison, my setup beat the plain model by 21 points and a standard
-  test said that was unlikely to be luck (p = 0.04). But those results came from 13 tasks, several seeds each, and
+  test said that was unlikely to be luck (p = 0.04). But those results came from just 12 tasks, four versions each, and
   seeds of the same task tend to pass or fail together. Grouping the results by task, the honest way, the same result
   gave **p = 0.22**: quite possibly luck. Same data, a third of the evidence I thought I had.
 - **Decide what counts before you look.** Write down which tasks a change should help and how much would be worth
